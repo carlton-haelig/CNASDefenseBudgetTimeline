@@ -993,12 +993,12 @@
             avgEvents.forEach((event, idx) => {
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
-                const topPos = (event.dayOfPeriod / totalDays) * 72;
+                const topPos = (event.dayOfPeriod / totalDays) * totalHeight;
                 
                 let barHeight = 0;
                 if (event.eventType !== 'Appropriation' && idx < avgEvents.length - 1) {
                     const nextEvent = avgEvents[idx + 1];
-                    const nextTopPos = (nextEvent.dayOfPeriod / totalDays) * 72;
+                    const nextTopPos = (nextEvent.dayOfPeriod / totalDays) * totalHeight;
                     barHeight = nextTopPos - topPos;
                 }
                 
@@ -1023,12 +1023,12 @@
             idealEvents.forEach((event, idx) => {
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
-                const topPos = (event.dayOfPeriod / totalDays) * 72;
+                const topPos = (event.dayOfPeriod / totalDays) * totalHeight;
                 
                 let barHeight = 0;
                 if (event.eventType !== 'Appropriation' && idx < idealEvents.length - 1) {
                     const nextEvent = idealEvents[idx + 1];
-                    const nextTopPos = (nextEvent.dayOfPeriod / totalDays) * 72;
+                    const nextTopPos = (nextEvent.dayOfPeriod / totalDays) * totalHeight;
                     barHeight = nextTopPos - topPos;
                 }
                 
