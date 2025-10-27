@@ -955,6 +955,11 @@
                 const leftPos = yearIdx * 5; // Define leftPos at year level
                 let barCounter = 1;
                 
+                // ALWAYS log for every year
+                console.log(`=== FY${year} ===`);
+                console.log(`Has appropriation: ${hasAppropriation}`);
+                console.log(`Events:`, yearEvents.map(e => `${e.dateStr} - ${e.eventType}`));
+                
                 yearEvents.forEach((event, eventIdx) => {
                     const cssClass = eventClasses[event.eventType] || 'data-pbd';
                     const color = eventColors[event.eventType] || '#58c1c6';
