@@ -814,6 +814,7 @@
         function renderVisualization(events, yearNotes) {
             const loading = document.getElementById('loading');
             const visualization = document.getElementById('visualization');
+            const today = new Date(); // Define today at the top of function scope
 
             // Group by fiscal year
             const eventsByYear = {};
@@ -935,6 +936,19 @@
                 const hasAppropriation = yearEvents.some(e => e.eventType === 'Appropriation');
                 const leftPos = yearIdx * 5; // Define leftPos at year level
                 let barCounter = 1;
+                
+                // Debug logging for incomplete years
+                if (!hasAppropriation) {
+                    const periodStart = new Date(parseInt(year) - 1, 1, 1);
+                    const currentDayOfPeriod = Math.floor((today - periodStart) / (1000 * 60 * 60 * 24));
+                    console.log(`FY${year} - No appropriation:`, {
+                        today: today.toDateString(),
+                        periodStart: periodStart.toDateString(),
+                        currentDayOfPeriod,
+                        totalDays,
+                        calculatedPosition: (currentDayOfPeriod / totalDays) * totalHeight + ' rem'
+                    });
+                }
                 
                 yearEvents.forEach((event, eventIdx) => {
                     const cssClass = eventClasses[event.eventType] || 'data-pbd';
