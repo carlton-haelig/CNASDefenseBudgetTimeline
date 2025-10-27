@@ -714,17 +714,24 @@
             const visualization = document.getElementById('visualization');
 
             loading.style.display = 'block';
+            loading.textContent = 'Loading data...';
             error.style.display = 'none';
             visualization.classList.add('u-hidden');
 
             try {
+                console.log('Attempting to fetch CSV file:', CSV_FILE);
                 const response = await fetch(CSV_FILE);
+                console.log('Fetch response:', response.status, response.statusText);
+                
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch CSV: ${response.statusText}`);
+                    throw new Error(`Failed to fetch CSV: ${response.statusText}. Make sure '${CSV_FILE}' exists in your repository.`);
                 }
 
                 const csvText = await response.text();
+                console.log('CSV loaded, length:', csvText.length);
+                
                 const rows = parseCSV(csvText);
+                console.log('Parsed rows:', rows.length);
 
                 if (rows.length === 0) {
                     throw new Error('No data found in CSV');
@@ -763,10 +770,13 @@
                     throw new Error('No valid events found');
                 }
 
+                console.log('Events parsed:', events.length);
+                console.log('Calling renderVisualization...');
                 renderVisualization(events, yearNotes);
+                console.log('Visualization rendered successfully');
 
             } catch (err) {
-                console.error('Error:', err);
+                console.error('Error loading data:', err);
                 error.textContent = `Error: ${err.message}`;
                 error.style.display = 'block';
                 loading.style.display = 'none';
@@ -812,9 +822,11 @@
         }
 
         function renderVisualization(events, yearNotes) {
+            console.log('renderVisualization started');
             const loading = document.getElementById('loading');
             const visualization = document.getElementById('visualization');
             const today = new Date(); // Define today at the top of function scope
+            console.log('Today:', today.toDateString());
 
             // Group by fiscal year
             const eventsByYear = {};
@@ -826,6 +838,7 @@
             });
 
             const years = Object.keys(eventsByYear).sort();
+            console.log('Years to render:', years);
             
             // Calculate if we need to extend beyond 18 months
             const today = new Date();
@@ -852,6 +865,12 @@
             const numRows = maxMonthsNeeded;
             const totalDays = Math.floor(maxMonthsNeeded * 30.42); // Approximate days
             const totalHeight = numRows * 4; // 4rem per row - total graph height
+            
+            // Safety check
+            if (totalDays <= 0 || totalHeight <= 0) {
+                console.error('Invalid calculations:', { numRows, totalDays, totalHeight });
+                throw new Error('Invalid graph dimensions calculated');
+            }
 
             // Calculate average and ideal
             const avgEvents = calculateAverageTimeline(eventsByYear);
@@ -936,19 +955,6 @@
                 const hasAppropriation = yearEvents.some(e => e.eventType === 'Appropriation');
                 const leftPos = yearIdx * 5; // Define leftPos at year level
                 let barCounter = 1;
-                
-                // Debug logging for incomplete years
-                if (!hasAppropriation) {
-                    const periodStart = new Date(parseInt(year) - 1, 1, 1);
-                    const currentDayOfPeriod = Math.floor((today - periodStart) / (1000 * 60 * 60 * 24));
-                    console.log(`FY${year} - No appropriation:`, {
-                        today: today.toDateString(),
-                        periodStart: periodStart.toDateString(),
-                        currentDayOfPeriod,
-                        totalDays,
-                        calculatedPosition: (currentDayOfPeriod / totalDays) * totalHeight + ' rem'
-                    });
-                }
                 
                 yearEvents.forEach((event, eventIdx) => {
                     const cssClass = eventClasses[event.eventType] || 'data-pbd';
@@ -1066,6 +1072,7 @@
 
             loading.style.display = 'none';
             visualization.classList.remove('u-hidden');
+            console.log('renderVisualization completed successfully');
         }
 
         // Load on page load
