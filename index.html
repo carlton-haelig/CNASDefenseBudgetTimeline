@@ -899,13 +899,13 @@
                 yearEvents.sort((a, b) => a.dayOfPeriod - b.dayOfPeriod);
                 
                 const hasAppropriation = yearEvents.some(e => e.eventType === 'Appropriation');
+                const leftPos = yearIdx * 5; // Define leftPos at year level
                 let barCounter = 1;
                 
                 yearEvents.forEach((event, eventIdx) => {
                     const cssClass = eventClasses[event.eventType] || 'data-pbd';
                     const color = eventColors[event.eventType] || '#58c1c6';
                     const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
-                    const leftPos = yearIdx * 5;
                     const topPos = (event.dayOfPeriod / totalDays) * 72;
                     
                     let barHeight = 0;
@@ -1025,5 +1025,8 @@
         // Load on page load
         loadData();
     </script>
+
+    <!-- Export and Display Features -->
+    <script src="app.js"></script>
 </body>
 </html>
