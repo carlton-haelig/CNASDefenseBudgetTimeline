@@ -4,49 +4,251 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Federal Budget Events Timeline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Base styles matching CNAS design */
         html {
             background-color: #37373d;
         }
 
         body {
+            padding: 1rem 1rem 1rem 4.9rem;
             color: #fff;
-            font-family: 'Arial', 'Helvetica', sans-serif;
-            padding: 2rem;
-            min-height: 100vh;
+            font-size: 1rem;
+            line-height: 1.4;
+            font-family: 'Montserrat', 'Arial', sans-serif;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            font-size: 2.5rem;
+        /* Typography - matching CNAS */
+        .h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.4rem;
             letter-spacing: 1px;
             text-transform: uppercase;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 0.5rem solid #fff;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
             margin-bottom: 3rem;
-            color: #ccc;
         }
 
+        .h1__border {
+            border-bottom: 0.5rem solid #fff;
+            padding-bottom: 1rem;
+        }
+
+        /* Color classes matching CNAS */
+        .data-pbd {
+            background-color: #58c1c6;
+        }
+
+        .data-cr {
+            background-color: #d47371;
+        }
+
+        .data-gs {
+            background-color: #7a2b2a;
+        }
+
+        .data-app {
+            background-color: #ddb375;
+        }
+
+        /* Graph structure */
+        .graph {
+            position: relative;
+            padding-left: 4rem;
+            overflow-x: auto;
+        }
+
+        .graph__row {
+            margin-bottom: -6px;
+            white-space: nowrap;
+        }
+
+        .graph__cell {
+            display: inline-block;
+            width: 5rem;
+            height: 4rem;
+            border: 1px solid #4f4f55;
+            margin-left: -5px;
+            background-color: transparent;
+            position: relative;
+        }
+
+        /* Y-axis styling */
+        .graph__y-axis {
+            position: absolute;
+            top: 2.6rem;
+            left: 0;
+            width: 3.5rem;
+        }
+
+        .graph__tick--y {
+            display: flex;
+            align-items: center;
+            height: 4rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            font-size: 0.85rem;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        /* X-axis styling */
+        .graph__x-axis {
+            padding-bottom: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .graph__tick--x {
+            display: inline-block;
+            width: 5rem;
+            margin-left: -5px;
+            text-align: center;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            font-size: 1.2rem;
+            color: #fff;
+            text-transform: uppercase;
+            padding: 0.5rem 0;
+        }
+
+        .graph__tick--x:hover .tick-x-text {
+            position: relative;
+            z-index: 3;
+            color: #58c1c6;
+        }
+
+        /* Data points */
+        .graph__data {
+            display: flex;
+            position: absolute;
+            top: 2.8rem;
+            left: 4rem;
+            pointer-events: none;
+        }
+
+        .graph__datacell {
+            position: absolute;
+            width: 5rem;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .datapoint {
+            display: block;
+            margin: auto;
+            position: relative;
+            max-width: 2.2rem;
+            height: 0.5rem;
+            cursor: pointer;
+            pointer-events: auto;
+            animation: data-anim 0.3s ease;
+        }
+
+        .databar {
+            display: block;
+            width: 0.6rem;
+            margin: auto;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        /* Animation matching CNAS */
+        @keyframes data-anim {
+            0% {
+                opacity: 0;
+                max-height: 0;
+                visibility: hidden;
+            }
+            100% {
+                visibility: visible;
+                opacity: 1;
+                max-height: 40rem;
+            }
+        }
+
+        /* Legend matching CNAS */
+        .legend {
+            float: right;
+            padding-right: 10rem;
+            padding-bottom: 4rem;
+            margin-top: 3rem;
+            clear: both;
+        }
+
+        .legend__row {
+            padding-bottom: 0.5rem;
+        }
+
+        .legend__bar,
+        .legend__text {
+            display: inline-block;
+        }
+
+        .legend__bar {
+            width: 2rem;
+            height: 0.4rem;
+        }
+
+        .legend__bar--eofy {
+            border-bottom: 1px dashed #fff;
+            background: transparent;
+            height: 0;
+        }
+
+        .legend__text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            font-size: 0.9rem;
+            padding-left: 1rem;
+        }
+
+        /* Tooltip matching CNAS style */
+        .tooltip {
+            position: absolute;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.15s ease;
+            pointer-events: none;
+        }
+
+        .tooltip__box {
+            position: absolute;
+            z-index: 1001;
+            min-width: 14.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #fff;
+            text-transform: none;
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            box-shadow: 8px 8px 5px 0px rgba(0, 0, 0, 0.75);
+            border-radius: 3px;
+        }
+
+        .datapoint:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip__btn {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .tooltip__btn:hover {
+            color: #58c1c6;
+        }
+
+        /* Controls */
         .controls {
             margin-bottom: 2rem;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
+            padding-left: 4rem;
         }
 
         .controls button {
@@ -55,9 +257,12 @@
             color: #fff;
             border: none;
             border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             transition: background-color 0.3s;
         }
 
@@ -65,274 +270,135 @@
             background-color: #4aa8ad;
         }
 
-        #loading {
-            text-align: center;
-            font-size: 1.2rem;
-            padding: 3rem;
-            color: #ccc;
+        #loading,
+        #error {
+            margin-left: 4rem;
+            padding: 2rem;
+            font-family: 'Montserrat', sans-serif;
         }
 
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            padding: 1.5rem;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
+        #error {
+            background-color: #d47371;
+            color: #fff;
+            border-radius: 4px;
+            display: none;
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-        }
-
-        .legend-color {
-            width: 2.5rem;
-            height: 0.6rem;
-            border-radius: 2px;
-        }
-
-        .legend-text {
-            font-size: 0.95rem;
-        }
-
-        .color-pbd { background-color: #58c1c6; }
-        .color-cr { background-color: #d47371; }
-        .color-app { background-color: #ddb375; }
-        .color-gs { background-color: #7a2b2a; }
-        .color-eofy { 
-            background: transparent;
-            border-bottom: 2px dashed #fff;
-            height: 0;
-        }
-
-        .timeline-container {
-            position: relative;
-            overflow-x: auto;
-            padding: 2rem 0;
-        }
-
-        .timeline {
-            position: relative;
-            display: flex;
-            gap: 0;
-            min-width: 100%;
-        }
-
-        .year-column {
-            flex: 0 0 120px;
-            position: relative;
-            border-right: 1px solid #555;
-            padding: 0 0.5rem;
-        }
-
-        .year-column:last-child {
-            border-right: none;
-        }
-
-        .year-label {
-            position: sticky;
-            top: 0;
-            background-color: #37373d;
-            padding: 0.5rem;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-bottom: 2px solid #fff;
-            margin-bottom: 1rem;
-            z-index: 10;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .year-label:hover {
-            background-color: #4a4a50;
-        }
-
-        .events-container {
-            position: relative;
-            min-height: 400px;
-            padding-top: 1rem;
-        }
-
-        .event-bar {
-            width: 0.8rem;
-            margin: 0 auto 0.3rem;
-            border-radius: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scaleY(0);
-            }
-            to {
-                opacity: 1;
-                transform: scaleY(1);
-            }
-        }
-
-        .event-bar:hover {
-            transform: scaleX(1.5);
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        .event-marker {
-            position: relative;
-            width: 2.5rem;
-            height: 0.6rem;
-            margin: 0 auto 0.5rem;
-            border-radius: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .event-marker:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        .tooltip {
-            position: absolute;
-            background-color: #fff;
-            color: #000;
-            padding: 1rem;
-            border-radius: 6px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            min-width: 250px;
-            max-width: 350px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .tooltip.show {
-            opacity: 1;
-        }
-
-        .tooltip-date {
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: #37373d;
-        }
-
-        .tooltip-event {
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .tooltip-link {
-            display: inline-block;
-            margin-top: 0.5rem;
-            color: #58c1c6;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .tooltip-link:hover {
-            text-decoration: underline;
-        }
-
-        .month-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            pointer-events: none;
-        }
-
+        /* Month grid lines */
         .month-line {
             position: absolute;
             left: 0;
             right: 0;
             height: 1px;
             background-color: rgba(255, 255, 255, 0.1);
+            border: none;
         }
 
         .eofy-line {
             position: absolute;
             left: 0;
             right: 0;
-            height: 2px;
-            background: transparent;
             border-bottom: 2px dashed #fff;
+            height: 0;
         }
 
-        .error {
-            background-color: #d47371;
-            color: #fff;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin: 2rem 0;
+        /* Utility classes */
+        .u-hidden {
+            display: none !important;
+            visibility: hidden;
+        }
+
+        .u-clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
         }
 
         @media (max-width: 768px) {
-            h1 {
+            body {
+                padding: 1rem;
+            }
+
+            .h1 {
                 font-size: 1.8rem;
             }
 
-            .year-column {
-                flex: 0 0 80px;
+            .legend {
+                float: none;
+                padding-right: 0;
             }
 
-            .legend {
-                flex-direction: column;
-                gap: 1rem;
+            .graph__cell {
+                width: 3rem;
+            }
+
+            .graph__tick--x {
+                width: 3rem;
+                font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Federal Budget Events Timeline</h1>
-        <p class="subtitle">Interactive visualization of budget-related events by fiscal year</p>
+    <div class="h1 h1__border">Federal Budget Events Timeline</div>
 
-        <div class="controls">
-            <button onclick="loadData()">🔄 Refresh Data</button>
-        </div>
-
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color color-pbd"></div>
-                <div class="legend-text">President's Budget Delivered</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color color-cr"></div>
-                <div class="legend-text">Continuing Resolution</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color color-app"></div>
-                <div class="legend-text">Appropriation</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color color-gs"></div>
-                <div class="legend-text">Government Shutdown</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color color-eofy"></div>
-                <div class="legend-text">End of Fiscal Year (Sept 30)</div>
-            </div>
-        </div>
-
-        <div id="loading">Loading data...</div>
-        <div id="error" class="error" style="display: none;"></div>
-        <div id="visualization" class="timeline-container" style="display: none;"></div>
+    <div class="controls">
+        <button onclick="loadData()">🔄 Refresh Data</button>
     </div>
 
-    <div id="tooltip" class="tooltip"></div>
+    <div id="loading">Loading data...</div>
+    <div id="error"></div>
+
+    <div id="visualization" class="u-hidden">
+        <div class="graph">
+            <!-- Y-axis will be inserted here -->
+            <div class="graph__y-axis" id="yAxis"></div>
+            
+            <!-- X-axis will be inserted here -->
+            <div class="graph__x-axis" id="xAxis"></div>
+            
+            <!-- Graph grid will be inserted here -->
+            <div id="graphGrid"></div>
+            
+            <!-- Data points will be inserted here -->
+            <div class="graph__data" id="graphData"></div>
+        </div>
+
+        <div class="legend u-clearfix">
+            <div class="legend__row">
+                <span class="legend__bar data-pbd"></span>
+                <span class="legend__text">President's Budget Delivered to Congress</span>
+            </div>
+            <div class="legend__row">
+                <span class="legend__bar data-cr"></span>
+                <span class="legend__text">Continuing Resolution</span>
+            </div>
+            <div class="legend__row">
+                <span class="legend__bar data-app"></span>
+                <span class="legend__text">Appropriation</span>
+            </div>
+            <div class="legend__row">
+                <span class="legend__bar data-gs"></span>
+                <span class="legend__text">Government Shutdown</span>
+            </div>
+            <div class="legend__row">
+                <span class="legend__bar legend__bar--eofy"></span>
+                <span class="legend__text">End of Fiscal Year</span>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Configuration - REPLACE WITH YOUR CSV FILE PATH
-        const CSV_FILE = '/data.csv'; // Change this to your CSV filename
+        // Configuration
+        const CSV_FILE = '/data.csv';
+
+        // Event type to CSS class mapping
+        const eventClasses = {
+            'Presidents Budget Delivered to Congress': 'data-pbd',
+            'Continuing Resolution': 'data-cr',
+            'Appropriation': 'data-app',
+            'Government Shutdown': 'data-gs'
+        };
 
         // Event type colors
         const eventColors = {
@@ -342,24 +408,21 @@
             'Government Shutdown': '#7a2b2a'
         };
 
-        // Parse CSV data
+        // Parse CSV
         function parseCSV(csvText) {
             const lines = csvText.split('\n');
             const result = [];
             
-            // Skip header row (line 0)
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (!line) continue;
                 
-                // Simple CSV parsing (handles quoted fields)
                 const values = [];
                 let current = '';
                 let inQuotes = false;
                 
                 for (let j = 0; j < line.length; j++) {
                     const char = line[j];
-                    
                     if (char === '"') {
                         inQuotes = !inQuotes;
                     } else if (char === ',' && !inQuotes) {
@@ -375,34 +438,34 @@
                     result.push(values);
                 }
             }
-            
             return result;
         }
 
-        // Parse date from MM/DD/YYYY format
         function parseDate(dateStr) {
             const parts = dateStr.split('/');
             if (parts.length !== 3) return null;
             return new Date(parts[2], parts[0] - 1, parts[1]);
         }
 
-        // Get fiscal year from calendar date
         function getFiscalYear(date) {
             const year = date.getFullYear();
             const month = date.getMonth();
-            // Federal fiscal year starts Oct 1
             return month >= 9 ? year + 1 : year;
         }
 
-        // Get day of fiscal year (0 = Oct 1, 364 = Sept 30)
         function getDayOfFiscalYear(date) {
             const fy = getFiscalYear(date);
-            const fyStart = new Date(fy - 1, 9, 1); // Oct 1 of previous calendar year
+            const fyStart = new Date(fy - 1, 9, 1);
             const diff = date - fyStart;
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        // Load data from CSV file
+        function getMonthOfFiscalYear(date) {
+            const month = date.getMonth();
+            // Oct=0, Nov=1, ..., Sept=11
+            return month >= 9 ? month - 9 : month + 3;
+        }
+
         async function loadData() {
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
@@ -410,61 +473,59 @@
 
             loading.style.display = 'block';
             error.style.display = 'none';
-            visualization.style.display = 'none';
+            visualization.classList.add('u-hidden');
 
             try {
                 const response = await fetch(CSV_FILE);
-                
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch CSV file: ${response.statusText}. Make sure '${CSV_FILE}' exists in your repository.`);
+                    throw new Error(`Failed to fetch CSV: ${response.statusText}`);
                 }
 
                 const csvText = await response.text();
                 const rows = parseCSV(csvText);
 
                 if (rows.length === 0) {
-                    throw new Error('No data found in CSV file');
+                    throw new Error('No data found in CSV');
                 }
 
-                // Parse data
-                // CSV columns: Timestamp, Fiscal Year, Date, Event Type, URL
                 const events = [];
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
                     if (row.length >= 4) {
-                        const date = parseDate(row[2]); // Date column (index 2)
+                        const date = parseDate(row[2]);
                         if (date) {
                             events.push({
-                                fiscalYear: parseInt(row[1]), // Fiscal Year column (index 1)
+                                fiscalYear: parseInt(row[1]),
                                 date: date,
-                                eventType: row[3], // Event Type column (index 3)
-                                url: row[4] || '', // URL column (index 4)
-                                dayOfFY: getDayOfFiscalYear(date)
+                                dateStr: row[2],
+                                eventType: row[3],
+                                url: row[4] || '',
+                                dayOfFY: getDayOfFiscalYear(date),
+                                monthOfFY: getMonthOfFiscalYear(date)
                             });
                         }
                     }
                 }
 
                 if (events.length === 0) {
-                    throw new Error('No valid events found in CSV. Check that your data format matches: Timestamp, Fiscal Year, Date (MM/DD/YYYY), Event Type, URL');
+                    throw new Error('No valid events found');
                 }
 
                 renderVisualization(events);
 
             } catch (err) {
-                console.error('Error loading data:', err);
+                console.error('Error:', err);
                 error.textContent = `Error: ${err.message}`;
                 error.style.display = 'block';
                 loading.style.display = 'none';
             }
         }
 
-        // Render the visualization
         function renderVisualization(events) {
             const loading = document.getElementById('loading');
             const visualization = document.getElementById('visualization');
 
-            // Group events by fiscal year
+            // Group by fiscal year
             const eventsByYear = {};
             events.forEach(event => {
                 if (!eventsByYear[event.fiscalYear]) {
@@ -473,103 +534,74 @@
                 eventsByYear[event.fiscalYear].push(event);
             });
 
-            // Sort years
             const years = Object.keys(eventsByYear).sort();
+            const numRows = 12; // 12 months
 
-            // Create timeline
-            let html = '<div class="timeline">';
+            // Create Y-axis (months)
+            const yAxis = document.getElementById('yAxis');
+            const months = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+            let yAxisHTML = '';
+            months.forEach(month => {
+                yAxisHTML += `<div class="graph__tick--y"><span class="tick-y-text">${month}</span></div>`;
+            });
+            yAxis.innerHTML = yAxisHTML;
 
+            // Create X-axis (fiscal years)
+            const xAxis = document.getElementById('xAxis');
+            let xAxisHTML = '';
             years.forEach(year => {
-                const yearEvents = eventsByYear[year].sort((a, b) => a.dayOfFY - b.dayOfFY);
-                
-                html += `
-                    <div class="year-column">
-                        <div class="year-label" title="Fiscal Year ${year}">FY ${year}</div>
-                        <div class="events-container">
-                            <div class="month-grid">
-                                ${generateMonthGrid()}
-                            </div>
-                `;
+                xAxisHTML += `<div class="graph__tick--x"><span class="tick-x-text">FY${year}</span></div>`;
+            });
+            xAxis.innerHTML = xAxisHTML;
 
-                // Add events
-                yearEvents.forEach((event, idx) => {
-                    const color = eventColors[event.eventType] || '#999';
-                    const topPosition = (event.dayOfFY / 365) * 100;
+            // Create grid
+            const graphGrid = document.getElementById('graphGrid');
+            let gridHTML = '';
+            for (let row = 0; row < numRows; row++) {
+                gridHTML += '<div class="graph__row">';
+                years.forEach(year => {
+                    gridHTML += '<div class="graph__cell"></div>';
+                });
+                gridHTML += '</div>';
+            }
+            graphGrid.innerHTML = gridHTML;
+
+            // Create data points
+            const graphData = document.getElementById('graphData');
+            let dataHTML = '';
+            
+            years.forEach((year, yearIdx) => {
+                const yearEvents = eventsByYear[year];
+                
+                yearEvents.forEach(event => {
+                    const cssClass = eventClasses[event.eventType] || 'data-pbd';
+                    const color = eventColors[event.eventType] || '#58c1c6';
+                    const leftPos = yearIdx * 5; // 5rem per column
+                    const topPos = (event.dayOfFY / 365) * 48; // 48rem = 12 months * 4rem
                     
-                    html += `
-                        <div class="event-marker" 
-                             style="background-color: ${color}; position: absolute; top: ${topPosition}%; left: 50%; transform: translateX(-50%);"
-                             data-event='${JSON.stringify(event).replace(/'/g, "&apos;")}'
-                             onmouseover="showTooltip(event, this)"
-                             onmouseout="hideTooltip()">
+                    dataHTML += `
+                        <div class="graph__datacell" style="left: ${leftPos}rem; top: ${topPos}rem;">
+                            <div class="datapoint ${cssClass}">
+                                <div class="tooltip">
+                                    <div class="tooltip__box" style="background-color: ${color};">
+                                        <strong>${event.dateStr}</strong><br>
+                                        ${event.eventType}
+                                        ${event.url ? `<br><a href="${event.url}" target="_blank" class="tooltip__btn">View Source →</a>` : ''}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     `;
                 });
-
-                html += `
-                        </div>
-                    </div>
-                `;
             });
+            
+            graphData.innerHTML = dataHTML;
 
-            html += '</div>';
-
-            visualization.innerHTML = html;
-            visualization.style.display = 'block';
             loading.style.display = 'none';
+            visualization.classList.remove('u-hidden');
         }
 
-        // Generate month grid lines
-        function generateMonthGrid() {
-            let html = '';
-            // Add line for end of fiscal year (Sept 30 = day 365)
-            html += '<div class="eofy-line" style="top: 100%;"></div>';
-            
-            // Add lines for each month
-            const monthDays = [31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 28]; // Oct-Aug
-            let cumDays = 0;
-            monthDays.forEach(days => {
-                cumDays += days;
-                const topPosition = (cumDays / 365) * 100;
-                html += `<div class="month-line" style="top: ${topPosition}%;"></div>`;
-            });
-            
-            return html;
-        }
-
-        // Show tooltip
-        function showTooltip(e, element) {
-            const tooltip = document.getElementById('tooltip');
-            const event = JSON.parse(element.getAttribute('data-event'));
-            
-            const dateStr = `${event.date.getMonth() + 1}/${event.date.getDate()}/${event.date.getFullYear()}`;
-            
-            let html = `
-                <div class="tooltip-date">${dateStr}</div>
-                <div class="tooltip-event">${event.eventType}</div>
-            `;
-            
-            if (event.url) {
-                html += `<a href="${event.url}" target="_blank" class="tooltip-link">View Source →</a>`;
-            }
-            
-            tooltip.innerHTML = html;
-            
-            // Position tooltip
-            const rect = element.getBoundingClientRect();
-            tooltip.style.left = rect.right + 20 + 'px';
-            tooltip.style.top = rect.top + window.scrollY - 20 + 'px';
-            
-            tooltip.classList.add('show');
-        }
-
-        // Hide tooltip
-        function hideTooltip() {
-            const tooltip = document.getElementById('tooltip');
-            tooltip.classList.remove('show');
-        }
-
-        // Load data on page load
+        // Load on page load
         loadData();
     </script>
 </body>
