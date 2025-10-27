@@ -825,16 +825,49 @@
             });
 
             const years = Object.keys(eventsByYear).sort();
-            const numRows = 18;
-            const totalDays = getTotalDaysInPeriod();
+            
+            // Calculate if we need to extend beyond 18 months
+            const today = new Date();
+            let maxMonthsNeeded = 18; // Default 18 months (Feb to Jul)
+            
+            // Check each year without appropriation to see if we need more months
+            years.forEach(year => {
+                const yearEvents = eventsByYear[year];
+                const hasAppropriation = yearEvents.some(e => e.eventType === 'Appropriation');
+                
+                if (!hasAppropriation) {
+                    // Calculate the July endpoint for this fiscal year
+                    const julyEndpoint = new Date(parseInt(year), 6, 31); // July 31 of the FY year
+                    
+                    if (today > julyEndpoint) {
+                        // Calculate months from Feb (start) to current date
+                        const periodStart = new Date(parseInt(year) - 1, 1, 1); // Feb 1 of previous year
+                        const monthsDiff = Math.floor((today - periodStart) / (1000 * 60 * 60 * 24 * 30.42));
+                        maxMonthsNeeded = Math.max(maxMonthsNeeded, monthsDiff + 1);
+                    }
+                }
+            });
+            
+            const numRows = maxMonthsNeeded;
+            const totalDays = Math.floor(maxMonthsNeeded * 30.42); // Approximate days
 
             // Calculate average and ideal
             const avgEvents = calculateAverageTimeline(eventsByYear);
             const idealEvents = createIdealTimeline();
 
-            // Create Y-axis
+            // Create Y-axis with dynamic months
             const yAxis = document.getElementById('yAxis');
-            const months = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+            const baseMonths = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+            const extendedMonths = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+            
+            let months = [...baseMonths];
+            if (maxMonthsNeeded > 18) {
+                const additionalMonthsNeeded = maxMonthsNeeded - 18;
+                for (let i = 0; i < additionalMonthsNeeded; i++) {
+                    months.push(extendedMonths[i % 12]);
+                }
+            }
+            
             let yAxisHTML = '';
             months.forEach(month => {
                 yAxisHTML += `<div class="graph__tick--y"><span class="tick-y-text">${month}</span></div>`;
@@ -944,12 +977,10 @@
                     `;
                 });
                 
-                // Add question mark if no appropriation
+                // Add question mark at bottom if no appropriation
                 if (!hasAppropriation) {
-                    const lastEvent = yearEvents[yearEvents.length - 1];
-                    const lastTopPos = (lastEvent.dayOfPeriod / totalDays) * 72;
                     dataHTML += `
-                        <div class="graph__datacell" style="left: ${leftPos}rem; top: ${lastTopPos + 2}rem;">
+                        <div class="graph__datacell" style="left: ${leftPos}rem; top: 68rem;">
                             <div class="data-unknown">?</div>
                         </div>
                     `;
