@@ -453,17 +453,18 @@
             return month >= 9 ? year + 1 : year;
         }
 
-        function getDayOfFiscalYear(date) {
-            const fy = getFiscalYear(date);
-            const fyStart = new Date(fy - 1, 9, 1);
-            const diff = date - fyStart;
+        function getDayOfPeriod(date, fiscalYear) {
+            // Period runs from February (year-1) to July (year)
+            // For FY 2024, period is Feb 2023 to Jul 2024
+            const periodStart = new Date(fiscalYear - 1, 1, 1); // Feb 1 of previous year
+            const diff = date - periodStart;
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        function getMonthOfFiscalYear(date) {
-            const month = date.getMonth();
-            // Oct=0, Nov=1, ..., Sept=11
-            return month >= 9 ? month - 9 : month + 3;
+        function getTotalDaysInPeriod() {
+            // 18 months: Feb through Jul of following year
+            // Approximate as 18 * 30.42 = 547 days
+            return 547;
         }
 
         async function loadData() {
@@ -493,15 +494,15 @@
                     const row = rows[i];
                     if (row.length >= 4) {
                         const date = parseDate(row[2]);
+                        const fiscalYear = parseInt(row[1]);
                         if (date) {
                             events.push({
-                                fiscalYear: parseInt(row[1]),
+                                fiscalYear: fiscalYear,
                                 date: date,
                                 dateStr: row[2],
                                 eventType: row[3],
                                 url: row[4] || '',
-                                dayOfFY: getDayOfFiscalYear(date),
-                                monthOfFY: getMonthOfFiscalYear(date)
+                                dayOfPeriod: getDayOfPeriod(date, fiscalYear)
                             });
                         }
                     }
@@ -535,11 +536,12 @@
             });
 
             const years = Object.keys(eventsByYear).sort();
-            const numRows = 12; // 12 months
+            const numRows = 18; // 18 months
+            const totalDays = getTotalDaysInPeriod();
 
-            // Create Y-axis (months)
+            // Create Y-axis (18 months: Feb through Jul of following year)
             const yAxis = document.getElementById('yAxis');
-            const months = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+            const months = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
             let yAxisHTML = '';
             months.forEach(month => {
                 yAxisHTML += `<div class="graph__tick--y"><span class="tick-y-text">${month}</span></div>`;
@@ -566,19 +568,41 @@
             }
             graphGrid.innerHTML = gridHTML;
 
-            // Create data points
+            // Create data points with connecting bars
             const graphData = document.getElementById('graphData');
             let dataHTML = '';
             
             years.forEach((year, yearIdx) => {
                 const yearEvents = eventsByYear[year];
+                // Sort events by date
+                yearEvents.sort((a, b) => a.dayOfPeriod - b.dayOfPeriod);
                 
-                yearEvents.forEach(event => {
+                yearEvents.forEach((event, eventIdx) => {
                     const cssClass = eventClasses[event.eventType] || 'data-pbd';
                     const color = eventColors[event.eventType] || '#58c1c6';
                     const leftPos = yearIdx * 5; // 5rem per column
-                    const topPos = (event.dayOfFY / 365) * 48; // 48rem = 12 months * 4rem
+                    const topPos = (event.dayOfPeriod / totalDays) * 72; // 72rem = 18 months * 4rem
                     
+                    // Calculate bar height (extends to next event or end of period)
+                    let barHeight = 0;
+                    if (eventIdx < yearEvents.length - 1) {
+                        // Bar extends to next event
+                        const nextEvent = yearEvents[eventIdx + 1];
+                        const nextTopPos = (nextEvent.dayOfPeriod / totalDays) * 72;
+                        barHeight = nextTopPos - topPos;
+                    } else {
+                        // Last event - bar extends to end of period
+                        barHeight = 72 - topPos;
+                    }
+                    
+                    // Add connecting bar
+                    dataHTML += `
+                        <div class="graph__datacell" style="left: ${leftPos}rem; top: ${topPos}rem;">
+                            <div class="databar ${cssClass}" style="height: ${barHeight}rem; background-color: ${color};"></div>
+                        </div>
+                    `;
+                    
+                    // Add data point marker on top
                     dataHTML += `
                         <div class="graph__datacell" style="left: ${leftPos}rem; top: ${topPos}rem;">
                             <div class="datapoint ${cssClass}">
