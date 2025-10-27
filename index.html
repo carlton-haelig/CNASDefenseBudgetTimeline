@@ -850,6 +850,7 @@
             
             const numRows = maxMonthsNeeded;
             const totalDays = Math.floor(maxMonthsNeeded * 30.42); // Approximate days
+            const totalHeight = numRows * 4; // 4rem per row - total graph height
 
             // Calculate average and ideal
             const avgEvents = calculateAverageTimeline(eventsByYear);
