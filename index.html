@@ -729,7 +729,7 @@
                 }
 
                 // Parse data
-                // CSV columns: Timestamp, Fiscal Year, Date, Event Type, URL, Notes (optional)
+                // CSV columns: Timestamp, Fiscal Year, Date, Event Type, URL, Bill Name, Notes (optional)
                 const events = [];
                 const yearNotes = {}; // Store notes per fiscal year
                 
@@ -746,13 +746,14 @@
                                 dateStr: row[2],
                                 eventType: row[3],
                                 url: row[4] || '',
+                                billName: row[5] || '', // Bill name (if applicable)
                                 dayOfPeriod: getDayOfPeriod(date, fiscalYear)
                             });
                         }
                         
-                        // Store note for this fiscal year (if provided)
-                        if (row[5] && row[5].trim()) {
-                            yearNotes[fiscalYear] = row[5].trim();
+                        // Store note for this fiscal year (if provided) - now in column 7
+                        if (row[6] && row[6].trim()) {
+                            yearNotes[fiscalYear] = row[6].trim();
                         }
                     }
                 }
@@ -818,7 +819,7 @@
             // Ideal: Budget in Feb (day ~0), Appropriation in Sept (day ~213)
             return [
                 { 
-                    eventType: 'Presidents Budget Delivered to Congress', 
+                    eventType: "President's Budget Delivered to Congress", 
                     dayOfPeriod: 0,
                     idealDateStr: '02/01'
                 },
@@ -1003,6 +1004,7 @@
                                     <div class="tooltip__box" style="background-color: ${color};">
                                         <strong>${event.dateStr}</strong><br>
                                         ${event.eventType}
+                                        ${event.billName ? `<br><strong>Bill:</strong> ${event.billName}` : ''}
                                         ${event.url ? `<br><a href="${event.url}" target="_blank" class="tooltip__btn">Read more &gt;&gt;</a>` : ''}
                                     </div>
                                 </div>
