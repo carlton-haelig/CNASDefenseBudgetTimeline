@@ -794,18 +794,28 @@
             Object.values(eventsByYear).forEach(yearEvents => {
                 yearEvents.forEach(event => {
                     if (eventTimings[event.eventType]) {
-                        eventTimings[event.eventType].push(event.dayOfPeriod);
+                        eventTimings[event.eventType].push({
+                            dayOfPeriod: event.dayOfPeriod,
+                            date: event.date
+                        });
                     }
                 });
             });
 
             const avgEvents = [];
-            for (const [eventType, days] of Object.entries(eventTimings)) {
-                if (days.length > 0) {
-                    const avgDay = Math.round(days.reduce((a, b) => a + b) / days.length);
+            for (const [eventType, timings] of Object.entries(eventTimings)) {
+                if (timings.length > 0) {
+                    const avgDay = Math.round(timings.reduce((a, b) => a + b.dayOfPeriod, 0) / timings.length);
+                    
+                    // Calculate the average date (approximate based on Feb 1 start)
+                    const avgDate = new Date(2024, 1, 1); // Use 2024 as reference year
+                    avgDate.setDate(avgDate.getDate() + avgDay);
+                    const avgDateStr = `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`;
+                    
                     avgEvents.push({
                         eventType: eventType,
-                        dayOfPeriod: avgDay
+                        dayOfPeriod: avgDay,
+                        avgDateStr: avgDateStr
                     });
                 }
             }
@@ -816,8 +826,16 @@
         function createIdealTimeline() {
             // Ideal: Budget in Feb (day ~0), Appropriation in Sept (day ~213)
             return [
-                { eventType: 'Presidents Budget Delivered to Congress', dayOfPeriod: 0 },
-                { eventType: 'Appropriation', dayOfPeriod: 213 }
+                { 
+                    eventType: 'Presidents Budget Delivered to Congress', 
+                    dayOfPeriod: 0,
+                    idealDateStr: '02/01'
+                },
+                { 
+                    eventType: 'Appropriation', 
+                    dayOfPeriod: 213,
+                    idealDateStr: '09/30'
+                }
             ];
         }
 
@@ -1018,6 +1036,7 @@
             avgEvents.forEach((event, idx) => {
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
+                const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
                 const topPos = (event.dayOfPeriod / totalDays) * totalHeight;
                 
                 let barHeight = 0;
@@ -1038,7 +1057,15 @@
                 
                 dataHTML += `
                     <div class="graph__datacell" style="left: ${avgLeftPos}rem; top: ${topPos}rem;">
-                        <div class="datapoint ${cssClass}"></div>
+                        <div class="datapoint ${cssClass}">
+                            <div class="tooltip">
+                                <div class="tooltip__arrow ${arrowClass}"></div>
+                                <div class="tooltip__box" style="background-color: ${color};">
+                                    <strong>Average: ${event.avgDateStr}</strong><br>
+                                    ${event.eventType}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -1048,6 +1075,7 @@
             idealEvents.forEach((event, idx) => {
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
+                const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
                 const topPos = (event.dayOfPeriod / totalDays) * totalHeight;
                 
                 let barHeight = 0;
@@ -1067,7 +1095,15 @@
                 
                 dataHTML += `
                     <div class="graph__datacell" style="left: ${idealLeftPos}rem; top: ${topPos}rem;">
-                        <div class="datapoint ${cssClass}"></div>
+                        <div class="datapoint ${cssClass}">
+                            <div class="tooltip">
+                                <div class="tooltip__arrow ${arrowClass}"></div>
+                                <div class="tooltip__box" style="background-color: ${color};">
+                                    <strong>Ideal: ${event.idealDateStr}</strong><br>
+                                    ${event.eventType}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
