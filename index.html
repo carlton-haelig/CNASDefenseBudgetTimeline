@@ -72,9 +72,11 @@
         }
 
         #graphGrid {
-            position: relative;
-            margin-top: 0;
-            padding-top: 0;
+            position: absolute;
+            top: 0;
+            left: 4rem;
+            margin: 0;
+            padding: 0;
         }
 
         .graph__row {
@@ -756,8 +758,9 @@
             }
             
             let yAxisHTML = '';
-            months.forEach(month => {
-                yAxisHTML += `<div class="graph__tick--y"><span class="tick-y-text">${month}</span></div>`;
+            months.forEach((month, index) => {
+                const topPosition = index * 4; // Each row is 4rem
+                yAxisHTML += `<div class="graph__tick--y" style="top: ${topPosition}rem;"><span class="tick-y-text">${month}</span></div>`;
             });
             yAxis.innerHTML = yAxisHTML;
 
