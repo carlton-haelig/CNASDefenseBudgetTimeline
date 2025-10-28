@@ -808,8 +808,15 @@
                     const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
                     const topPos = getVisualPosition(event.date, event.fiscalYear);
                     
-                    // Debug output for positioning
-                    console.log(`${event.dateStr} (${event.eventType}): topPos = ${topPos.toFixed(2)} rem`);
+                    // Debug output
+                    console.log(`${event.dateStr} (${event.eventType}):`, {
+                        parsedDate: event.date.toDateString(),
+                        year: event.date.getFullYear(),
+                        month: event.date.getMonth(),
+                        day: event.date.getDate(),
+                        fiscalYear: event.fiscalYear,
+                        topPos: topPos.toFixed(2) + ' rem'
+                    });
                     
                     let barHeight = 0;
                     if (event.eventType !== 'Appropriation') {
