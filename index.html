@@ -542,11 +542,16 @@
             const month = date.getMonth();
             const day = date.getDate();
             
+            // Calculate which row (0-17 for 18 months)
+            // Rows 0-10: Feb-Dec of (fiscalYear-1) = 11 months
+            // Rows 11-17: Jan-Jul of (fiscalYear) = 7 months
             let rowIndex;
             if (year === fiscalYear - 1) {
-                rowIndex = month - 1;
+                // Previous calendar year (Feb-Dec)
+                rowIndex = month - 1; // Feb=month 1, becomes row 0
             } else {
-                rowIndex = 10 + month;
+                // Current fiscal year's calendar year (Jan-Jul)
+                rowIndex = 11 + month; // Jan=month 0, becomes row 11
             }
             
             const daysInMonth = new Date(year, month + 1, 0).getDate();
