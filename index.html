@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Federal Budget Events Timeline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Gotham Font Files - IMPORTANT: Place font files in a 'fonts' folder */
+        /* Gotham Font Files */
         @font-face {
             font-family: "Gotham-Book";
             src: url("fonts/Gotham-Book.eot");
@@ -13,8 +14,6 @@
                  url("fonts/Gotham-Book.woff") format("woff"),
                  url("fonts/Gotham-Book.ttf") format("truetype"),
                  url("fonts/Gotham-Book.otf") format("opentype");
-            font-weight: normal;
-            font-style: normal;
         }
 
         @font-face {
@@ -24,8 +23,6 @@
                  url("fonts/Gotham-Bold.woff") format("woff"),
                  url("fonts/Gotham-Bold.ttf") format("truetype"),
                  url("fonts/Gotham-Bold.otf") format("opentype");
-            font-weight: bold;
-            font-style: normal;
         }
 
         @font-face {
@@ -35,11 +32,8 @@
                  url("fonts/Gotham-Medium.woff") format("woff"),
                  url("fonts/Gotham-Medium.ttf") format("truetype"),
                  url("fonts/Gotham-Medium.otf") format("opentype");
-            font-weight: 500;
-            font-style: normal;
         }
 
-        /* Base styles */
         html {
             background-color: #37373d;
         }
@@ -49,10 +43,9 @@
             color: #fff;
             font-size: 1rem;
             line-height: 1.4;
-            font-family: 'Gotham-Book', 'Arial', sans-serif;
+            font-family: 'Gotham-Book', 'Montserrat', 'Arial', sans-serif;
         }
 
-        /* Typography */
         .h1 {
             font-family: 'Gotham-Bold', sans-serif;
             font-weight: 700;
@@ -67,24 +60,11 @@
             padding-bottom: 1rem;
         }
 
-        /* Color classes */
-        .data-pbd {
-            background-color: #58c1c6;
-        }
+        .data-pbd { background-color: #58c1c6; }
+        .data-cr { background-color: #d47371; }
+        .data-gs { background-color: #7a2b2a; }
+        .data-app { background-color: #ddb375; }
 
-        .data-cr {
-            background-color: #d47371;
-        }
-
-        .data-gs {
-            background-color: #7a2b2a;
-        }
-
-        .data-app {
-            background-color: #ddb375;
-        }
-
-        /* Graph structure */
         .graph {
             position: relative;
             padding-left: 4rem;
@@ -102,22 +82,17 @@
             height: 4rem;
             border: 1px solid #4f4f55;
             margin-left: -5px;
-            background-color: transparent;
-            position: relative;
         }
 
-        /* Gray out Average and Ideal columns */
         .graph__cell.avg-ideal {
             background-color: #4b4b51;
             border: 1px solid #6f6f74;
         }
 
-        /* September 30 dashed line (row 8) */
         .graph__row:nth-child(8) .graph__cell {
             border-bottom: 2px dashed #fff;
         }
 
-        /* Y-axis styling */
         .graph__y-axis {
             position: absolute;
             top: 2.6rem;
@@ -130,13 +105,11 @@
             align-items: center;
             height: 4rem;
             font-family: 'Gotham-Book', sans-serif;
-            font-weight: 400;
             font-size: 0.85rem;
             color: #fff;
             text-transform: uppercase;
         }
 
-        /* X-axis styling */
         .graph__x-axis {
             padding-bottom: 0.5rem;
             white-space: nowrap;
@@ -149,7 +122,6 @@
             text-align: center;
             cursor: pointer;
             font-family: 'Gotham-Book', sans-serif;
-            font-weight: 400;
             font-size: 1.2rem;
             color: #fff;
             text-transform: uppercase;
@@ -161,7 +133,6 @@
             color: #58c1c6;
         }
 
-        /* Disable hover for Avg and Ideal */
         .graph__tick--x.no-hover {
             cursor: default;
         }
@@ -170,7 +141,6 @@
             color: #fff;
         }
 
-        /* Data points */
         .graph__data {
             display: flex;
             position: absolute;
@@ -204,7 +174,6 @@
             cursor: pointer;
         }
 
-        /* Question mark for incomplete years */
         .data-unknown {
             display: block;
             margin: auto;
@@ -215,7 +184,6 @@
             pointer-events: auto;
         }
 
-        /* Staggered animations */
         .datapoint, .databar, .data-unknown {
             animation: data-anim ease;
         }
@@ -248,7 +216,6 @@
             }
         }
 
-        /* Legend */
         .legend {
             float: right;
             padding-right: 10rem;
@@ -261,8 +228,7 @@
             padding-bottom: 0.5rem;
         }
 
-        .legend__bar,
-        .legend__text {
+        .legend__bar, .legend__text {
             display: inline-block;
         }
 
@@ -279,12 +245,10 @@
 
         .legend__text {
             font-family: 'Gotham-Book', sans-serif;
-            font-weight: 400;
             font-size: 0.9rem;
             padding-left: 1rem;
         }
 
-        /* Tooltip - Data points */
         .tooltip {
             position: absolute;
             z-index: 1000;
@@ -302,7 +266,6 @@
             position: relative;
         }
 
-        /* CSS Arrow using pseudo-element */
         .tooltip__arrow::after {
             content: '';
             position: absolute;
@@ -346,11 +309,6 @@
             visibility: visible;
         }
 
-        .graph__datacell:hover .tooltip {
-            opacity: 1;
-            visibility: visible;
-        }
-
         .tooltip__btn {
             color: #fff;
             text-decoration: none;
@@ -371,7 +329,6 @@
             color: #fff;
         }
 
-        /* X-axis tooltips */
         .tooltip-xaxis {
             position: absolute;
             top: -2.35rem;
@@ -423,8 +380,7 @@
             z-index: 1001;
         }
 
-        #loading,
-        #error {
+        #loading, #error {
             margin-left: 4rem;
             padding: 2rem;
             font-family: 'Gotham-Book', sans-serif;
@@ -437,7 +393,6 @@
             display: none;
         }
 
-        /* Utility classes */
         .u-hidden {
             display: none !important;
             visibility: hidden;
@@ -449,131 +404,20 @@
             clear: both;
         }
 
-        /* Export Controls */
-        .export-controls {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            padding-left: 4rem;
-            flex-wrap: wrap;
-        }
-
-        .export-btn {
-            padding: 0.7rem 1.2rem;
-            background-color: #58c1c6;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-family: 'Gotham-Medium', sans-serif;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .export-btn:hover {
-            background-color: #4aa8ad;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .export-btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-icon {
-            font-size: 1.1rem;
-        }
-
-        /* Export Message */
-        .export-message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            background-color: #58c1c6;
-            color: #fff;
-            border-radius: 6px;
-            font-family: 'Gotham-Medium', sans-serif;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 10000;
-            opacity: 1;
-            transition: opacity 0.3s;
-        }
-
-        .export-message--success {
-            background-color: #58c1c6;
-        }
-
-        .export-message--error {
-            background-color: #d47371;
-        }
-
-        /* Print Styles */
-        @media print {
-            body {
-                background-color: white;
-                padding: 0;
-            }
-
-            html {
-                background-color: white;
-            }
-
-            .export-controls {
-                display: none !important;
-            }
-
-            .h1 {
-                color: #000;
-            }
-
-            .h1__border {
-                border-bottom-color: #000;
-            }
-
-            .graph__tick--y,
-            .graph__tick--x,
-            .legend__text {
-                color: #000;
-            }
-
-            .tooltip,
-            .tooltip-xaxis {
-                display: none !important;
-            }
-
-            .legend {
-                page-break-inside: avoid;
-            }
-
-            /* Ensure graph doesn't break across pages */
-            .graph {
-                page-break-inside: avoid;
-            }
-        }
-
         @media (max-width: 768px) {
             body {
                 padding: 1rem;
             }
-
             .h1 {
                 font-size: 1.8rem;
             }
-
             .legend {
                 float: none;
                 padding-right: 0;
             }
-
             .graph__cell {
                 width: 3rem;
             }
-
             .graph__tick--x {
                 width: 3rem;
                 font-size: 1rem;
@@ -620,10 +464,8 @@
     </div>
 
     <script>
-        // Configuration
         const CSV_FILE = 'data.csv';
 
-        // Event type to CSS class mapping
         const eventClasses = {
             "President's Budget Delivered to Congress": 'data-pbd',
             'Continuing Resolution': 'data-cr',
@@ -695,8 +537,24 @@
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        function getTotalDaysInPeriod() {
-            return 547; // 18 months
+        function getVisualPosition(date, fiscalYear) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const day = date.getDate();
+            
+            let rowIndex;
+            if (year === fiscalYear - 1) {
+                rowIndex = month - 1;
+            } else {
+                rowIndex = 10 + month;
+            }
+            
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const rowHeight = 4;
+            const rowStartPos = rowIndex * rowHeight;
+            const positionInRow = (day / daysInMonth) * rowHeight;
+            
+            return rowStartPos + positionInRow;
         }
 
         async function loadData() {
@@ -705,33 +563,24 @@
             const visualization = document.getElementById('visualization');
 
             loading.style.display = 'block';
-            loading.textContent = 'Loading data...';
             error.style.display = 'none';
             visualization.classList.add('u-hidden');
 
             try {
-                console.log('Attempting to fetch CSV file:', CSV_FILE);
                 const response = await fetch(CSV_FILE);
-                console.log('Fetch response:', response.status, response.statusText);
-                
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch CSV: ${response.statusText}. Make sure '${CSV_FILE}' exists in your repository.`);
+                    throw new Error(`Failed to fetch CSV: ${response.statusText}`);
                 }
 
                 const csvText = await response.text();
-                console.log('CSV loaded, length:', csvText.length);
-                
                 const rows = parseCSV(csvText);
-                console.log('Parsed rows:', rows.length);
 
                 if (rows.length === 0) {
                     throw new Error('No data found in CSV');
                 }
 
-                // Parse data
-                // CSV columns: Timestamp, Fiscal Year, Date, Event Type, URL, Bill Name, Notes (optional)
                 const events = [];
-                const yearNotes = {}; // Store notes per fiscal year
+                const yearNotes = {};
                 
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
@@ -746,12 +595,11 @@
                                 dateStr: row[2],
                                 eventType: row[3],
                                 url: row[4] || '',
-                                billName: row[5] || '', // Bill name (if applicable)
+                                billName: row[5] || '',
                                 dayOfPeriod: getDayOfPeriod(date, fiscalYear)
                             });
                         }
                         
-                        // Store note for this fiscal year (if provided) - now in column 7
                         if (row[6] && row[6].trim()) {
                             yearNotes[fiscalYear] = row[6].trim();
                         }
@@ -762,13 +610,10 @@
                     throw new Error('No valid events found');
                 }
 
-                console.log('Events parsed:', events.length);
-                console.log('Calling renderVisualization...');
                 renderVisualization(events, yearNotes);
-                console.log('Visualization rendered successfully');
 
             } catch (err) {
-                console.error('Error loading data:', err);
+                console.error('Error:', err);
                 error.textContent = `Error: ${err.message}`;
                 error.style.display = 'block';
                 loading.style.display = 'none';
@@ -776,7 +621,6 @@
         }
 
         function calculateAverageTimeline(eventsByYear) {
-            // Calculate average timing for each event type
             const eventTimings = {
                 "President's Budget Delivered to Congress": [],
                 'Continuing Resolution': [],
@@ -798,16 +642,15 @@
             for (const [eventType, timings] of Object.entries(eventTimings)) {
                 if (timings.length > 0) {
                     const avgDay = Math.round(timings.reduce((a, b) => a + b.dayOfPeriod, 0) / timings.length);
-                    
-                    // Calculate the average date (approximate based on Feb 1 start)
-                    const avgDate = new Date(2024, 1, 1); // Use 2024 as reference year
+                    const avgDate = new Date(2024, 1, 1);
                     avgDate.setDate(avgDate.getDate() + avgDay);
                     const avgDateStr = `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`;
                     
                     avgEvents.push({
                         eventType: eventType,
                         dayOfPeriod: avgDay,
-                        avgDateStr: avgDateStr
+                        avgDateStr: avgDateStr,
+                        date: avgDate
                     });
                 }
             }
@@ -816,29 +659,30 @@
         }
 
         function createIdealTimeline() {
-            // Ideal: Budget in Feb (day ~0), Appropriation in Sept (day ~213)
+            const idealBudgetDate = new Date(2024, 1, 1);
+            const idealAppropDate = new Date(2024, 8, 30);
+            
             return [
                 { 
                     eventType: "President's Budget Delivered to Congress", 
                     dayOfPeriod: 0,
-                    idealDateStr: '02/01'
+                    idealDateStr: '02/01',
+                    date: idealBudgetDate
                 },
                 { 
                     eventType: 'Appropriation', 
                     dayOfPeriod: 213,
-                    idealDateStr: '09/30'
+                    idealDateStr: '09/30',
+                    date: idealAppropDate
                 }
             ];
         }
 
         function renderVisualization(events, yearNotes) {
-            console.log('renderVisualization started');
             const loading = document.getElementById('loading');
             const visualization = document.getElementById('visualization');
-            const today = new Date(); // Define today at the top of function scope
-            console.log('Today:', today.toDateString());
+            const today = new Date();
 
-            // Group by fiscal year
             const eventsByYear = {};
             events.forEach(event => {
                 if (!eventsByYear[event.fiscalYear]) {
@@ -848,23 +692,17 @@
             });
 
             const years = Object.keys(eventsByYear).sort();
-            console.log('Years to render:', years);
             
-            // Calculate if we need to extend beyond 18 months
-            let maxMonthsNeeded = 18; // Default 18 months (Feb to Jul)
+            let maxMonthsNeeded = 18;
             
-            // Check each year without appropriation to see if we need more months
             years.forEach(year => {
                 const yearEvents = eventsByYear[year];
                 const hasAppropriation = yearEvents.some(e => e.eventType === 'Appropriation');
                 
                 if (!hasAppropriation) {
-                    // Calculate the July endpoint for this fiscal year
-                    const julyEndpoint = new Date(parseInt(year), 6, 31); // July 31 of the FY year
-                    
+                    const julyEndpoint = new Date(parseInt(year), 6, 31);
                     if (today > julyEndpoint) {
-                        // Calculate months from Feb (start) to current date
-                        const periodStart = new Date(parseInt(year) - 1, 1, 1); // Feb 1 of previous year
+                        const periodStart = new Date(parseInt(year) - 1, 1, 1);
                         const monthsDiff = Math.floor((today - periodStart) / (1000 * 60 * 60 * 24 * 30.42));
                         maxMonthsNeeded = Math.max(maxMonthsNeeded, monthsDiff + 1);
                     }
@@ -872,20 +710,11 @@
             });
             
             const numRows = maxMonthsNeeded;
-            const totalDays = Math.floor(maxMonthsNeeded * 30.42); // Approximate days
-            const totalHeight = numRows * 4; // 4rem per row - total graph height
-            
-            // Safety check
-            if (totalDays <= 0 || totalHeight <= 0) {
-                console.error('Invalid calculations:', { numRows, totalDays, totalHeight });
-                throw new Error('Invalid graph dimensions calculated');
-            }
+            const totalHeight = numRows * 4;
 
-            // Calculate average and ideal
             const avgEvents = calculateAverageTimeline(eventsByYear);
             const idealEvents = createIdealTimeline();
 
-            // Create Y-axis with dynamic months
             const yAxis = document.getElementById('yAxis');
             const baseMonths = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
             const extendedMonths = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
@@ -904,7 +733,6 @@
             });
             yAxis.innerHTML = yAxisHTML;
 
-            // Create X-axis
             const xAxis = document.getElementById('xAxis');
             let xAxisHTML = '';
             
@@ -923,7 +751,6 @@
                 `;
             });
             
-            // Add Avg and Ideal
             xAxisHTML += `
                 <div class="graph__tick graph__tick--x no-hover">
                     <span class="tick-x-text">Avg</span>
@@ -934,26 +761,19 @@
             `;
             xAxis.innerHTML = xAxisHTML;
 
-            // Create grid
             const graphGrid = document.getElementById('graphGrid');
             let gridHTML = '';
             for (let row = 0; row < numRows; row++) {
                 gridHTML += '<div class="graph__row">';
-                
-                // Regular year columns
                 years.forEach(year => {
                     gridHTML += '<div class="graph__cell"></div>';
                 });
-                
-                // Avg and Ideal columns (grayed out)
                 gridHTML += '<div class="graph__cell avg-ideal"></div>';
                 gridHTML += '<div class="graph__cell avg-ideal"></div>';
-                
                 gridHTML += '</div>';
             }
             graphGrid.innerHTML = gridHTML;
 
-            // Create data points
             const graphData = document.getElementById('graphData');
             let dataHTML = '';
             
@@ -962,28 +782,28 @@
                 yearEvents.sort((a, b) => a.dayOfPeriod - b.dayOfPeriod);
                 
                 const hasAppropriation = yearEvents.some(e => e.eventType === 'Appropriation');
-                const leftPos = yearIdx * 5; // Define leftPos at year level
+                const leftPos = yearIdx * 5;
                 let barCounter = 1;
-                
-                // ALWAYS log for every year
-                console.log(`=== FY${year} ===`);
-                console.log(`Has appropriation: ${hasAppropriation}`);
-                console.log(`Events:`, yearEvents.map(e => `${e.dateStr} - ${e.eventType}`));
                 
                 yearEvents.forEach((event, eventIdx) => {
                     const cssClass = eventClasses[event.eventType] || 'data-pbd';
                     const color = eventColors[event.eventType] || '#58c1c6';
                     const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
-                    const topPos = (event.dayOfPeriod / totalDays) * 72;
+                    const topPos = getVisualPosition(event.date, event.fiscalYear);
                     
                     let barHeight = 0;
                     if (event.eventType !== 'Appropriation') {
                         if (eventIdx < yearEvents.length - 1) {
                             const nextEvent = yearEvents[eventIdx + 1];
-                            const nextTopPos = (nextEvent.dayOfPeriod / totalDays) * 72;
+                            const nextTopPos = getVisualPosition(nextEvent.date, nextEvent.fiscalYear);
                             barHeight = nextTopPos - topPos;
                         } else {
-                            barHeight = 72 - topPos;
+                            if (!hasAppropriation) {
+                                const currentTopPos = getVisualPosition(today, parseInt(year));
+                                if (currentTopPos > topPos) {
+                                    barHeight = currentTopPos - topPos;
+                                }
+                            }
                         }
                     }
                     
@@ -1013,35 +833,28 @@
                     `;
                 });
                 
-                // Add question mark at bottom if no appropriation
                 if (!hasAppropriation) {
+                    const currentTopPos = getVisualPosition(today, parseInt(year));
                     dataHTML += `
-                        <div class="graph__datacell" style="left: ${leftPos}rem; top: 68rem;">
+                        <div class="graph__datacell" style="left: ${leftPos}rem; top: ${currentTopPos}rem;">
                             <div class="data-unknown">?</div>
                         </div>
                     `;
                 }
             });
             
-            // Render Average column
             const avgLeftPos = years.length * 5;
             let avgBarCounter = 1;
             avgEvents.forEach((event, idx) => {
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
                 const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
-                
-                // Convert dayOfPeriod to a date for visual positioning
-                const avgDate = new Date(2024, 1, 1); // Use 2024 as reference
-                avgDate.setDate(avgDate.getDate() + event.dayOfPeriod);
-                const topPos = getVisualPosition(avgDate, 2024, totalHeight);
+                const topPos = getVisualPosition(event.date, 2024);
                 
                 let barHeight = 0;
                 if (event.eventType !== 'Appropriation' && idx < avgEvents.length - 1) {
                     const nextEvent = avgEvents[idx + 1];
-                    const nextAvgDate = new Date(2024, 1, 1);
-                    nextAvgDate.setDate(nextAvgDate.getDate() + nextEvent.dayOfPeriod);
-                    const nextTopPos = getVisualPosition(nextAvgDate, 2024, totalHeight);
+                    const nextTopPos = getVisualPosition(nextEvent.date, 2024);
                     barHeight = nextTopPos - topPos;
                 }
                 
@@ -1069,24 +882,17 @@
                 `;
             });
             
-            // Render Ideal column
             const idealLeftPos = (years.length + 1) * 5;
             idealEvents.forEach((event, idx) => {
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
                 const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
-                
-                // Convert dayOfPeriod to a date for visual positioning
-                const idealDate = new Date(2024, 1, 1); // Use 2024 as reference
-                idealDate.setDate(idealDate.getDate() + event.dayOfPeriod);
-                const topPos = getVisualPosition(idealDate, 2024, totalHeight);
+                const topPos = getVisualPosition(event.date, 2024);
                 
                 let barHeight = 0;
                 if (event.eventType !== 'Appropriation' && idx < idealEvents.length - 1) {
                     const nextEvent = idealEvents[idx + 1];
-                    const nextIdealDate = new Date(2024, 1, 1);
-                    nextIdealDate.setDate(nextIdealDate.getDate() + nextEvent.dayOfPeriod);
-                    const nextTopPos = getVisualPosition(nextIdealDate, 2024, totalHeight);
+                    const nextTopPos = getVisualPosition(nextEvent.date, 2024);
                     barHeight = nextTopPos - topPos;
                 }
                 
@@ -1114,13 +920,10 @@
             });
             
             graphData.innerHTML = dataHTML;
-
             loading.style.display = 'none';
             visualization.classList.remove('u-hidden');
-            console.log('renderVisualization completed successfully');
         }
 
-        // Load on page load
         loadData();
     </script>
 </body>
