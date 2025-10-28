@@ -647,15 +647,21 @@
             for (const [eventType, timings] of Object.entries(eventTimings)) {
                 if (timings.length > 0) {
                     const avgDay = Math.round(timings.reduce((a, b) => a + b.dayOfPeriod, 0) / timings.length);
-                    const avgDate = new Date(2024, 1, 1);
+                    
+                    // Create date in the FIRST year of the period (fiscalYear - 1)
+                    // For a reference FY, we use FY2024: period is Feb 2023 to Jul 2024
+                    const refFY = 2024;
+                    const avgDate = new Date(refFY - 1, 1, 1); // Feb 1, 2023
                     avgDate.setDate(avgDate.getDate() + avgDay);
+                    
                     const avgDateStr = `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`;
                     
                     avgEvents.push({
                         eventType: eventType,
                         dayOfPeriod: avgDay,
                         avgDateStr: avgDateStr,
-                        date: avgDate
+                        date: avgDate,
+                        fiscalYear: refFY
                     });
                 }
             }
@@ -664,21 +670,24 @@
         }
 
         function createIdealTimeline() {
-            const idealBudgetDate = new Date(2024, 1, 1);
-            const idealAppropDate = new Date(2024, 8, 30);
+            const refFY = 2024;
+            const idealBudgetDate = new Date(refFY - 1, 1, 1); // Feb 1, 2023
+            const idealAppropDate = new Date(refFY - 1, 8, 30); // Sept 30, 2023
             
             return [
                 { 
                     eventType: "President's Budget Delivered to Congress", 
                     dayOfPeriod: 0,
                     idealDateStr: '02/01',
-                    date: idealBudgetDate
+                    date: idealBudgetDate,
+                    fiscalYear: refFY
                 },
                 { 
                     eventType: 'Appropriation', 
                     dayOfPeriod: 213,
                     idealDateStr: '09/30',
-                    date: idealAppropDate
+                    date: idealAppropDate,
+                    fiscalYear: refFY
                 }
             ];
         }
@@ -796,6 +805,9 @@
                     const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
                     const topPos = getVisualPosition(event.date, event.fiscalYear);
                     
+                    // Debug output for positioning
+                    console.log(`${event.dateStr} (${event.eventType}): topPos = ${topPos.toFixed(2)} rem`);
+                    
                     let barHeight = 0;
                     if (event.eventType !== 'Appropriation') {
                         if (eventIdx < yearEvents.length - 1) {
@@ -854,12 +866,12 @@
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
                 const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
-                const topPos = getVisualPosition(event.date, 2024);
+                const topPos = getVisualPosition(event.date, event.fiscalYear);
                 
                 let barHeight = 0;
                 if (event.eventType !== 'Appropriation' && idx < avgEvents.length - 1) {
                     const nextEvent = avgEvents[idx + 1];
-                    const nextTopPos = getVisualPosition(nextEvent.date, 2024);
+                    const nextTopPos = getVisualPosition(nextEvent.date, nextEvent.fiscalYear);
                     barHeight = nextTopPos - topPos;
                 }
                 
@@ -892,12 +904,12 @@
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
                 const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
-                const topPos = getVisualPosition(event.date, 2024);
+                const topPos = getVisualPosition(event.date, event.fiscalYear);
                 
                 let barHeight = 0;
                 if (event.eventType !== 'Appropriation' && idx < idealEvents.length - 1) {
                     const nextEvent = idealEvents[idx + 1];
-                    const nextTopPos = getVisualPosition(nextEvent.date, 2024);
+                    const nextTopPos = getVisualPosition(nextEvent.date, nextEvent.fiscalYear);
                     barHeight = nextTopPos - topPos;
                 }
                 
