@@ -1030,12 +1030,18 @@
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
                 const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
-                const topPos = (event.dayOfPeriod / totalDays) * totalHeight;
+                
+                // Convert dayOfPeriod to a date for visual positioning
+                const avgDate = new Date(2024, 1, 1); // Use 2024 as reference
+                avgDate.setDate(avgDate.getDate() + event.dayOfPeriod);
+                const topPos = getVisualPosition(avgDate, 2024, totalHeight);
                 
                 let barHeight = 0;
                 if (event.eventType !== 'Appropriation' && idx < avgEvents.length - 1) {
                     const nextEvent = avgEvents[idx + 1];
-                    const nextTopPos = (nextEvent.dayOfPeriod / totalDays) * totalHeight;
+                    const nextAvgDate = new Date(2024, 1, 1);
+                    nextAvgDate.setDate(nextAvgDate.getDate() + nextEvent.dayOfPeriod);
+                    const nextTopPos = getVisualPosition(nextAvgDate, 2024, totalHeight);
                     barHeight = nextTopPos - topPos;
                 }
                 
@@ -1069,12 +1075,18 @@
                 const cssClass = eventClasses[event.eventType] || 'data-pbd';
                 const color = eventColors[event.eventType] || '#58c1c6';
                 const arrowClass = arrowClasses[event.eventType] || 'arrow-pbd';
-                const topPos = (event.dayOfPeriod / totalDays) * totalHeight;
+                
+                // Convert dayOfPeriod to a date for visual positioning
+                const idealDate = new Date(2024, 1, 1); // Use 2024 as reference
+                idealDate.setDate(idealDate.getDate() + event.dayOfPeriod);
+                const topPos = getVisualPosition(idealDate, 2024, totalHeight);
                 
                 let barHeight = 0;
                 if (event.eventType !== 'Appropriation' && idx < idealEvents.length - 1) {
                     const nextEvent = idealEvents[idx + 1];
-                    const nextTopPos = (nextEvent.dayOfPeriod / totalDays) * totalHeight;
+                    const nextIdealDate = new Date(2024, 1, 1);
+                    nextIdealDate.setDate(nextIdealDate.getDate() + nextEvent.dayOfPeriod);
+                    const nextTopPos = getVisualPosition(nextIdealDate, 2024, totalHeight);
                     barHeight = nextTopPos - topPos;
                 }
                 
