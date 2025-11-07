@@ -22,14 +22,8 @@
         }
 
         html { background-color: #37373d; }
-        
-        body {
-            padding: 1rem 1rem 1rem 4.9rem;
-            color: #fff;
-            font-size: 1rem;
-            line-height: 1.4;
-            margin: 0;
-        }
+        body { padding: 1rem 1rem 1rem 4.9rem; }
+        html { color: #fff; font-size: 1rem; line-height: 1.4; }
 
         .h1 {
             font-family: "Gotham-Bold", sans-serif;
@@ -38,10 +32,8 @@
             text-transform: uppercase;
             margin-bottom: 3rem;
         }
-        
         .h1__border {
             border-bottom: 0.5rem solid #fff;
-            padding-bottom: 0.5rem;
         }
 
         .data-pbd { background-color: #58c1c6; }
@@ -52,20 +44,10 @@
         .graph {
             position: relative;
             padding-left: 4rem;
-            margin: 0;
-        }
-
-        .graph__grid {
-            position: relative;
-            margin: 0;
-            padding: 0;
         }
 
         .graph__row {
-            height: 4rem;
-            margin: 0;
-            white-space: nowrap;
-            line-height: 0;
+            margin-bottom: -6px;
         }
 
         .graph__cell {
@@ -73,123 +55,103 @@
             width: 5rem;
             height: 4rem;
             border: 1px solid #4f4f55;
-            margin: 0;
-            margin-left: -1px;
-            margin-bottom: -1px;
-            box-sizing: border-box;
-            vertical-align: top;
+            margin-left: -5px;
         }
 
-        .graph__cell:first-child {
-            margin-left: 0;
-        }
-
-        .graph__cell.avg-ideal {
+        .graph__cell:nth-last-child(2),
+        .graph__cell:last-child {
             background-color: #4b4b51;
-            border-color: #6f6f74;
+            border: 1px solid #6f6f74;
         }
 
         .graph__row:nth-child(8) .graph__cell {
-            border-bottom: 2px dashed #fff !important;
-        }
-        
-        .graph__row:nth-child(8) {
-            margin-bottom: -2px;
+            border-bottom: 1px dashed #fff !important;
         }
 
         .graph__y-axis {
             position: absolute;
-            top: 3.2rem;
+            top: 2.6rem;
             left: 0;
-            width: 3.5rem;
-        }
-
-        .graph__tick--y {
-            height: 4rem;
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-end;
-            padding-right: 0.5rem;
-            padding-top: 0.2rem;
-            font-family: "Gotham-Book", sans-serif;
-            font-size: 0.9rem;
-            color: #fff;
-            text-transform: uppercase;
         }
 
         .graph__x-axis {
             padding-bottom: 0.5rem;
-            margin: 0;
-            white-space: nowrap;
-            line-height: 0;
         }
 
-        .graph__tick--x {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 5rem;
-            margin: 0;
-            margin-left: -1px;
-            padding: 0.5rem 0;
-            cursor: pointer;
+        .graph__tick {
+            position: relative;
             font-family: "Gotham-Book", sans-serif;
             font-size: 1.2rem;
             color: #fff;
             text-transform: uppercase;
-            box-sizing: border-box;
-            position: relative;
+            border: 1px solid transparent;
+            border-bottom: none;
         }
 
-        .graph__tick--x:first-child {
-            margin-left: 0;
+        .graph__tick--y {
+            display: flex;
+            align-items: center;
+            height: 4rem;
         }
 
-        .graph__tick--x.no-hover {
+        .tick-y-text {
+            line-height: 1;
+        }
+
+        .graph__tick--x {
+            display: inline-block;
+            width: 5rem;
+            margin-left: -5px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .graph__tick--x:nth-last-child(2),
+        .graph__tick--x:last-child {
             cursor: default;
         }
 
         .graph__tick--x:hover .tick-x-text {
+            position: relative;
+            z-index: 3;
             color: #000;
         }
 
-        .graph__tick--x.no-hover:hover .tick-x-text {
-            color: #fff;
-        }
-
         .graph__data {
+            display: flex;
             position: absolute;
-            top: 3.2rem;
+            top: 2.8rem;
             left: 4rem;
         }
 
         .graph__datacell {
             position: absolute;
             width: 5rem;
+            border: 1px solid transparent;
+            margin-left: -5px;
+            text-align: center;
+        }
+
+        .datapoint, .databar, .data-unknown {
+            display: block;
+            margin: auto;
         }
 
         .datapoint {
-            display: block;
-            margin: 0 auto;
-            width: 2.2rem;
+            position: relative;
+            max-width: 2.2rem;
             height: 0.5rem;
             cursor: pointer;
-            position: relative;
         }
 
         .databar {
-            display: block;
             width: 0.6rem;
-            margin: 0 auto;
         }
 
         .data-unknown {
             font-family: "Gotham-Bold", sans-serif;
             font-size: 2rem;
-            line-height: 1;
-            display: block;
-            text-align: center;
-            margin: 0 auto;
+            line-height: 0.9;
         }
 
         .datapoint, .databar, .data-unknown {
@@ -216,11 +178,13 @@
                 opacity: 0;
                 max-height: 0;
                 visibility: hidden;
+                transition: visibility .2s .3s ease, opacity .2s 0s ease, max-height .3s ease;
             }
             100% {
                 visibility: visible;
                 opacity: 1;
                 max-height: 40rem;
+                transition: visibility .2s .2s ease, opacity .2s .15s ease, max-height .3s ease;
             }
         }
 
@@ -246,8 +210,6 @@
 
         .legend__bar--eofy {
             border-bottom: 1px dashed #fff;
-            background: transparent;
-            height: 0;
         }
 
         .legend__text {
@@ -258,37 +220,62 @@
 
         .tooltip {
             position: absolute;
-            z-index: 1000;
+            z-index: 2;
         }
 
         .tooltip__box {
             position: absolute;
-            z-index: 1001;
+            z-index: 3;
+            width: 100%;
             min-width: 14.5rem;
             font-family: "Gotham-Medium", sans-serif;
             font-size: 0.95rem;
             color: #fff;
             text-transform: none;
             text-align: left;
-            padding: 0.6rem 0.8rem;
+            padding: 0.4rem 0.6rem;
             box-shadow: 8px 8px 5px 0px rgba(0, 0, 0, 0.75);
-            border-radius: 3px;
+        }
+
+        .tooltip--xaxis {
+            top: -2.35rem;
+            left: -2.3rem;
+        }
+
+        .tooltip__box--xaxis {
+            top: 2rem;
+            left: 8.2rem;
+            background-color: #fff;
+            color: #000;
+        }
+
+        .tooltip__box--xaxis {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.15s ease;
+        }
+
+        .graph__tick--x:hover .tooltip__box--xaxis {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .graph__tick--x:nth-last-child(2):hover,
+        .graph__tick--x:last-child:hover {
+            cursor: default;
+        }
+
+        .graph__tick--x:nth-last-child(2):hover .tick-x-text,
+        .graph__tick--x:last-child:hover .tick-x-text {
+            color: #fff;
         }
 
         .tooltip--data {
             top: -1.15rem;
-            left: 50%;
-            transform: translateX(-50%);
+            left: -0.9rem;
             opacity: 0;
             visibility: hidden;
             transition: all 0.2s ease;
-            pointer-events: auto;
-        }
-
-        .tooltip__box--data {
-            top: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
         }
 
         .datapoint:hover .tooltip--data,
@@ -297,28 +284,9 @@
             visibility: visible;
         }
 
-        .tooltip--xaxis {
-            top: -2.35rem;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.15s ease;
-            pointer-events: none;
-        }
-
-        .tooltip__box--xaxis {
-            top: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #fff;
-            color: #000;
-            max-width: 20rem;
-        }
-
-        .graph__tick--x:hover .tooltip__box--xaxis {
-            opacity: 1;
-            visibility: visible;
+        .tooltip__box--data {
+            top: 1rem;
+            left: 4rem;
         }
 
         .tooltip__btn {
@@ -341,6 +309,7 @@
 
         .u-hidden {
             display: none !important;
+            visibility: hidden;
         }
 
         #loading, #error {
@@ -378,36 +347,26 @@
         function parseCSV(text) {
             const lines = text.split('\n');
             const data = [];
-            
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (!line) continue;
-                
                 const row = [];
                 let cell = '';
                 let inQuotes = false;
-                
                 for (let char of line) {
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        row.push(cell.trim());
-                        cell = '';
-                    } else {
-                        cell += char;
-                    }
+                    if (char === '"') inQuotes = !inQuotes;
+                    else if (char === ',' && !inQuotes) { row.push(cell.trim()); cell = ''; }
+                    else cell += char;
                 }
                 row.push(cell.trim());
-                
                 if (row.length >= 5) data.push(row);
             }
             return data;
         }
 
         function parseDate(str) {
-            const parts = str.split('/');
-            if (parts.length !== 3) return null;
-            return new Date(parts[2], parts[0] - 1, parts[1]);
+            const [m, d, y] = str.split('/');
+            return new Date(y, m - 1, d);
         }
 
         function getYPosition(date, fiscalYear) {
@@ -425,10 +384,8 @@
             
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const proportion = day / daysInMonth;
-            const rowStart = rowIndex * 4;
-            const offset = proportion * 4;
             
-            return rowStart + offset;
+            return (rowIndex * 4) + (proportion * 4);
         }
 
         function calculateDayOfPeriod(date, fiscalYear) {
@@ -443,11 +400,10 @@
 
             try {
                 const response = await fetch(CSV_FILE);
-                if (!response.ok) throw new Error('Cannot load CSV file');
+                if (!response.ok) throw new Error('Cannot load CSV');
                 
                 const text = await response.text();
                 const rows = parseCSV(text);
-                
                 if (rows.length === 0) throw new Error('No data found');
                 
                 const events = [];
@@ -456,7 +412,6 @@
                 rows.forEach(row => {
                     const fy = row[1];
                     const date = parseDate(row[2]);
-                    
                     if (date && fy) {
                         events.push({
                             fy: fy,
@@ -467,7 +422,6 @@
                             bill: row[5] || ''
                         });
                     }
-                    
                     if (row[6]) {
                         const clean = row[6].replace(/^"+|"+$/g, '');
                         if (!notes[fy]) notes[fy] = clean;
@@ -475,7 +429,6 @@
                 });
 
                 if (events.length === 0) throw new Error('No valid events');
-
                 renderViz(events, notes);
                 
             } catch (err) {
@@ -493,37 +446,40 @@
             });
 
             const years = Object.keys(byYear).sort((a, b) => parseInt(a) - parseInt(b));
+            const numCols = years.length + 2;
             
             let html = '<div class="graph">';
             
+            // Y-Axis
             html += '<div class="graph__y-axis">';
-            ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'].forEach(m => {
-                html += `<div class="graph__tick--y">${m}</div>`;
+            ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'].forEach(m => {
+                html += `<div class="graph__tick graph__tick--y"><div class="tick-y-text">${m}</div></div>`;
             });
             html += '</div>';
             
+            // X-Axis
             html += '<div class="graph__x-axis">';
             years.forEach(y => {
-                const yr = y.toString().slice(-2);
+                const yr = y.slice(-2);
                 const n = notes[y] || '';
                 html += `<div class="graph__tick graph__tick--x">`;
                 if (n) html += `<div class="tooltip tooltip--xaxis"><div class="tooltip__box tooltip__box--xaxis">${n}</div></div>`;
-                html += `<span class="tick-x-text">FY ${yr}</span></div>`;
+                html += `<div class="tick-x-text">FY ${yr}</div></div>`;
             });
-            html += '<div class="graph__tick graph__tick--x no-hover"><span class="tick-x-text">Avg</span></div>';
-            html += '<div class="graph__tick graph__tick--x no-hover"><span class="tick-x-text">Ideal</span></div>';
+            html += '<div class="graph__tick graph__tick--x"><div class="tick-x-text">Avg</div></div>';
+            html += '<div class="graph__tick graph__tick--x"><div class="tick-x-text">Ideal</div></div>';
             html += '</div>';
             
-            html += '<div class="graph__grid">';
+            // Grid
             for (let r = 0; r < 18; r++) {
                 html += '<div class="graph__row">';
-                for (let c = 0; c < years.length + 2; c++) {
-                    html += `<div class="graph__cell ${c >= years.length ? 'avg-ideal' : ''}"></div>`;
+                for (let c = 0; c < numCols; c++) {
+                    html += '<div class="graph__cell"></div>';
                 }
                 html += '</div>';
             }
-            html += '</div>';
             
+            // Data
             html += '<div class="graph__data">';
             html += renderData(byYear, years);
             html += renderAvgIdeal(byYear, years.length);
@@ -551,7 +507,6 @@
             years.forEach((fy, i) => {
                 const evts = byYear[fy].sort((a, b) => getYPosition(a.date, a.fy) - getYPosition(b.date, b.fy));
                 const done = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
-                const x = i * 5;
                 let bn = 1;
                 
                 evts.forEach((e, j) => {
@@ -571,28 +526,26 @@
                         }
                     }
                     
+                    html += `<div class="graph__datacell fy${fy}" style="left:${i * 5}rem;top:${y}rem;">`;
                     if (bh > 0) {
-                        html += `<div class="graph__datacell" style="left:${x}rem;top:${y}rem;"><div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div></div>`;
+                        html += `<div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div>`;
                         bn++;
                     }
-                    
-                    html += `<div class="graph__datacell" style="left:${x}rem;top:${y}rem;">
-                        <div class="datapoint ${cfg.class}">
-                            <div class="tooltip tooltip--data">
-                                <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                    <strong>${e.dateStr}</strong><br>${e.type}
-                                    ${e.bill ? `<br><strong>Bill:</strong> ${e.bill}` : ''}
-                                    ${e.url ? `<br><a class="tooltip__btn" target="_blank" href="${e.url}">Read more &gt;&gt;</a>` : ''}
-                                </div>
+                    html += `<div class="datapoint ${cfg.class}">
+                        <div class="tooltip tooltip--data">
+                            <div class="tooltip__box tooltip__box--data ${cfg.class}">
+                                ${e.dateStr}<br>${e.type}
+                                ${e.bill ? `<br><strong>Bill:</strong> ${e.bill}` : ''}
+                                ${e.url ? `<br><a class="tooltip__btn" target="_blank" href="${e.url}">Read more &gt;&gt;</a>` : ''}
                             </div>
                         </div>
-                    </div>`;
+                    </div></div>`;
                 });
                 
                 if (!done) {
                     const ty = getYPosition(today, fy);
                     if (ty <= 72) {
-                        html += `<div class="graph__datacell" style="left:${x}rem;top:${ty}rem;"><div class="data-unknown">?</div></div>`;
+                        html += `<div class="graph__datacell fy${fy}" style="left:${i * 5}rem;top:${ty}rem;"><div class="data-unknown">?</div></div>`;
                     }
                 }
             });
@@ -620,13 +573,11 @@
                 const dt = new Date(ref.getTime() + d * 86400000);
                 avg.push({ type: "President's Budget Delivered to Congress", date: dt, label: `${(dt.getMonth() + 1).toString().padStart(2, '0')}/${dt.getDate().toString().padStart(2, '0')}` });
             }
-            
             if (cd.length) {
                 const d = Math.round(cd.reduce((a, b) => a + b) / cd.length);
                 const dt = new Date(ref.getTime() + d * 86400000);
                 avg.push({ type: 'Continuing Resolution', date: dt, label: `${(dt.getMonth() + 1).toString().padStart(2, '0')}/${dt.getDate().toString().padStart(2, '0')}` });
             }
-            
             if (ad.length) {
                 const d = Math.round(ad.reduce((a, b) => a + b) / ad.length);
                 const dt = new Date(ref.getTime() + d * 86400000);
@@ -641,7 +592,7 @@
             let html = '';
             
             [avg, ideal].forEach((list, ci) => {
-                const x = (off + ci) * 5;
+                const xPos = (off + ci) * 5;
                 let bn = 1;
                 
                 list.forEach((e, i) => {
@@ -655,21 +606,20 @@
                         bh = getYPosition(list[i + 1].date, 2024) - y;
                     }
                     
+                    const className = ci === 0 ? 'fy-avg' : 'fy-ideal';
+                    html += `<div class="graph__datacell ${className}" style="left:${xPos}rem;top:${y}rem;">`;
                     if (bh > 0) {
-                        html += `<div class="graph__datacell" style="left:${x}rem;top:${y}rem;"><div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div></div>`;
+                        html += `<div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div>`;
                         bn++;
                     }
-                    
                     const lbl = ci === 0 ? 'Average' : 'Ideal';
-                    html += `<div class="graph__datacell" style="left:${x}rem;top:${y}rem;">
-                        <div class="datapoint ${cfg.class}">
-                            <div class="tooltip tooltip--data">
-                                <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                    <strong>${lbl}: ${e.label}</strong><br>${e.type}
-                                </div>
+                    html += `<div class="datapoint ${cfg.class}">
+                        <div class="tooltip tooltip--data">
+                            <div class="tooltip__box tooltip__box--data ${cfg.class}">
+                                ${lbl}: ${e.label}<br>${e.type}
                             </div>
                         </div>
-                    </div>`;
+                    </div></div>`;
                 });
             });
             
