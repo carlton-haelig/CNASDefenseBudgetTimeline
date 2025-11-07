@@ -50,6 +50,10 @@
             padding-left: 4rem;
         }
 
+        #graphGrid {
+            margin-top: 2.5rem;
+        }
+
         .graph__row {
             margin-bottom: -1px;
         }
@@ -131,9 +135,6 @@
             position: absolute;
             width: 5rem;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .datapoint {
@@ -155,6 +156,8 @@
             font-family: "Gotham-Bold", sans-serif;
             font-size: 2rem;
             line-height: 0.9;
+            display: block;
+            margin: 0 auto;
         }
 
         .datapoint, .databar, .data-unknown {
@@ -409,9 +412,12 @@
                 rowIndex = 11 + month; // Jan=0 becomes 11, Jul=6 becomes 17
             }
             
-            // Position within month (proportional to day)
+            // Calculate days in this specific month (handles leap years)
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const proportionThroughMonth = (day - 1) / daysInMonth;
+            
+            // Position within month - proportional to day number
+            // Feb 1 = 1/28 (near top), Feb 14 = 14/28 = 50% (middle), Feb 28 = 28/28 = 100% (bottom)
+            const proportionThroughMonth = day / daysInMonth;
             
             // Each row is 4rem tall
             const rowTop = rowIndex * 4;
@@ -696,11 +702,11 @@
                     const labelText = colIdx === 0 ? `Average: ${evt.label}` : `Ideal: ${evt.label}`;
                     html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
                         <div class="datapoint ${cfg.class}">
-                            ${evt.label ? `<div class="tooltip tooltip--data">
+                            <div class="tooltip tooltip--data">
                                 <div class="tooltip__box tooltip__box--data ${cfg.class}">
                                     ${labelText}<br>${evt.type}
                                 </div>
-                            </div>` : ''}
+                            </div>
                         </div>
                     </div>`;
                 });
