@@ -60,6 +60,7 @@
             height: 4rem;
             border: 1px solid #4f4f55;
             margin-left: -1px;
+            box-sizing: border-box;
         }
 
         .graph__cell.avg-ideal {
@@ -92,15 +93,20 @@
         .graph__tick--y {
             display: flex;
             align-items: center;
+            justify-content: flex-end;
             height: 4rem;
+            padding-right: 0.5rem;
         }
 
         .graph__tick--x {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             width: 5rem;
             margin-left: -1px;
-            text-align: center;
             cursor: pointer;
+            padding: 0.5rem 0;
+            box-sizing: border-box;
         }
 
         .graph__tick--x.no-hover {
@@ -125,6 +131,9 @@
             position: absolute;
             width: 5rem;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .datapoint {
@@ -606,9 +615,11 @@
             if (budgetDates.length > 0) {
                 const avgTime = budgetDates.reduce((sum, d) => sum + d.getTime(), 0) / budgetDates.length;
                 const avgDate = new Date(avgTime);
+                // Normalize to FY2024 reference period (Feb 2023 - Jul 2024)
+                const normalizedDate = new Date(2023, avgDate.getMonth(), avgDate.getDate());
                 avgEvents.push({
                     type: "President's Budget Delivered to Congress",
-                    date: avgDate,
+                    date: normalizedDate,
                     label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
                 });
             }
@@ -616,9 +627,11 @@
             if (crDates.length > 0) {
                 const avgTime = crDates.reduce((sum, d) => sum + d.getTime(), 0) / crDates.length;
                 const avgDate = new Date(avgTime);
+                // Normalize to FY2024 reference period
+                const normalizedDate = new Date(2023, avgDate.getMonth(), avgDate.getDate());
                 avgEvents.push({
                     type: 'Continuing Resolution',
-                    date: avgDate,
+                    date: normalizedDate,
                     label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
                 });
             }
@@ -626,22 +639,31 @@
             if (appDates.length > 0) {
                 const avgTime = appDates.reduce((sum, d) => sum + d.getTime(), 0) / appDates.length;
                 const avgDate = new Date(avgTime);
+                // Normalize to FY2024 reference period
+                const normalizedDate = new Date(2023, avgDate.getMonth(), avgDate.getDate());
                 avgEvents.push({
                     type: 'Appropriation',
-                    date: avgDate,
+                    date: normalizedDate,
                     label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
                 });
             }
+            
+            // Sort by position
+            avgEvents.sort((a, b) => getMonthPosition(a.date, 2024) - getMonthPosition(b.date, 2024));
+            
+            // Debug logging
+            console.log('Average events:', avgEvents.map(e => `${e.label} ${e.type} at ${getMonthPosition(e.date, 2024).toFixed(2)}rem`));
+            console.log('Ideal events:', idealEvents.map(e => `${e.label} ${e.type} at ${getMonthPosition(e.date, 2024).toFixed(2)}rem`));
 
             const idealEvents = [
                 { 
                     type: "President's Budget Delivered to Congress",
-                    date: new Date(2024, 1, 1),
+                    date: new Date(2023, 1, 1), // Feb 1, 2023 (fiscalYear-1 for reference FY2024)
                     label: '02/01'
                 },
                 { 
                     type: 'Appropriation',
-                    date: new Date(2024, 8, 30),
+                    date: new Date(2023, 8, 30), // Sept 30, 2023 (fiscalYear-1 for reference FY2024)
                     label: '09/30'
                 }
             ];
