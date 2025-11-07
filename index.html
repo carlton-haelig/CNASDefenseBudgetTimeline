@@ -66,6 +66,7 @@
         .graph__grid {
             position: relative;
             margin: 0;
+            margin-top: 2.5rem;
             padding: 0;
         }
 
@@ -93,16 +94,20 @@
             border-color: #6f6f74;
         }
 
-        /* Sept 30 dashed line at bottom of row 8 */
-        .graph__row:nth-child(8) {
+        /* Sept 30 dashed line at bottom of row 8 - extends through ALL columns */
+        .graph__row:nth-child(8) .graph__cell,
+        .graph__row:nth-child(8) .graph__cell.avg-ideal {
             border-bottom: 2px dashed #fff;
+        }
+        
+        .graph__row:nth-child(8) {
             margin-bottom: -2px;
         }
 
         /* Y-Axis */
         .graph__y-axis {
             position: absolute;
-            top: 0;
+            top: 2.5rem;
             left: 0;
             width: 3.5rem;
         }
@@ -159,7 +164,7 @@
         /* Data Layer */
         .graph__data {
             position: absolute;
-            top: 0;
+            top: 2.5rem;
             left: 4rem;
         }
 
