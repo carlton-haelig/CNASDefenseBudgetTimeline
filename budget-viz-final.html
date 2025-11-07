@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Decade of Budget Instability</title>
+    <style>
+        /* Gotham Fonts */
+        @font-face {
+            font-family: "Gotham-Book";
+            src: url("fonts/Gotham-Book.woff") format("woff"),
+                 url("fonts/Gotham-Book.ttf") format("truetype");
+        }
+        @font-face {
+            font-family: "Gotham-Bold";
+            src: url("fonts/Gotham-Bold.woff") format("woff"),
+                 url("fonts/Gotham-Bold.ttf") format("truetype");
+        }
+        @font-face {
+            font-family: "Gotham-Medium";
+            src: url("fonts/Gotham-Medium.woff") format("woff"),
+                 url("fonts/Gotham-Medium.ttf") format("truetype");
+        }
+
+        html { background-color: #37373d; }
+        body {
+            padding: 1rem 1rem 1rem 4.9rem;
+            color: #fff;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .h1 {
+            font-family: "Gotham-Bold", sans-serif;
+            font-size: 2.4rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+        }
+        .h1__border {
+            border-bottom: 0.5rem solid #fff;
+        }
+
+        .data-pbd { background-color: #58c1c6; }
+        .data-cr { background-color: #d47371; }
+        .data-gs { background-color: #7a2b2a; }
+        .data-app { background-color: #ddb375; }
+
+        .graph {
+            position: relative;
+            padding-left: 4rem;
+        }
+
+        .graph__row {
+            margin-bottom: -6px;
+        }
+
+        .graph__cell {
+            display: inline-block;
+            width: 5rem;
+            height: 4rem;
+            border: 1px solid #4f4f55;
+            margin-left: -5px;
+        }
+
+        .graph__cell.avg-ideal {
+            background-color: #4b4b51;
+            border: 1px solid #6f6f74;
+        }
+
+        .graph__row:nth-child(8) .graph__cell {
+            border-bottom: 1px dashed #fff;
+        }
+
+        .graph__y-axis {
+            position: absolute;
+            top: 2.6rem;
+            left: 0;
+        }
+
+        .graph__x-axis {
+            padding-bottom: 0.5rem;
+        }
+
+        .graph__tick {
+            position: relative;
+            font-family: "Gotham-Book", sans-serif;
+            font-size: 1.2rem;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .graph__tick--y {
+            display: flex;
+            align-items: center;
+            height: 4rem;
+        }
+
+        .graph__tick--x {
+            display: inline-block;
+            width: 5rem;
+            margin-left: -5px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .graph__tick--x.no-hover {
+            cursor: default;
+        }
+
+        .graph__tick--x:hover .tick-x-text {
+            color: #000;
+        }
+
+        .graph__tick--x.no-hover:hover .tick-x-text {
+            color: #fff;
+        }
+
+        .graph__data {
+            display: flex;
+            position: absolute;
+            top: 2.8rem;
+            left: 4rem;
+        }
+
+        .graph__datacell {
+            position: absolute;
+            width: 5rem;
+            text-align: center;
+        }
+
+        .datapoint, .databar, .data-unknown {
+            display: block;
+            margin: auto;
+        }
+
+        .datapoint {
+            position: relative;
+            max-width: 2.2rem;
+            height: 0.5rem;
+            cursor: pointer;
+        }
+
+        .databar {
+            width: 0.6rem;
+        }
+
+        .data-unknown {
+            font-family: "Gotham-Bold", sans-serif;
+            font-size: 2rem;
+            line-height: 0.9;
+        }
+
+        .datapoint, .databar, .data-unknown {
+            animation: data-anim ease;
+        }
+
+        .datapoint, .data-unknown {
+            animation-duration: 0.3s;
+        }
+
+        .databar1 { animation-duration: 1.3s; }
+        .databar2 { animation-duration: 1.6s; }
+        .databar3 { animation-duration: 1.9s; }
+        .databar4 { animation-duration: 2.2s; }
+        .databar5 { animation-duration: 2.5s; }
+        .databar6 { animation-duration: 2.8s; }
+        .databar7 { animation-duration: 3.1s; }
+        .databar8 { animation-duration: 3.4s; }
+        .databar9 { animation-duration: 3.7s; }
+        .databar10 { animation-duration: 4s; }
+
+        @keyframes data-anim {
+            0% {
+                opacity: 0;
+                max-height: 0;
+                visibility: hidden;
+            }
+            100% {
+                visibility: visible;
+                opacity: 1;
+                max-height: 40rem;
+            }
+        }
+
+        .legend {
+            float: right;
+            padding-right: 10rem;
+            padding-bottom: 4rem;
+            margin-top: 3rem;
+        }
+
+        .legend__row {
+            padding-bottom: 0.5rem;
+        }
+
+        .legend__bar, .legend__text {
+            display: inline-block;
+        }
+
+        .legend__bar {
+            width: 2rem;
+            height: 0.4rem;
+        }
+
+        .legend__bar--eofy {
+            border-bottom: 1px dashed #fff;
+        }
+
+        .legend__text {
+            font-family: "Gotham-Book", sans-serif;
+            font-size: 0.9rem;
+            padding-left: 1rem;
+        }
+
+        .tooltip {
+            position: absolute;
+            z-index: 2;
+        }
+
+        .tooltip__box {
+            position: absolute;
+            z-index: 3;
+            width: 100%;
+            min-width: 14.5rem;
+            font-family: "Gotham-Medium", sans-serif;
+            font-size: 0.95rem;
+            color: #fff;
+            text-transform: none;
+            text-align: left;
+            padding: 0.4rem 0.6rem;
+            box-shadow: 8px 8px 5px 0px rgba(0, 0, 0, 0.75);
+        }
+
+        .tooltip--xaxis {
+            top: -2.35rem;
+            left: -2.3rem;
+        }
+
+        .tooltip__box--xaxis {
+            top: 2rem;
+            left: 8.2rem;
+            background-color: #fff;
+            color: #000;
+        }
+
+        .tooltip__box--xaxis, .tooltip__arrow--xaxis {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.15s ease;
+        }
+
+        .graph__tick--x:hover .tooltip__box--xaxis,
+        .graph__tick--x:hover .tooltip__arrow--xaxis {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip--data {
+            top: -1.15rem;
+            left: -0.9rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .datapoint:hover .tooltip--data,
+        .tooltip--data:hover {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip__arrow--data {
+            width: 4.5rem;
+        }
+
+        .tooltip__box--data {
+            top: 1rem;
+            left: 4rem;
+        }
+
+        .tooltip__btn {
+            color: #37373d;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .tooltip__btn:hover {
+            color: #fff;
+        }
+
+        .data-gs .tooltip__btn {
+            color: #ccc;
+        }
+
+        .data-gs .tooltip__btn:hover {
+            color: #fff;
+        }
+
+        .u-hidden {
+            display: none !important;
+            visibility: hidden;
+        }
+
+        #loading, #error {
+            margin-left: 4rem;
+            padding: 2rem;
+            font-family: "Gotham-Book", sans-serif;
+        }
+
+        #error {
+            background-color: #d47371;
+            color: #fff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="h1"><span class="h1__border">A Decade</span> of Budget Instability</h1>
+
+    <div id="loading">Loading data...</div>
+    <div id="error" class="u-hidden"></div>
+
+    <div id="visualization" class="u-hidden">
+        <div class="graph">
+            <div class="graph__y-axis" id="yAxis"></div>
+            <div class="graph__x-axis" id="xAxis"></div>
+            <div id="graphGrid"></div>
+            <div class="graph__data" id="graphData"></div>
+        </div>
+
+        <div class="legend">
+            <div class="legend__row">
+                <div class="legend__bar data-pbd"></div>
+                <div class="legend__text">President's Budget Delivered to the Hill</div>
+            </div>
+            <div class="legend__row">
+                <div class="legend__bar data-cr"></div>
+                <div class="legend__text">Continuing Resolution</div>
+            </div>
+            <div class="legend__row">
+                <div class="legend__bar data-app"></div>
+                <div class="legend__text">Appropriation</div>
+            </div>
+            <div class="legend__row">
+                <div class="legend__bar data-gs"></div>
+                <div class="legend__text">Government Shutdown</div>
+            </div>
+            <div class="legend__row">
+                <div class="legend__bar legend__bar--eofy"></div>
+                <div class="legend__text">End of Fiscal Year</div>
+            </div>
+            <div style="margin-top: 1rem; font-family: 'Gotham-Book', sans-serif; font-size: 0.85rem; font-style: italic; color: #ccc;">
+                * Full-Year Continuing Resolutions shown as regular CRs
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CSV_FILE = 'data.csv';
+
+        const EVENT_CONFIG = {
+            "President's Budget Delivered to Congress": { color: '#58c1c6', class: 'data-pbd' },
+            'Continuing Resolution': { color: '#d47371', class: 'data-cr' },
+            'Full-Year Continuing Resolution': { color: '#d47371', class: 'data-cr' },
+            'Appropriation': { color: '#ddb375', class: 'data-app' },
+            'Government Shutdown': { color: '#7a2b2a', class: 'data-gs' }
+        };
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const data = [];
+            // Skip header row (line 0)
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const row = [];
+                let cell = '';
+                let inQuotes = false;
+                
+                for (let char of line) {
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        row.push(cell.trim());
+                        cell = '';
+                    } else {
+                        cell += char;
+                    }
+                }
+                row.push(cell.trim());
+                
+                if (row.length >= 5) data.push(row); // At least 5 columns (including Timestamp)
+            }
+            return data;
+        }
+
+        function parseDate(str) {
+            const [m, d, y] = str.split('/');
+            return new Date(y, m - 1, d);
+        }
+
+        function calculatePosition(date, fiscalYear) {
+            const fy = parseInt(fiscalYear);
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const day = date.getDate();
+            
+            let monthIndex;
+            if (year === fy - 1) {
+                monthIndex = month - 1;
+            } else {
+                monthIndex = 11 + month;
+            }
+            
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const posInMonth = (day - 1) / daysInMonth;
+            
+            return (monthIndex * 4) + (posInMonth * 4);
+        }
+
+        async function loadData() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const viz = document.getElementById('visualization');
+
+            try {
+                const response = await fetch(CSV_FILE);
+                if (!response.ok) throw new Error('Failed to load CSV file');
+                
+                const text = await response.text();
+                const rows = parseCSV(text);
+                
+                const events = [];
+                const notes = {};
+                
+                rows.forEach(row => {
+                    // Google Forms CSV: Timestamp, Fiscal Year, Date, Event Type, Source URL, Bill Name, Notes
+                    const fy = row[1];        // Column 1: Fiscal Year
+                    const dateStr = row[2];   // Column 2: Date
+                    const date = parseDate(dateStr);
+                    
+                    if (date && fy) {
+                        events.push({
+                            fy: fy,
+                            date: date,
+                            dateStr: dateStr,
+                            type: row[3],      // Column 3: Event Type
+                            url: row[4] || '', // Column 4: Source URL
+                            bill: row[5] || '', // Column 5: Bill Name
+                            pos: calculatePosition(date, fy)
+                        });
+                    }
+                    
+                    // Column 6: Notes (clean up extra quotes)
+                    if (row[6]) {
+                        const cleanNote = row[6].replace(/^"+|"+$/g, ''); // Remove leading/trailing quotes
+                        notes[fy] = cleanNote;
+                    }
+                });
+
+                render(events, notes);
+                
+            } catch (err) {
+                error.textContent = 'Error: ' + err.message;
+                error.classList.remove('u-hidden');
+                loading.classList.add('u-hidden');
+            }
+        }
+
+        function render(events, notes) {
+            const byYear = {};
+            events.forEach(e => {
+                if (!byYear[e.fy]) byYear[e.fy] = [];
+                byYear[e.fy].push(e);
+            });
+
+            const years = Object.keys(byYear).sort();
+            const today = new Date();
+            
+            let maxRows = 18;
+            years.forEach(y => {
+                const hasApp = byYear[y].some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
+                if (!hasApp) {
+                    const julyEnd = new Date(parseInt(y), 6, 31);
+                    if (today > julyEnd) {
+                        const monthsNeeded = Math.ceil((today - new Date(y - 1, 1, 1)) / (30.42 * 24 * 60 * 60 * 1000));
+                        maxRows = Math.max(maxRows, monthsNeeded);
+                    }
+                }
+            });
+
+            renderYAxis(maxRows);
+            renderXAxis(years, notes);
+            renderGrid(years.length + 2, maxRows);
+            renderData(byYear, years, today);
+            renderAvgIdeal(byYear, years.length);
+
+            document.getElementById('loading').classList.add('u-hidden');
+            document.getElementById('visualization').classList.remove('u-hidden');
+        }
+
+        function renderYAxis(numRows) {
+            const months = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'];
+            let html = '';
+            for (let i = 0; i < numRows; i++) {
+                html += `<div class="graph__tick graph__tick--y"><div class="tick-y-text">${months[i % 12]}</div></div>`;
+            }
+            document.getElementById('yAxis').innerHTML = html;
+        }
+
+        function renderXAxis(years, notes) {
+            let html = '';
+            years.forEach(y => {
+                const note = notes[y] || '';
+                html += `<div class="graph__tick graph__tick--x">`;
+                if (note) {
+                    html += `<div class="tooltip tooltip--xaxis">
+                        <div class="tooltip__box tooltip__box--xaxis">${note}</div>
+                    </div>`;
+                }
+                html += `<div class="tick-x-text">FY${y}</div></div>`;
+            });
+            html += `<div class="graph__tick graph__tick--x no-hover"><div class="tick-x-text">Avg</div></div>`;
+            html += `<div class="graph__tick graph__tick--x no-hover"><div class="tick-x-text">Ideal</div></div>`;
+            document.getElementById('xAxis').innerHTML = html;
+        }
+
+        function renderGrid(numCols, numRows) {
+            let html = '';
+            for (let r = 0; r < numRows; r++) {
+                html += '<div class="graph__row">';
+                for (let c = 0; c < numCols; c++) {
+                    const isAvgIdeal = c >= numCols - 2;
+                    html += `<div class="graph__cell ${isAvgIdeal ? 'avg-ideal' : ''}"></div>`;
+                }
+                html += '</div>';
+            }
+            document.getElementById('graphGrid').innerHTML = html;
+        }
+
+        function renderData(byYear, years, today) {
+            let html = '';
+            
+            years.forEach((y, idx) => {
+                const evts = byYear[y].sort((a, b) => a.pos - b.pos);
+                // Check for Appropriation OR Full-Year CR (which functions as appropriation)
+                const hasApp = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
+                const leftPos = idx * 5;
+                let barNum = 1;
+
+                evts.forEach((evt, i) => {
+                    const cfg = EVENT_CONFIG[evt.type];
+                    if (!cfg) {
+                        console.warn(`Unknown event type: ${evt.type}`);
+                        return;
+                    }
+                    
+                    const topPos = evt.pos;
+                    
+                    let barHeight = 0;
+                    // Don't extend bars from Appropriation or Full-Year CR events
+                    if (evt.type !== 'Appropriation' && evt.type !== 'Full-Year Continuing Resolution') {
+                        if (i < evts.length - 1) {
+                            barHeight = evts[i + 1].pos - topPos;
+                        } else if (!hasApp) {
+                            const nowPos = calculatePosition(today, y);
+                            if (nowPos > topPos) barHeight = nowPos - topPos;
+                        }
+                    }
+
+                    if (barHeight > 0) {
+                        html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
+                            <div class="databar databar${barNum} ${cfg.class}" style="height:${barHeight}rem;"></div>
+                        </div>`;
+                        barNum++;
+                    }
+
+                    html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
+                        <div class="datapoint ${cfg.class}">
+                            <div class="tooltip tooltip--data">
+                                <div class="tooltip__box tooltip__box--data ${cfg.class}">
+                                    ${evt.dateStr}<br>${evt.type}
+                                    ${evt.bill ? `<br><strong>Bill:</strong> ${evt.bill}` : ''}
+                                    ${evt.url ? `<br><a class="tooltip__btn" target="_blank" href="${evt.url}">Read more &gt;&gt;</a>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+
+                if (!hasApp) {
+                    const nowPos = calculatePosition(today, y);
+                    html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${nowPos}rem;">
+                        <div class="data-unknown">?</div>
+                    </div>`;
+                }
+            });
+
+            document.getElementById('graphData').innerHTML = html;
+        }
+
+        function renderAvgIdeal(byYear, offset) {
+            const avgData = calculateAverage(byYear);
+            const idealData = [
+                { type: "President's Budget Delivered to Congress", date: new Date(2024, 1, 1) },
+                { type: 'Appropriation', date: new Date(2024, 8, 30) }
+            ];
+
+            let html = '';
+            
+            [avgData, idealData].forEach((data, colIdx) => {
+                const leftPos = (offset + colIdx) * 5;
+                let barNum = 1;
+                
+                data.forEach((evt, i) => {
+                    const cfg = EVENT_CONFIG[evt.type];
+                    if (!cfg) return;
+                    
+                    const topPos = calculatePosition(evt.date, 2024);
+                    
+                    let barHeight = 0;
+                    if (evt.type !== 'Appropriation' && evt.type !== 'Full-Year Continuing Resolution' && i < data.length - 1) {
+                        barHeight = calculatePosition(data[i + 1].date, 2024) - topPos;
+                    }
+
+                    if (barHeight > 0) {
+                        html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
+                            <div class="databar databar${barNum} ${cfg.class}" style="height:${barHeight}rem;"></div>
+                        </div>`;
+                        barNum++;
+                    }
+
+                    const label = colIdx === 0 ? `Average: ${evt.label || ''}` : `Ideal: ${evt.label || ''}`;
+                    html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
+                        <div class="datapoint ${cfg.class}">
+                            ${colIdx === 0 && evt.label ? `<div class="tooltip tooltip--data">
+                                <div class="tooltip__box tooltip__box--data ${cfg.class}">
+                                    ${label}<br>${evt.type}
+                                </div>
+                            </div>` : ''}
+                        </div>
+                    </div>`;
+                });
+            });
+
+            document.getElementById('graphData').insertAdjacentHTML('beforeend', html);
+        }
+
+        function calculateAverage(byYear) {
+            const byType = {};
+            Object.values(byYear).forEach(evts => {
+                evts.forEach(e => {
+                    // Treat Full-Year CR same as regular CR for averaging
+                    const typeKey = e.type === 'Full-Year Continuing Resolution' ? 'Continuing Resolution' : e.type;
+                    if (!byType[typeKey]) byType[typeKey] = [];
+                    byType[typeKey].push(e.date);
+                });
+            });
+
+            const avg = [];
+            for (const [type, dates] of Object.entries(byType)) {
+                if (dates.length > 0) {
+                    const avgTime = dates.reduce((sum, d) => sum + d.getTime(), 0) / dates.length;
+                    const avgDate = new Date(avgTime);
+                    const label = `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`;
+                    avg.push({ type, date: avgDate, label });
+                }
+            }
+            return avg.sort((a, b) => a.date - b.date);
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
