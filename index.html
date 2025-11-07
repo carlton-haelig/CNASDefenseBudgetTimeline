@@ -650,10 +650,6 @@
             
             // Sort by position
             avgEvents.sort((a, b) => getMonthPosition(a.date, 2024) - getMonthPosition(b.date, 2024));
-            
-            // Debug logging
-            console.log('Average events:', avgEvents.map(e => `${e.label} ${e.type} at ${getMonthPosition(e.date, 2024).toFixed(2)}rem`));
-            console.log('Ideal events:', idealEvents.map(e => `${e.label} ${e.type} at ${getMonthPosition(e.date, 2024).toFixed(2)}rem`));
 
             const idealEvents = [
                 { 
@@ -667,6 +663,10 @@
                     label: '09/30'
                 }
             ];
+            
+            // Debug logging
+            console.log('Average events:', avgEvents.map(e => `${e.label} ${e.type} at ${getMonthPosition(e.date, 2024).toFixed(2)}rem`));
+            console.log('Ideal events:', idealEvents.map(e => `${e.label} ${e.type} at ${getMonthPosition(e.date, 2024).toFixed(2)}rem`));
 
             let html = '';
             
