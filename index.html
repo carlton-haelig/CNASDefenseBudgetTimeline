@@ -80,13 +80,17 @@
             vertical-align: top;
         }
 
+        .graph__cell:first-child {
+            margin-left: 0;
+        }
+
         .graph__cell.avg-ideal {
             background-color: #4b4b51;
             border-color: #6f6f74;
         }
 
         .graph__row:nth-child(8) .graph__cell {
-            border-bottom: 2px dashed #fff;
+            border-bottom: 2px dashed #fff !important;
         }
         
         .graph__row:nth-child(8) {
@@ -103,9 +107,10 @@
         .graph__tick--y {
             height: 4rem;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: flex-end;
             padding-right: 0.5rem;
+            padding-top: 0.2rem;
             font-family: "Gotham-Book", sans-serif;
             font-size: 0.9rem;
             color: #fff;
@@ -134,6 +139,10 @@
             text-transform: uppercase;
             box-sizing: border-box;
             position: relative;
+        }
+
+        .graph__tick--x:first-child {
+            margin-left: 0;
         }
 
         .graph__tick--x.no-hover {
