@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Decade of Budget Instability</title>
     <style>
-        /* Gotham Fonts */
         @font-face {
             font-family: "Gotham-Book";
             src: url("fonts/Gotham-Book.woff") format("woff"),
@@ -52,7 +51,7 @@
         }
 
         .graph__row {
-            margin-bottom: -6px;
+            margin-bottom: -1px;
         }
 
         .graph__cell {
@@ -60,7 +59,7 @@
             width: 5rem;
             height: 4rem;
             border: 1px solid #4f4f55;
-            margin-left: -5px;
+            margin-left: -1px;
         }
 
         .graph__cell.avg-ideal {
@@ -99,7 +98,7 @@
         .graph__tick--x {
             display: inline-block;
             width: 5rem;
-            margin-left: -5px;
+            margin-left: -1px;
             text-align: center;
             cursor: pointer;
         }
@@ -117,7 +116,6 @@
         }
 
         .graph__data {
-            display: flex;
             position: absolute;
             top: 2.8rem;
             left: 4rem;
@@ -129,12 +127,9 @@
             text-align: center;
         }
 
-        .datapoint, .databar, .data-unknown {
-            display: block;
-            margin: auto;
-        }
-
         .datapoint {
+            display: block;
+            margin: 0 auto;
             position: relative;
             max-width: 2.2rem;
             height: 0.5rem;
@@ -142,7 +137,9 @@
         }
 
         .databar {
+            display: block;
             width: 0.6rem;
+            margin: 0 auto;
         }
 
         .data-unknown {
@@ -215,13 +212,12 @@
 
         .tooltip {
             position: absolute;
-            z-index: 2;
+            z-index: 1000;
         }
 
         .tooltip__box {
             position: absolute;
-            z-index: 3;
-            width: 100%;
+            z-index: 1001;
             min-width: 14.5rem;
             font-family: "Gotham-Medium", sans-serif;
             font-size: 0.95rem;
@@ -244,21 +240,21 @@
             color: #000;
         }
 
-        .tooltip__box--xaxis, .tooltip__arrow--xaxis {
+        .tooltip__box--xaxis {
             opacity: 0;
             visibility: hidden;
             transition: all 0.15s ease;
         }
 
-        .graph__tick--x:hover .tooltip__box--xaxis,
-        .graph__tick--x:hover .tooltip__arrow--xaxis {
+        .graph__tick--x:hover .tooltip__box--xaxis {
             opacity: 1;
             visibility: visible;
         }
 
         .tooltip--data {
             top: -1.15rem;
-            left: -0.9rem;
+            left: 50%;
+            transform: translateX(-50%);
             opacity: 0;
             visibility: hidden;
             transition: all 0.2s ease;
@@ -270,13 +266,9 @@
             visibility: visible;
         }
 
-        .tooltip__arrow--data {
-            width: 4.5rem;
-        }
-
         .tooltip__box--data {
             top: 1rem;
-            left: 4rem;
+            left: 0;
         }
 
         .tooltip__btn {
@@ -291,10 +283,6 @@
 
         .data-gs .tooltip__btn {
             color: #ccc;
-        }
-
-        .data-gs .tooltip__btn:hover {
-            color: #fff;
         }
 
         .u-hidden {
@@ -350,9 +338,6 @@
                 <div class="legend__bar legend__bar--eofy"></div>
                 <div class="legend__text">End of Fiscal Year</div>
             </div>
-            <div style="margin-top: 1rem; font-family: 'Gotham-Book', sans-serif; font-size: 0.85rem; font-style: italic; color: #ccc;">
-                * Full-Year Continuing Resolutions shown as regular CRs
-            </div>
         </div>
     </div>
 
@@ -370,7 +355,6 @@
         function parseCSV(text) {
             const lines = text.split('\n');
             const data = [];
-            // Skip header row (line 0)
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (!line) continue;
@@ -390,8 +374,7 @@
                     }
                 }
                 row.push(cell.trim());
-                
-                if (row.length >= 5) data.push(row); // At least 5 columns (including Timestamp)
+                if (row.length >= 5) data.push(row);
             }
             return data;
         }
@@ -401,23 +384,31 @@
             return new Date(y, m - 1, d);
         }
 
-        function calculatePosition(date, fiscalYear) {
+        function getMonthPosition(date, fiscalYear) {
             const fy = parseInt(fiscalYear);
             const year = date.getFullYear();
             const month = date.getMonth();
             const day = date.getDate();
             
-            let monthIndex;
+            // Calculate row index (0-17 for Feb-Jul)
+            let rowIndex;
             if (year === fy - 1) {
-                monthIndex = month - 1;
+                // Feb-Dec of previous year = rows 0-10
+                rowIndex = month - 1; // Feb=1 becomes 0, Dec=11 becomes 10
             } else {
-                monthIndex = 11 + month;
+                // Jan-Jul of FY year = rows 11-17
+                rowIndex = 11 + month; // Jan=0 becomes 11, Jul=6 becomes 17
             }
             
+            // Position within month (proportional to day)
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const posInMonth = (day - 1) / daysInMonth;
+            const proportionThroughMonth = (day - 1) / daysInMonth;
             
-            return (monthIndex * 4) + (posInMonth * 4);
+            // Each row is 4rem tall
+            const rowTop = rowIndex * 4;
+            const positionInRow = proportionThroughMonth * 4;
+            
+            return rowTop + positionInRow;
         }
 
         async function loadData() {
@@ -436,9 +427,8 @@
                 const notes = {};
                 
                 rows.forEach(row => {
-                    // Google Forms CSV: Timestamp, Fiscal Year, Date, Event Type, Source URL, Bill Name, Notes
-                    const fy = row[1];        // Column 1: Fiscal Year
-                    const dateStr = row[2];   // Column 2: Date
+                    const fy = row[1];
+                    const dateStr = row[2];
                     const date = parseDate(dateStr);
                     
                     if (date && fy) {
@@ -446,16 +436,14 @@
                             fy: fy,
                             date: date,
                             dateStr: dateStr,
-                            type: row[3],      // Column 3: Event Type
-                            url: row[4] || '', // Column 4: Source URL
-                            bill: row[5] || '', // Column 5: Bill Name
-                            pos: calculatePosition(date, fy)
+                            type: row[3],
+                            url: row[4] || '',
+                            bill: row[5] || ''
                         });
                     }
                     
-                    // Column 6: Notes (clean up extra quotes)
                     if (row[6]) {
-                        const cleanNote = row[6].replace(/^"+|"+$/g, ''); // Remove leading/trailing quotes
+                        const cleanNote = row[6].replace(/^"+|"+$/g, '');
                         notes[fy] = cleanNote;
                     }
                 });
@@ -477,35 +465,22 @@
             });
 
             const years = Object.keys(byYear).sort();
-            const today = new Date();
             
-            let maxRows = 18;
-            years.forEach(y => {
-                const hasApp = byYear[y].some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
-                if (!hasApp) {
-                    const julyEnd = new Date(parseInt(y), 6, 31);
-                    if (today > julyEnd) {
-                        const monthsNeeded = Math.ceil((today - new Date(y - 1, 1, 1)) / (30.42 * 24 * 60 * 60 * 1000));
-                        maxRows = Math.max(maxRows, monthsNeeded);
-                    }
-                }
-            });
-
-            renderYAxis(maxRows);
+            renderYAxis();
             renderXAxis(years, notes);
-            renderGrid(years.length + 2, maxRows);
-            renderData(byYear, years, today);
+            renderGrid(years.length + 2);
+            renderData(byYear, years);
             renderAvgIdeal(byYear, years.length);
 
             document.getElementById('loading').classList.add('u-hidden');
             document.getElementById('visualization').classList.remove('u-hidden');
         }
 
-        function renderYAxis(numRows) {
-            const months = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'];
+        function renderYAxis() {
+            const months = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
             let html = '';
-            for (let i = 0; i < numRows; i++) {
-                html += `<div class="graph__tick graph__tick--y"><div class="tick-y-text">${months[i % 12]}</div></div>`;
+            for (let i = 0; i < 18; i++) {
+                html += `<div class="graph__tick graph__tick--y"><div class="tick-y-text">${months[i]}</div></div>`;
             }
             document.getElementById('yAxis').innerHTML = html;
         }
@@ -514,22 +489,23 @@
             let html = '';
             years.forEach(y => {
                 const note = notes[y] || '';
+                const shortYear = y.toString().slice(-2); // Get last 2 digits
                 html += `<div class="graph__tick graph__tick--x">`;
                 if (note) {
                     html += `<div class="tooltip tooltip--xaxis">
                         <div class="tooltip__box tooltip__box--xaxis">${note}</div>
                     </div>`;
                 }
-                html += `<div class="tick-x-text">FY${y}</div></div>`;
+                html += `<div class="tick-x-text">FY ${shortYear}</div></div>`;
             });
             html += `<div class="graph__tick graph__tick--x no-hover"><div class="tick-x-text">Avg</div></div>`;
             html += `<div class="graph__tick graph__tick--x no-hover"><div class="tick-x-text">Ideal</div></div>`;
             document.getElementById('xAxis').innerHTML = html;
         }
 
-        function renderGrid(numCols, numRows) {
+        function renderGrid(numCols) {
             let html = '';
-            for (let r = 0; r < numRows; r++) {
+            for (let r = 0; r < 18; r++) {
                 html += '<div class="graph__row">';
                 for (let c = 0; c < numCols; c++) {
                     const isAvgIdeal = c >= numCols - 2;
@@ -540,33 +516,37 @@
             document.getElementById('graphGrid').innerHTML = html;
         }
 
-        function renderData(byYear, years, today) {
+        function renderData(byYear, years) {
             let html = '';
+            const today = new Date();
             
             years.forEach((y, idx) => {
-                const evts = byYear[y].sort((a, b) => a.pos - b.pos);
-                // Check for Appropriation OR Full-Year CR (which functions as appropriation)
+                const evts = byYear[y].sort((a, b) => {
+                    const posA = getMonthPosition(a.date, a.fy);
+                    const posB = getMonthPosition(b.date, b.fy);
+                    return posA - posB;
+                });
+                
                 const hasApp = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
                 const leftPos = idx * 5;
                 let barNum = 1;
 
                 evts.forEach((evt, i) => {
                     const cfg = EVENT_CONFIG[evt.type];
-                    if (!cfg) {
-                        console.warn(`Unknown event type: ${evt.type}`);
-                        return;
-                    }
+                    if (!cfg) return;
                     
-                    const topPos = evt.pos;
+                    const topPos = getMonthPosition(evt.date, evt.fy);
                     
                     let barHeight = 0;
-                    // Don't extend bars from Appropriation or Full-Year CR events
                     if (evt.type !== 'Appropriation' && evt.type !== 'Full-Year Continuing Resolution') {
                         if (i < evts.length - 1) {
-                            barHeight = evts[i + 1].pos - topPos;
+                            const nextPos = getMonthPosition(evts[i + 1].date, evts[i + 1].fy);
+                            barHeight = nextPos - topPos;
                         } else if (!hasApp) {
-                            const nowPos = calculatePosition(today, y);
-                            if (nowPos > topPos) barHeight = nowPos - topPos;
+                            const nowPos = getMonthPosition(today, y);
+                            if (nowPos > topPos && nowPos <= 72) {
+                                barHeight = nowPos - topPos;
+                            }
                         }
                     }
 
@@ -591,10 +571,12 @@
                 });
 
                 if (!hasApp) {
-                    const nowPos = calculatePosition(today, y);
-                    html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${nowPos}rem;">
-                        <div class="data-unknown">?</div>
-                    </div>`;
+                    const nowPos = getMonthPosition(today, y);
+                    if (nowPos <= 72) {
+                        html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${nowPos}rem;">
+                            <div class="data-unknown">?</div>
+                        </div>`;
+                    }
                 }
             });
 
@@ -602,15 +584,71 @@
         }
 
         function renderAvgIdeal(byYear, offset) {
-            const avgData = calculateAverage(byYear);
-            const idealData = [
-                { type: "President's Budget Delivered to Congress", date: new Date(2024, 1, 1) },
-                { type: 'Appropriation', date: new Date(2024, 8, 30) }
+            // Calculate average for Budget, CR, and Appropriation only
+            const budgetDates = [];
+            const crDates = [];
+            const appDates = [];
+            
+            Object.values(byYear).forEach(evts => {
+                evts.forEach(e => {
+                    if (e.type === "President's Budget Delivered to Congress") {
+                        budgetDates.push(e.date);
+                    } else if (e.type === 'Continuing Resolution' || e.type === 'Full-Year Continuing Resolution') {
+                        crDates.push(e.date);
+                    } else if (e.type === 'Appropriation') {
+                        appDates.push(e.date);
+                    }
+                });
+            });
+
+            const avgEvents = [];
+            
+            if (budgetDates.length > 0) {
+                const avgTime = budgetDates.reduce((sum, d) => sum + d.getTime(), 0) / budgetDates.length;
+                const avgDate = new Date(avgTime);
+                avgEvents.push({
+                    type: "President's Budget Delivered to Congress",
+                    date: avgDate,
+                    label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
+                });
+            }
+            
+            if (crDates.length > 0) {
+                const avgTime = crDates.reduce((sum, d) => sum + d.getTime(), 0) / crDates.length;
+                const avgDate = new Date(avgTime);
+                avgEvents.push({
+                    type: 'Continuing Resolution',
+                    date: avgDate,
+                    label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
+                });
+            }
+            
+            if (appDates.length > 0) {
+                const avgTime = appDates.reduce((sum, d) => sum + d.getTime(), 0) / appDates.length;
+                const avgDate = new Date(avgTime);
+                avgEvents.push({
+                    type: 'Appropriation',
+                    date: avgDate,
+                    label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
+                });
+            }
+
+            const idealEvents = [
+                { 
+                    type: "President's Budget Delivered to Congress",
+                    date: new Date(2024, 1, 1),
+                    label: '02/01'
+                },
+                { 
+                    type: 'Appropriation',
+                    date: new Date(2024, 8, 30),
+                    label: '09/30'
+                }
             ];
 
             let html = '';
             
-            [avgData, idealData].forEach((data, colIdx) => {
+            [avgEvents, idealEvents].forEach((data, colIdx) => {
                 const leftPos = (offset + colIdx) * 5;
                 let barNum = 1;
                 
@@ -618,11 +656,12 @@
                     const cfg = EVENT_CONFIG[evt.type];
                     if (!cfg) return;
                     
-                    const topPos = calculatePosition(evt.date, 2024);
+                    const topPos = getMonthPosition(evt.date, 2024);
                     
                     let barHeight = 0;
-                    if (evt.type !== 'Appropriation' && evt.type !== 'Full-Year Continuing Resolution' && i < data.length - 1) {
-                        barHeight = calculatePosition(data[i + 1].date, 2024) - topPos;
+                    if (evt.type !== 'Appropriation' && i < data.length - 1) {
+                        const nextPos = getMonthPosition(data[i + 1].date, 2024);
+                        barHeight = nextPos - topPos;
                     }
 
                     if (barHeight > 0) {
@@ -632,12 +671,12 @@
                         barNum++;
                     }
 
-                    const label = colIdx === 0 ? `Average: ${evt.label || ''}` : `Ideal: ${evt.label || ''}`;
+                    const labelText = colIdx === 0 ? `Average: ${evt.label}` : `Ideal: ${evt.label}`;
                     html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
                         <div class="datapoint ${cfg.class}">
-                            ${colIdx === 0 && evt.label ? `<div class="tooltip tooltip--data">
+                            ${evt.label ? `<div class="tooltip tooltip--data">
                                 <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                    ${label}<br>${evt.type}
+                                    ${labelText}<br>${evt.type}
                                 </div>
                             </div>` : ''}
                         </div>
@@ -646,29 +685,6 @@
             });
 
             document.getElementById('graphData').insertAdjacentHTML('beforeend', html);
-        }
-
-        function calculateAverage(byYear) {
-            const byType = {};
-            Object.values(byYear).forEach(evts => {
-                evts.forEach(e => {
-                    // Treat Full-Year CR same as regular CR for averaging
-                    const typeKey = e.type === 'Full-Year Continuing Resolution' ? 'Continuing Resolution' : e.type;
-                    if (!byType[typeKey]) byType[typeKey] = [];
-                    byType[typeKey].push(e.date);
-                });
-            });
-
-            const avg = [];
-            for (const [type, dates] of Object.entries(byType)) {
-                if (dates.length > 0) {
-                    const avgTime = dates.reduce((sum, d) => sum + d.getTime(), 0) / dates.length;
-                    const avgDate = new Date(avgTime);
-                    const label = `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`;
-                    avg.push({ type, date: avgDate, label });
-                }
-            }
-            return avg.sort((a, b) => a.date - b.date);
         }
 
         loadData();
