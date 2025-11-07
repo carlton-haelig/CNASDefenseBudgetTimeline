@@ -84,18 +84,12 @@
             font-size: 1.2rem;
             color: #fff;
             text-transform: uppercase;
-            border: 1px solid transparent;
-            border-bottom: none;
         }
 
         .graph__tick--y {
             display: flex;
             align-items: center;
             height: 4rem;
-        }
-
-        .tick-y-text {
-            line-height: 1;
         }
 
         .graph__tick--x {
@@ -117,8 +111,12 @@
             color: #000;
         }
 
+        .graph__tick--x:nth-last-child(2):hover .tick-x-text,
+        .graph__tick--x:last-child:hover .tick-x-text {
+            color: #fff;
+        }
+
         .graph__data {
-            display: flex;
             position: absolute;
             top: 2.8rem;
             left: 4rem;
@@ -127,8 +125,6 @@
         .graph__datacell {
             position: absolute;
             width: 5rem;
-            border: 1px solid transparent;
-            margin-left: -5px;
             text-align: center;
         }
 
@@ -178,13 +174,11 @@
                 opacity: 0;
                 max-height: 0;
                 visibility: hidden;
-                transition: visibility .2s .3s ease, opacity .2s 0s ease, max-height .3s ease;
             }
             100% {
                 visibility: visible;
                 opacity: 1;
                 max-height: 40rem;
-                transition: visibility .2s .2s ease, opacity .2s .15s ease, max-height .3s ease;
             }
         }
 
@@ -260,16 +254,6 @@
             visibility: visible;
         }
 
-        .graph__tick--x:nth-last-child(2):hover,
-        .graph__tick--x:last-child:hover {
-            cursor: default;
-        }
-
-        .graph__tick--x:nth-last-child(2):hover .tick-x-text,
-        .graph__tick--x:last-child:hover .tick-x-text {
-            color: #fff;
-        }
-
         .tooltip--data {
             top: -1.15rem;
             left: -0.9rem;
@@ -303,13 +287,8 @@
             color: #ccc;
         }
 
-        .data-gs .tooltip__btn:hover {
-            color: #fff;
-        }
-
         .u-hidden {
             display: none !important;
-            visibility: hidden;
         }
 
         #loading, #error {
@@ -383,7 +362,7 @@
             }
             
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const proportion = day / daysInMonth;
+            const proportion = (day - 1) / (daysInMonth - 1); // 1st = 0%, middle ≈ 50%, last = 100%
             
             return (rowIndex * 4) + (proportion * 4);
         }
@@ -413,18 +392,10 @@
                     const fy = row[1];
                     const date = parseDate(row[2]);
                     if (date && fy) {
-                        events.push({
-                            fy: fy,
-                            date: date,
-                            dateStr: row[2],
-                            type: row[3],
-                            url: row[4] || '',
-                            bill: row[5] || ''
-                        });
+                        events.push({ fy, date, dateStr: row[2], type: row[3], url: row[4] || '', bill: row[5] || '' });
                     }
-                    if (row[6]) {
-                        const clean = row[6].replace(/^"+|"+$/g, '');
-                        if (!notes[fy]) notes[fy] = clean;
+                    if (row[6] && !notes[fy]) {
+                        notes[fy] = row[6].replace(/^"+|"+$/g, '');
                     }
                 });
 
@@ -446,19 +417,13 @@
             });
 
             const years = Object.keys(byYear).sort((a, b) => parseInt(a) - parseInt(b));
-            const numCols = years.length + 2;
             
-            let html = '<div class="graph">';
-            
-            // Y-Axis
-            html += '<div class="graph__y-axis">';
+            let html = '<div class="graph"><div class="graph__y-axis">';
             ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'].forEach(m => {
                 html += `<div class="graph__tick graph__tick--y"><div class="tick-y-text">${m}</div></div>`;
             });
-            html += '</div>';
+            html += '</div><div class="graph__x-axis">';
             
-            // X-Axis
-            html += '<div class="graph__x-axis">';
             years.forEach(y => {
                 const yr = y.slice(-2);
                 const n = notes[y] || '';
@@ -467,25 +432,20 @@
                 html += `<div class="tick-x-text">FY ${yr}</div></div>`;
             });
             html += '<div class="graph__tick graph__tick--x"><div class="tick-x-text">Avg</div></div>';
-            html += '<div class="graph__tick graph__tick--x"><div class="tick-x-text">Ideal</div></div>';
-            html += '</div>';
+            html += '<div class="graph__tick graph__tick--x"><div class="tick-x-text">Ideal</div></div></div>';
             
-            // Grid
             for (let r = 0; r < 18; r++) {
                 html += '<div class="graph__row">';
-                for (let c = 0; c < numCols; c++) {
+                for (let c = 0; c < years.length + 2; c++) {
                     html += '<div class="graph__cell"></div>';
                 }
                 html += '</div>';
             }
             
-            // Data
             html += '<div class="graph__data">';
             html += renderData(byYear, years);
             html += renderAvgIdeal(byYear, years.length);
-            html += '</div>';
-            
-            html += '</div>';
+            html += '</div></div>';
             
             html += `<div class="legend">
                 <div class="legend__row"><div class="legend__bar data-pbd"></div><div class="legend__text">President's Budget Delivered to the Hill</div></div>
@@ -504,48 +464,57 @@
             let html = '';
             const today = new Date();
             
-            years.forEach((fy, i) => {
+            years.forEach((fy, colIdx) => {
                 const evts = byYear[fy].sort((a, b) => getYPosition(a.date, a.fy) - getYPosition(b.date, b.fy));
                 const done = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
+                const xPos = (colIdx * 5) + 0.1; // 0.1rem offset centers the 0.6rem bar in the 5rem cell
                 let bn = 1;
                 
                 evts.forEach((e, j) => {
                     const cfg = EVENT_CONFIG[e.type];
                     if (!cfg) return;
                     
-                    const y = getYPosition(e.date, e.fy);
+                    const yTop = getYPosition(e.date, e.fy);
                     const term = e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution';
                     
+                    // Bar first (so marker appears on top)
                     let bh = 0;
                     if (!term) {
                         if (j < evts.length - 1) {
-                            bh = getYPosition(evts[j + 1].date, evts[j + 1].fy) - y;
+                            bh = getYPosition(evts[j + 1].date, evts[j + 1].fy) - yTop;
                         } else if (!done) {
                             const ty = getYPosition(today, fy);
-                            if (ty > y && ty <= 72) bh = ty - y;
+                            if (ty > yTop && ty <= 72) bh = ty - yTop;
                         }
                     }
                     
-                    html += `<div class="graph__datacell fy${fy}" style="left:${i * 5}rem;top:${y}rem;">`;
                     if (bh > 0) {
-                        html += `<div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div>`;
+                        html += `<div class="graph__datacell" style="position:absolute;left:${xPos}rem;top:${yTop}rem;">
+                            <div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div>
+                        </div>`;
                         bn++;
                     }
-                    html += `<div class="datapoint ${cfg.class}">
-                        <div class="tooltip tooltip--data">
-                            <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                ${e.dateStr}<br>${e.type}
-                                ${e.bill ? `<br><strong>Bill:</strong> ${e.bill}` : ''}
-                                ${e.url ? `<br><a class="tooltip__btn" target="_blank" href="${e.url}">Read more &gt;&gt;</a>` : ''}
+                    
+                    // Event marker on top of bar
+                    html += `<div class="graph__datacell" style="position:absolute;left:${colIdx * 5}rem;top:${yTop}rem;">
+                        <div class="datapoint ${cfg.class}">
+                            <div class="tooltip tooltip--data">
+                                <div class="tooltip__box tooltip__box--data ${cfg.class}">
+                                    ${e.dateStr}<br>${e.type}
+                                    ${e.bill ? `<br><strong>Bill:</strong> ${e.bill}` : ''}
+                                    ${e.url ? `<br><a class="tooltip__btn" target="_blank" href="${e.url}">Read more &gt;&gt;</a>` : ''}
+                                </div>
                             </div>
                         </div>
-                    </div></div>`;
+                    </div>`;
                 });
                 
                 if (!done) {
                     const ty = getYPosition(today, fy);
                     if (ty <= 72) {
-                        html += `<div class="graph__datacell fy${fy}" style="left:${i * 5}rem;top:${ty}rem;"><div class="data-unknown">?</div></div>`;
+                        html += `<div class="graph__datacell" style="position:absolute;left:${colIdx * 5}rem;top:${ty}rem;">
+                            <div class="data-unknown">?</div>
+                        </div>`;
                     }
                 }
             });
@@ -553,14 +522,14 @@
             return html;
         }
 
-        function renderAvgIdeal(byYear, off) {
+        function renderAvgIdeal(byYear, numYears) {
             const bd = [], cd = [], ad = [];
             
             Object.entries(byYear).forEach(([fy, evts]) => {
                 evts.forEach(e => {
                     const d = calculateDayOfPeriod(e.date, e.fy);
                     if (e.type === "President's Budget Delivered to Congress") bd.push(d);
-                    else if (e.type === 'Continuing Resolution' || e.type === 'Full-Year Continuing Resolution') cd.push(d);
+                    else if (e.type.includes('Continuing Resolution')) cd.push(d);
                     else if (e.type === 'Appropriation') ad.push(d);
                 });
             });
@@ -569,19 +538,16 @@
             const ref = new Date(2023, 1, 1);
             
             if (bd.length) {
-                const d = Math.round(bd.reduce((a, b) => a + b) / bd.length);
-                const dt = new Date(ref.getTime() + d * 86400000);
-                avg.push({ type: "President's Budget Delivered to Congress", date: dt, label: `${(dt.getMonth() + 1).toString().padStart(2, '0')}/${dt.getDate().toString().padStart(2, '0')}` });
+                const dt = new Date(ref.getTime() + (bd.reduce((a,b)=>a+b)/bd.length) * 86400000);
+                avg.push({ type: "President's Budget Delivered to Congress", date: dt, label: `${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}` });
             }
             if (cd.length) {
-                const d = Math.round(cd.reduce((a, b) => a + b) / cd.length);
-                const dt = new Date(ref.getTime() + d * 86400000);
-                avg.push({ type: 'Continuing Resolution', date: dt, label: `${(dt.getMonth() + 1).toString().padStart(2, '0')}/${dt.getDate().toString().padStart(2, '0')}` });
+                const dt = new Date(ref.getTime() + (cd.reduce((a,b)=>a+b)/cd.length) * 86400000);
+                avg.push({ type: 'Continuing Resolution', date: dt, label: `${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}` });
             }
             if (ad.length) {
-                const d = Math.round(ad.reduce((a, b) => a + b) / ad.length);
-                const dt = new Date(ref.getTime() + d * 86400000);
-                avg.push({ type: 'Appropriation', date: dt, label: `${(dt.getMonth() + 1).toString().padStart(2, '0')}/${dt.getDate().toString().padStart(2, '0')}` });
+                const dt = new Date(ref.getTime() + (ad.reduce((a,b)=>a+b)/ad.length) * 86400000);
+                avg.push({ type: 'Appropriation', date: dt, label: `${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}` });
             }
 
             const ideal = [
@@ -592,34 +558,38 @@
             let html = '';
             
             [avg, ideal].forEach((list, ci) => {
-                const xPos = (off + ci) * 5;
+                const colIdx = numYears + ci;
+                const xPos = (colIdx * 5) + 0.1;
                 let bn = 1;
                 
                 list.forEach((e, i) => {
                     const cfg = EVENT_CONFIG[e.type];
                     if (!cfg) return;
                     
-                    const y = getYPosition(e.date, 2024);
+                    const yTop = getYPosition(e.date, 2024);
                     let bh = 0;
                     
                     if (e.type !== 'Appropriation' && i < list.length - 1) {
-                        bh = getYPosition(list[i + 1].date, 2024) - y;
+                        bh = getYPosition(list[i + 1].date, 2024) - yTop;
                     }
                     
-                    const className = ci === 0 ? 'fy-avg' : 'fy-ideal';
-                    html += `<div class="graph__datacell ${className}" style="left:${xPos}rem;top:${y}rem;">`;
                     if (bh > 0) {
-                        html += `<div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div>`;
+                        html += `<div class="graph__datacell" style="position:absolute;left:${xPos}rem;top:${yTop}rem;">
+                            <div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div>
+                        </div>`;
                         bn++;
                     }
+                    
                     const lbl = ci === 0 ? 'Average' : 'Ideal';
-                    html += `<div class="datapoint ${cfg.class}">
-                        <div class="tooltip tooltip--data">
-                            <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                ${lbl}: ${e.label}<br>${e.type}
+                    html += `<div class="graph__datacell" style="position:absolute;left:${colIdx * 5}rem;top:${yTop}rem;">
+                        <div class="datapoint ${cfg.class}">
+                            <div class="tooltip tooltip--data">
+                                <div class="tooltip__box tooltip__box--data ${cfg.class}">
+                                    ${lbl}: ${e.label}<br>${e.type}
+                                </div>
                             </div>
                         </div>
-                    </div></div>`;
+                    </div>`;
                 });
             });
             
