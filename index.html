@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Decade of Budget Instability</title>
     <style>
+        /* Gotham Fonts */
         @font-face {
             font-family: "Gotham-Book";
             src: url("fonts/Gotham-Book.woff") format("woff"),
@@ -21,14 +22,20 @@
                  url("fonts/Gotham-Medium.ttf") format("truetype");
         }
 
-        html { background-color: #37373d; }
+        /* Base Styles */
+        html { 
+            background-color: #37373d; 
+        }
+        
         body {
             padding: 1rem 1rem 1rem 4.9rem;
             color: #fff;
             font-size: 1rem;
             line-height: 1.4;
+            margin: 0;
         }
 
+        /* Typography */
         .h1 {
             font-family: "Gotham-Bold", sans-serif;
             font-size: 2.4rem;
@@ -36,26 +43,37 @@
             text-transform: uppercase;
             margin-bottom: 3rem;
         }
+        
         .h1__border {
             border-bottom: 0.5rem solid #fff;
+            padding-bottom: 0.5rem;
         }
 
+        /* Event Colors */
         .data-pbd { background-color: #58c1c6; }
         .data-cr { background-color: #d47371; }
         .data-gs { background-color: #7a2b2a; }
         .data-app { background-color: #ddb375; }
 
+        /* Graph Container */
         .graph {
             position: relative;
             padding-left: 4rem;
+            margin: 0;
         }
 
-        #graphGrid {
-            margin-top: 2.5rem;
+        /* Grid */
+        .graph__grid {
+            position: relative;
+            margin: 0;
+            padding: 0;
         }
 
         .graph__row {
-            margin-bottom: -1px;
+            height: 4rem;
+            margin: 0;
+            white-space: nowrap;
+            line-height: 0;
         }
 
         .graph__cell {
@@ -63,43 +81,50 @@
             width: 5rem;
             height: 4rem;
             border: 1px solid #4f4f55;
+            margin: 0;
             margin-left: -1px;
+            margin-bottom: -1px;
             box-sizing: border-box;
+            vertical-align: top;
         }
 
         .graph__cell.avg-ideal {
             background-color: #4b4b51;
-            border: 1px solid #6f6f74;
+            border-color: #6f6f74;
         }
 
-        .graph__row:nth-child(8) .graph__cell {
-            border-bottom: 1px dashed #fff;
+        /* Sept 30 dashed line at bottom of row 8 */
+        .graph__row:nth-child(8) {
+            border-bottom: 2px dashed #fff;
+            margin-bottom: -2px;
         }
 
+        /* Y-Axis */
         .graph__y-axis {
             position: absolute;
-            top: 2.6rem;
+            top: 0;
             left: 0;
+            width: 3.5rem;
         }
 
-        .graph__x-axis {
-            padding-bottom: 0.5rem;
-        }
-
-        .graph__tick {
-            position: relative;
+        .graph__tick--y {
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
             font-family: "Gotham-Book", sans-serif;
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             color: #fff;
             text-transform: uppercase;
         }
 
-        .graph__tick--y {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            height: 4rem;
-            padding-right: 0.5rem;
+        /* X-Axis */
+        .graph__x-axis {
+            padding-bottom: 0.5rem;
+            margin: 0;
+            white-space: nowrap;
+            line-height: 0;
         }
 
         .graph__tick--x {
@@ -107,10 +132,16 @@
             align-items: center;
             justify-content: center;
             width: 5rem;
+            margin: 0;
             margin-left: -1px;
-            cursor: pointer;
             padding: 0.5rem 0;
+            cursor: pointer;
+            font-family: "Gotham-Book", sans-serif;
+            font-size: 1.2rem;
+            color: #fff;
+            text-transform: uppercase;
             box-sizing: border-box;
+            position: relative;
         }
 
         .graph__tick--x.no-hover {
@@ -125,25 +156,25 @@
             color: #fff;
         }
 
+        /* Data Layer */
         .graph__data {
             position: absolute;
-            top: 2.8rem;
+            top: 0;
             left: 4rem;
         }
 
         .graph__datacell {
             position: absolute;
             width: 5rem;
-            text-align: center;
         }
 
         .datapoint {
             display: block;
             margin: 0 auto;
-            position: relative;
-            max-width: 2.2rem;
+            width: 2.2rem;
             height: 0.5rem;
             cursor: pointer;
+            position: relative;
         }
 
         .databar {
@@ -155,11 +186,12 @@
         .data-unknown {
             font-family: "Gotham-Bold", sans-serif;
             font-size: 2rem;
-            line-height: 0.9;
+            line-height: 1;
             display: block;
-            margin: 0 auto;
+            text-align: center;
         }
 
+        /* Animations */
         .datapoint, .databar, .data-unknown {
             animation: data-anim ease;
         }
@@ -192,6 +224,7 @@
             }
         }
 
+        /* Legend */
         .legend {
             float: right;
             padding-right: 10rem;
@@ -214,6 +247,8 @@
 
         .legend__bar--eofy {
             border-bottom: 1px dashed #fff;
+            background: transparent;
+            height: 0;
         }
 
         .legend__text {
@@ -222,6 +257,7 @@
             padding-left: 1rem;
         }
 
+        /* Tooltips - Data Points */
         .tooltip {
             position: absolute;
             z-index: 1000;
@@ -236,31 +272,9 @@
             color: #fff;
             text-transform: none;
             text-align: left;
-            padding: 0.4rem 0.6rem;
+            padding: 0.6rem 0.8rem;
             box-shadow: 8px 8px 5px 0px rgba(0, 0, 0, 0.75);
-        }
-
-        .tooltip--xaxis {
-            top: -2.35rem;
-            left: -2.3rem;
-        }
-
-        .tooltip__box--xaxis {
-            top: 2rem;
-            left: 8.2rem;
-            background-color: #fff;
-            color: #000;
-        }
-
-        .tooltip__box--xaxis {
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.15s ease;
-        }
-
-        .graph__tick--x:hover .tooltip__box--xaxis {
-            opacity: 1;
-            visibility: visible;
+            border-radius: 3px;
         }
 
         .tooltip--data {
@@ -270,6 +284,13 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.2s ease;
+            pointer-events: auto;
+        }
+
+        .tooltip__box--data {
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .datapoint:hover .tooltip--data,
@@ -278,9 +299,29 @@
             visibility: visible;
         }
 
-        .tooltip__box--data {
-            top: 1rem;
-            left: 0;
+        /* Tooltips - X-Axis */
+        .tooltip--xaxis {
+            top: -2.35rem;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.15s ease;
+            pointer-events: none;
+        }
+
+        .tooltip__box--xaxis {
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            color: #000;
+            max-width: 20rem;
+        }
+
+        .graph__tick--x:hover .tooltip--xaxis {
+            opacity: 1;
+            visibility: visible;
         }
 
         .tooltip__btn {
@@ -297,9 +338,13 @@
             color: #ccc;
         }
 
+        .data-gs .tooltip__btn:hover {
+            color: #fff;
+        }
+
+        /* Utility */
         .u-hidden {
             display: none !important;
-            visibility: hidden;
         }
 
         #loading, #error {
@@ -321,37 +366,7 @@
     <div id="loading">Loading data...</div>
     <div id="error" class="u-hidden"></div>
 
-    <div id="visualization" class="u-hidden">
-        <div class="graph">
-            <div class="graph__y-axis" id="yAxis"></div>
-            <div class="graph__x-axis" id="xAxis"></div>
-            <div id="graphGrid"></div>
-            <div class="graph__data" id="graphData"></div>
-        </div>
-
-        <div class="legend">
-            <div class="legend__row">
-                <div class="legend__bar data-pbd"></div>
-                <div class="legend__text">President's Budget Delivered to the Hill</div>
-            </div>
-            <div class="legend__row">
-                <div class="legend__bar data-cr"></div>
-                <div class="legend__text">Continuing Resolution</div>
-            </div>
-            <div class="legend__row">
-                <div class="legend__bar data-app"></div>
-                <div class="legend__text">Appropriation</div>
-            </div>
-            <div class="legend__row">
-                <div class="legend__bar data-gs"></div>
-                <div class="legend__text">Government Shutdown</div>
-            </div>
-            <div class="legend__row">
-                <div class="legend__bar legend__bar--eofy"></div>
-                <div class="legend__text">End of Fiscal Year</div>
-            </div>
-        </div>
-    </div>
+    <div id="visualization" class="u-hidden"></div>
 
     <script>
         const CSV_FILE = 'data.csv';
@@ -364,9 +379,11 @@
             'Government Shutdown': { color: '#7a2b2a', class: 'data-gs' }
         };
 
+        // Parse CSV with proper quote handling
         function parseCSV(text) {
             const lines = text.split('\n');
             const data = [];
+            
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (!line) continue;
@@ -386,46 +403,55 @@
                     }
                 }
                 row.push(cell.trim());
+                
                 if (row.length >= 5) data.push(row);
             }
             return data;
         }
 
+        // Parse MM/DD/YYYY date
         function parseDate(str) {
-            const [m, d, y] = str.split('/');
-            return new Date(y, m - 1, d);
+            const parts = str.split('/');
+            if (parts.length !== 3) return null;
+            return new Date(parts[2], parts[0] - 1, parts[1]);
         }
 
-        function getMonthPosition(date, fiscalYear) {
+        // Calculate visual position on Y-axis (in rem units)
+        function getYPosition(date, fiscalYear) {
             const fy = parseInt(fiscalYear);
             const year = date.getFullYear();
             const month = date.getMonth();
             const day = date.getDate();
             
-            // Calculate row index (0-17 for Feb-Jul)
+            // Determine which row (0-17)
             let rowIndex;
             if (year === fy - 1) {
-                // Feb-Dec of previous year = rows 0-10
-                rowIndex = month - 1; // Feb=1 becomes 0, Dec=11 becomes 10
+                // Feb-Dec of (FY-1) = rows 0-10
+                rowIndex = month - 1; // Feb(1) → 0, Mar(2) → 1, ..., Dec(11) → 10
             } else {
-                // Jan-Jul of FY year = rows 11-17
-                rowIndex = 11 + month; // Jan=0 becomes 11, Jul=6 becomes 17
+                // Jan-Jul of FY = rows 11-17
+                rowIndex = 11 + month; // Jan(0) → 11, Feb(1) → 12, ..., Jul(6) → 17
             }
             
-            // Calculate days in this specific month (handles leap years)
+            // Calculate proportion through month
             const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const proportion = day / daysInMonth; // 1st = 1/X, 15th ≈ 50%, last day = 100%
             
-            // Position within month - proportional to day number
-            // Feb 1 = 1/28 (near top), Feb 14 = 14/28 = 50% (middle), Feb 28 = 28/28 = 100% (bottom)
-            const proportionThroughMonth = day / daysInMonth;
+            // Position in rem
+            const rowStart = rowIndex * 4; // Each row is 4rem
+            const offset = proportion * 4; // Position within row
             
-            // Each row is 4rem tall
-            const rowTop = rowIndex * 4;
-            const positionInRow = proportionThroughMonth * 4;
-            
-            return rowTop + positionInRow;
+            return rowStart + offset;
         }
 
+        // Calculate average day-of-period
+        function calculateDayOfPeriod(date, fiscalYear) {
+            const fy = parseInt(fiscalYear);
+            const periodStart = new Date(fy - 1, 1, 1); // Feb 1 of (FY-1)
+            return Math.floor((date - periodStart) / (1000 * 60 * 60 * 24));
+        }
+
+        // Load and parse CSV data
         async function loadData() {
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
@@ -433,14 +459,21 @@
 
             try {
                 const response = await fetch(CSV_FILE);
-                if (!response.ok) throw new Error('Failed to load CSV file');
+                if (!response.ok) {
+                    throw new Error(`Cannot load ${CSV_FILE}. Make sure file exists in repository.`);
+                }
                 
                 const text = await response.text();
                 const rows = parseCSV(text);
                 
+                if (rows.length === 0) {
+                    throw new Error('No data found in CSV file');
+                }
+                
                 const events = [];
                 const notes = {};
                 
+                // Parse each row
                 rows.forEach(row => {
                     const fy = row[1];
                     const dateStr = row[2];
@@ -457,126 +490,174 @@
                         });
                     }
                     
+                    // Extract notes (clean up extra quotes from Google Forms)
                     if (row[6]) {
                         const cleanNote = row[6].replace(/^"+|"+$/g, '');
-                        notes[fy] = cleanNote;
+                        if (!notes[fy]) notes[fy] = cleanNote;
                     }
                 });
 
-                render(events, notes);
+                if (events.length === 0) {
+                    throw new Error('No valid events parsed from CSV');
+                }
+
+                renderVisualization(events, notes);
                 
             } catch (err) {
+                console.error('Load error:', err);
                 error.textContent = 'Error: ' + err.message;
                 error.classList.remove('u-hidden');
                 loading.classList.add('u-hidden');
             }
         }
 
-        function render(events, notes) {
+        // Main render function
+        function renderVisualization(events, notes) {
+            // Group events by fiscal year
             const byYear = {};
             events.forEach(e => {
                 if (!byYear[e.fy]) byYear[e.fy] = [];
                 byYear[e.fy].push(e);
             });
 
-            const years = Object.keys(byYear).sort();
+            const years = Object.keys(byYear).sort((a, b) => parseInt(a) - parseInt(b));
             
-            renderYAxis();
-            renderXAxis(years, notes);
-            renderGrid(years.length + 2);
-            renderData(byYear, years);
-            renderAvgIdeal(byYear, years.length);
-
-            document.getElementById('loading').classList.add('u-hidden');
-            document.getElementById('visualization').classList.remove('u-hidden');
-        }
-
-        function renderYAxis() {
+            // Build HTML
+            let html = '<div class="graph">';
+            
+            // Y-Axis
+            html += '<div class="graph__y-axis">';
             const months = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-            let html = '';
-            for (let i = 0; i < 18; i++) {
-                html += `<div class="graph__tick graph__tick--y"><div class="tick-y-text">${months[i]}</div></div>`;
-            }
-            document.getElementById('yAxis').innerHTML = html;
-        }
-
-        function renderXAxis(years, notes) {
-            let html = '';
+            months.forEach(m => {
+                html += `<div class="graph__tick--y">${m}</div>`;
+            });
+            html += '</div>';
+            
+            // X-Axis
+            html += '<div class="graph__x-axis">';
             years.forEach(y => {
+                const shortYear = y.toString().slice(-2);
                 const note = notes[y] || '';
-                const shortYear = y.toString().slice(-2); // Get last 2 digits
                 html += `<div class="graph__tick graph__tick--x">`;
                 if (note) {
                     html += `<div class="tooltip tooltip--xaxis">
                         <div class="tooltip__box tooltip__box--xaxis">${note}</div>
                     </div>`;
                 }
-                html += `<div class="tick-x-text">FY ${shortYear}</div></div>`;
+                html += `<span class="tick-x-text">FY ${shortYear}</span></div>`;
             });
-            html += `<div class="graph__tick graph__tick--x no-hover"><div class="tick-x-text">Avg</div></div>`;
-            html += `<div class="graph__tick graph__tick--x no-hover"><div class="tick-x-text">Ideal</div></div>`;
-            document.getElementById('xAxis').innerHTML = html;
-        }
-
-        function renderGrid(numCols) {
-            let html = '';
+            html += '<div class="graph__tick graph__tick--x no-hover"><span class="tick-x-text">Avg</span></div>';
+            html += '<div class="graph__tick graph__tick--x no-hover"><span class="tick-x-text">Ideal</span></div>';
+            html += '</div>';
+            
+            // Grid (18 rows)
+            html += '<div class="graph__grid">';
             for (let r = 0; r < 18; r++) {
                 html += '<div class="graph__row">';
-                for (let c = 0; c < numCols; c++) {
-                    const isAvgIdeal = c >= numCols - 2;
+                for (let c = 0; c < years.length + 2; c++) {
+                    const isAvgIdeal = c >= years.length;
                     html += `<div class="graph__cell ${isAvgIdeal ? 'avg-ideal' : ''}"></div>`;
                 }
                 html += '</div>';
             }
-            document.getElementById('graphGrid').innerHTML = html;
+            html += '</div>';
+            
+            // Data points and bars
+            html += '<div class="graph__data">';
+            html += renderDataPoints(byYear, years);
+            html += renderAvgIdeal(byYear, years.length);
+            html += '</div>';
+            
+            html += '</div>'; // Close graph
+            
+            // Legend
+            html += `<div class="legend">
+                <div class="legend__row">
+                    <div class="legend__bar data-pbd"></div>
+                    <div class="legend__text">President's Budget Delivered to the Hill</div>
+                </div>
+                <div class="legend__row">
+                    <div class="legend__bar data-cr"></div>
+                    <div class="legend__text">Continuing Resolution</div>
+                </div>
+                <div class="legend__row">
+                    <div class="legend__bar data-app"></div>
+                    <div class="legend__text">Appropriation</div>
+                </div>
+                <div class="legend__row">
+                    <div class="legend__bar data-gs"></div>
+                    <div class="legend__text">Government Shutdown</div>
+                </div>
+                <div class="legend__row">
+                    <div class="legend__bar legend__bar--eofy"></div>
+                    <div class="legend__text">End of Fiscal Year</div>
+                </div>
+            </div>`;
+            
+            document.getElementById('visualization').innerHTML = html;
+            document.getElementById('loading').classList.add('u-hidden');
+            document.getElementById('visualization').classList.remove('u-hidden');
         }
 
-        function renderData(byYear, years) {
+        // Render data points for all fiscal years
+        function renderDataPoints(byYear, years) {
             let html = '';
             const today = new Date();
             
-            years.forEach((y, idx) => {
-                const evts = byYear[y].sort((a, b) => {
-                    const posA = getMonthPosition(a.date, a.fy);
-                    const posB = getMonthPosition(b.date, b.fy);
-                    return posA - posB;
+            years.forEach((fy, colIndex) => {
+                const evts = byYear[fy].sort((a, b) => {
+                    return getYPosition(a.date, a.fy) - getYPosition(b.date, b.fy);
                 });
                 
-                const hasApp = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
-                const leftPos = idx * 5;
+                const hasComplete = evts.some(e => 
+                    e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution'
+                );
+                
+                const xPos = colIndex * 5; // Column position
                 let barNum = 1;
-
-                evts.forEach((evt, i) => {
+                
+                evts.forEach((evt, idx) => {
                     const cfg = EVENT_CONFIG[evt.type];
-                    if (!cfg) return;
+                    if (!cfg) {
+                        console.warn('Unknown event type:', evt.type);
+                        return;
+                    }
                     
-                    const topPos = getMonthPosition(evt.date, evt.fy);
+                    const yPos = getYPosition(evt.date, evt.fy);
                     
+                    // Calculate bar height
                     let barHeight = 0;
-                    if (evt.type !== 'Appropriation' && evt.type !== 'Full-Year Continuing Resolution') {
-                        if (i < evts.length - 1) {
-                            const nextPos = getMonthPosition(evts[i + 1].date, evts[i + 1].fy);
-                            barHeight = nextPos - topPos;
-                        } else if (!hasApp) {
-                            const nowPos = getMonthPosition(today, y);
-                            if (nowPos > topPos && nowPos <= 72) {
-                                barHeight = nowPos - topPos;
+                    const isTerminal = evt.type === 'Appropriation' || evt.type === 'Full-Year Continuing Resolution';
+                    
+                    if (!isTerminal) {
+                        if (idx < evts.length - 1) {
+                            // Bar to next event
+                            const nextY = getYPosition(evts[idx + 1].date, evts[idx + 1].fy);
+                            barHeight = nextY - yPos;
+                        } else if (!hasComplete) {
+                            // Last event, no appropriation - extend to today (max 72rem)
+                            const todayY = getYPosition(today, fy);
+                            if (todayY > yPos && todayY <= 72) {
+                                barHeight = todayY - yPos;
                             }
                         }
                     }
-
+                    
+                    // Render bar
                     if (barHeight > 0) {
-                        html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
+                        html += `<div class="graph__datacell" style="left:${xPos}rem;top:${yPos}rem;">
                             <div class="databar databar${barNum} ${cfg.class}" style="height:${barHeight}rem;"></div>
                         </div>`;
                         barNum++;
                     }
-
-                    html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
+                    
+                    // Render event marker
+                    html += `<div class="graph__datacell" style="left:${xPos}rem;top:${yPos}rem;">
                         <div class="datapoint ${cfg.class}">
                             <div class="tooltip tooltip--data">
                                 <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                    ${evt.dateStr}<br>${evt.type}
+                                    <strong>${evt.dateStr}</strong><br>
+                                    ${evt.type}
                                     ${evt.bill ? `<br><strong>Bill:</strong> ${evt.bill}` : ''}
                                     ${evt.url ? `<br><a class="tooltip__btn" target="_blank" href="${evt.url}">Read more &gt;&gt;</a>` : ''}
                                 </div>
@@ -584,137 +665,140 @@
                         </div>
                     </div>`;
                 });
-
-                if (!hasApp) {
-                    const nowPos = getMonthPosition(today, y);
-                    if (nowPos <= 72) {
-                        html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${nowPos}rem;">
+                
+                // Question mark for incomplete years
+                if (!hasComplete) {
+                    const todayY = getYPosition(today, fy);
+                    if (todayY <= 72) {
+                        html += `<div class="graph__datacell" style="left:${xPos}rem;top:${todayY}rem;">
                             <div class="data-unknown">?</div>
                         </div>`;
                     }
                 }
             });
-
-            document.getElementById('graphData').innerHTML = html;
+            
+            return html;
         }
 
+        // Render Average and Ideal columns
         function renderAvgIdeal(byYear, offset) {
-            // Calculate average for Budget, CR, and Appropriation only
-            const budgetDates = [];
-            const crDates = [];
-            const appDates = [];
+            // Calculate average day-of-period for each event type
+            const budgetDays = [];
+            const crDays = [];
+            const appDays = [];
             
-            Object.values(byYear).forEach(evts => {
+            Object.entries(byYear).forEach(([fy, evts]) => {
                 evts.forEach(e => {
+                    const dayOfPeriod = calculateDayOfPeriod(e.date, e.fy);
+                    
                     if (e.type === "President's Budget Delivered to Congress") {
-                        budgetDates.push(e.date);
+                        budgetDays.push(dayOfPeriod);
                     } else if (e.type === 'Continuing Resolution' || e.type === 'Full-Year Continuing Resolution') {
-                        crDates.push(e.date);
+                        crDays.push(dayOfPeriod);
                     } else if (e.type === 'Appropriation') {
-                        appDates.push(e.date);
+                        appDays.push(dayOfPeriod);
                     }
                 });
             });
 
+            // Build average events using day-of-period averages
             const avgEvents = [];
+            const refFY = 2024;
+            const refStart = new Date(refFY - 1, 1, 1); // Feb 1, 2023
             
-            if (budgetDates.length > 0) {
-                const avgTime = budgetDates.reduce((sum, d) => sum + d.getTime(), 0) / budgetDates.length;
-                const avgDate = new Date(avgTime);
-                // Normalize to FY2024 reference period (Feb 2023 - Jul 2024)
-                const normalizedDate = new Date(2023, avgDate.getMonth(), avgDate.getDate());
+            if (budgetDays.length > 0) {
+                const avgDay = Math.round(budgetDays.reduce((a, b) => a + b) / budgetDays.length);
+                const avgDate = new Date(refStart.getTime() + avgDay * 24 * 60 * 60 * 1000);
                 avgEvents.push({
                     type: "President's Budget Delivered to Congress",
-                    date: normalizedDate,
+                    date: avgDate,
                     label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
                 });
             }
             
-            if (crDates.length > 0) {
-                const avgTime = crDates.reduce((sum, d) => sum + d.getTime(), 0) / crDates.length;
-                const avgDate = new Date(avgTime);
-                // Normalize to FY2024 reference period
-                const normalizedDate = new Date(2023, avgDate.getMonth(), avgDate.getDate());
+            if (crDays.length > 0) {
+                const avgDay = Math.round(crDays.reduce((a, b) => a + b) / crDays.length);
+                const avgDate = new Date(refStart.getTime() + avgDay * 24 * 60 * 60 * 1000);
                 avgEvents.push({
                     type: 'Continuing Resolution',
-                    date: normalizedDate,
+                    date: avgDate,
                     label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
                 });
             }
             
-            if (appDates.length > 0) {
-                const avgTime = appDates.reduce((sum, d) => sum + d.getTime(), 0) / appDates.length;
-                const avgDate = new Date(avgTime);
-                // Normalize to FY2024 reference period
-                const normalizedDate = new Date(2023, avgDate.getMonth(), avgDate.getDate());
+            if (appDays.length > 0) {
+                const avgDay = Math.round(appDays.reduce((a, b) => a + b) / appDays.length);
+                const avgDate = new Date(refStart.getTime() + avgDay * 24 * 60 * 60 * 1000);
                 avgEvents.push({
                     type: 'Appropriation',
-                    date: normalizedDate,
+                    date: avgDate,
                     label: `${(avgDate.getMonth() + 1).toString().padStart(2, '0')}/${avgDate.getDate().toString().padStart(2, '0')}`
                 });
             }
-            
-            // Sort by position
-            avgEvents.sort((a, b) => getMonthPosition(a.date, 2024) - getMonthPosition(b.date, 2024));
 
+            // Ideal events
             const idealEvents = [
-                { 
+                {
                     type: "President's Budget Delivered to Congress",
-                    date: new Date(2023, 1, 1), // Feb 1, 2023 (fiscalYear-1 for reference FY2024)
+                    date: new Date(2023, 1, 1), // Feb 1, 2023
                     label: '02/01'
                 },
-                { 
+                {
                     type: 'Appropriation',
-                    date: new Date(2023, 8, 30), // Sept 30, 2023 (fiscalYear-1 for reference FY2024)
+                    date: new Date(2023, 8, 30), // Sep 30, 2023
                     label: '09/30'
                 }
             ];
-            
-            // Debug logging
-            console.log('Average events:', avgEvents.map(e => `${e.label} ${e.type} at ${getMonthPosition(e.date, 2024).toFixed(2)}rem`));
-            console.log('Ideal events:', idealEvents.map(e => `${e.label} ${e.type} at ${getMonthPosition(e.date, 2024).toFixed(2)}rem`));
 
+            // Render both columns
             let html = '';
             
-            [avgEvents, idealEvents].forEach((data, colIdx) => {
-                const leftPos = (offset + colIdx) * 5;
+            [avgEvents, idealEvents].forEach((eventList, colIdx) => {
+                const xPos = (offset + colIdx) * 5;
                 let barNum = 1;
                 
-                data.forEach((evt, i) => {
+                eventList.forEach((evt, idx) => {
                     const cfg = EVENT_CONFIG[evt.type];
                     if (!cfg) return;
                     
-                    const topPos = getMonthPosition(evt.date, 2024);
+                    const yPos = getYPosition(evt.date, refFY);
                     
+                    // Calculate bar height
                     let barHeight = 0;
-                    if (evt.type !== 'Appropriation' && i < data.length - 1) {
-                        const nextPos = getMonthPosition(data[i + 1].date, 2024);
-                        barHeight = nextPos - topPos;
+                    const isTerminal = evt.type === 'Appropriation';
+                    
+                    if (!isTerminal && idx < eventList.length - 1) {
+                        const nextY = getYPosition(eventList[idx + 1].date, refFY);
+                        barHeight = nextY - yPos;
                     }
-
+                    
+                    // Render bar
                     if (barHeight > 0) {
-                        html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
+                        html += `<div class="graph__datacell" style="left:${xPos}rem;top:${yPos}rem;">
                             <div class="databar databar${barNum} ${cfg.class}" style="height:${barHeight}rem;"></div>
                         </div>`;
                         barNum++;
                     }
-
-                    const labelText = colIdx === 0 ? `Average: ${evt.label}` : `Ideal: ${evt.label}`;
-                    html += `<div class="graph__datacell" style="left:${leftPos}rem;top:${topPos}rem;">
+                    
+                    // Render marker
+                    const labelPrefix = colIdx === 0 ? 'Average' : 'Ideal';
+                    html += `<div class="graph__datacell" style="left:${xPos}rem;top:${yPos}rem;">
                         <div class="datapoint ${cfg.class}">
                             <div class="tooltip tooltip--data">
                                 <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                    ${labelText}<br>${evt.type}
+                                    <strong>${labelPrefix}: ${evt.label}</strong><br>
+                                    ${evt.type}
                                 </div>
                             </div>
                         </div>
                     </div>`;
                 });
             });
-
-            document.getElementById('graphData').insertAdjacentHTML('beforeend', html);
+            
+            return html;
         }
 
+        // Initialize
         loadData();
     </script>
 </body>
