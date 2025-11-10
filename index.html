@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>A Decade of Budget Instability</title>
     <style>
         @font-face {
@@ -326,15 +326,17 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="subtitle">
-            <h1>A DECADE OF BUDGET INSTABILITY</h1>
+    <div id="budget-viz-wrapper">
+        <div class="container">
+            <div class="subtitle">
+                <h1>A DECADE OF BUDGET INSTABILITY</h1>
+            </div>
+
+            <div id="loading">Loading data...</div>
+            <div id="error" class="u-hidden"></div>
+
+            <div id="viz" class="u-hidden"></div>
         </div>
-
-        <div id="loading">Loading data...</div>
-        <div id="error" class="u-hidden"></div>
-
-        <div id="viz" class="u-hidden"></div>
     </div>
 
     <script>
