@@ -123,7 +123,7 @@
         #budget-viz-wrapper .y-labels {
             position: absolute;
             left: 0;
-            top: 13.5rem;
+            top: 16.5rem;
             width: 3.5rem;
             text-align: right;
             font-size: 0.9rem;
@@ -219,7 +219,7 @@
 
         #budget-viz-wrapper .data-layer {
             position: absolute;
-            top: 0;
+            top: 2.5rem;
             left: 0;
             width: 100%;
             pointer-events: none;
@@ -633,7 +633,7 @@
                 left: 0.5rem;
                 width: 2.5rem;
                 font-size: 0.7rem;
-                top: 13rem;
+                top: 16rem;
             }
 
             #budget-viz-wrapper .y-label {
@@ -975,6 +975,8 @@
 
         function renderEvents(byYear, years) {
             let h = '';
+            const now = new Date();
+            
             years.forEach((fy, col) => {
                 const ev = byYear[fy];
                 ev.sort((a,b) => a.date - b.date);
@@ -990,14 +992,23 @@
                     const x = col * 5;
                     
                     let barH = 0;
-                    if (e.type !== 'Appropriation' && e.type !== 'Full-Year Continuing Resolution' && i < ev.length - 1) {
-                        const nextY = getPos(ev[i+1].date, fy);
-                        barH = nextY - y;
+                    if (e.type !== 'Appropriation' && e.type !== 'Full-Year Continuing Resolution') {
+                        if (i < ev.length - 1) {
+                            // Bar to next event
+                            const nextY = getPos(ev[i+1].date, fy);
+                            barH = nextY - y;
+                        } else if (!hasApp) {
+                            // Last event in incomplete year - bar to question mark
+                            const nowY = getPos(now, fy);
+                            if (nowY > y) {
+                                barH = nowY - y;
+                            }
+                        }
                     }
                     
                     h += `<div class="event ${cfg.class}" style="top:${y}rem; left:${x}rem;">`;
-                    h += `<div class="marker"></div>`;
                     if (barH > 0) h += `<div class="bar" style="height:${barH}rem;"></div>`;
+                    h += `<div class="marker"></div>`;
                     
                     h += `<div class="event-tooltip">`;
                     h += `<strong>${formatDate(e.date)}</strong><br>${e.type}`;
@@ -1009,7 +1020,6 @@
                 }
                 
                 if (!hasApp) {
-                    const now = new Date();
                     const y = getPos(now, fy);
                     const x = col * 5;
                     h += `<div class="event" style="top:${y}rem; left:${x}rem;"><div class="question-mark">?</div></div>`;
@@ -1036,21 +1046,44 @@
             
             // Average column
             const avgX = yearCount * 5;
+            const avgEvents = [];
+            
             ['pbd', 'cr', 'app'].forEach(type => {
                 if (avgByType[type].length === 0) return;
                 const avgDay = avgByType[type].reduce((a,b)=>a+b,0) / avgByType[type].length;
                 const avgDate = new Date(refStart.getTime() + avgDay * 24 * 60 * 60 * 1000);
                 const y = getPos(avgDate, refFY);
                 const cls = type === 'pbd' ? 'data-pbd' : type === 'cr' ? 'data-cr' : 'data-app';
-                h += `<div class="event ${cls}" style="top:${y}rem; left:${avgX}rem;"><div class="marker"></div></div>`;
+                avgEvents.push({ y, cls, type });
+            });
+            
+            // Sort by position
+            avgEvents.sort((a, b) => a.y - b.y);
+            
+            // Render average events with bars
+            avgEvents.forEach((e, i) => {
+                let barH = 0;
+                if (e.type !== 'app' && i < avgEvents.length - 1) {
+                    barH = avgEvents[i + 1].y - e.y;
+                }
+                
+                if (barH > 0) {
+                    h += `<div class="event ${e.cls}" style="top:${e.y}rem; left:${avgX}rem;"><div class="bar" style="height:${barH}rem;"></div></div>`;
+                }
+                h += `<div class="event ${e.cls}" style="top:${e.y}rem; left:${avgX}rem;"><div class="marker"></div></div>`;
             });
             
             // Ideal column
             const idealX = (yearCount + 1) * 5;
             const idealBudget = new Date(refFY - 1, 1, 1);
             const idealApp = new Date(refFY - 1, 8, 30);
-            h += `<div class="event data-pbd" style="top:${getPos(idealBudget, refFY)}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
-            h += `<div class="event data-app" style="top:${getPos(idealApp, refFY)}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
+            const budgetY = getPos(idealBudget, refFY);
+            const appY = getPos(idealApp, refFY);
+            const barH = appY - budgetY;
+            
+            h += `<div class="event data-pbd" style="top:${budgetY}rem; left:${idealX}rem;"><div class="bar" style="height:${barH}rem;"></div></div>`;
+            h += `<div class="event data-pbd" style="top:${budgetY}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
+            h += `<div class="event data-app" style="top:${appY}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
             
             return h;
         }
