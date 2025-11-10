@@ -71,7 +71,7 @@
         #budget-viz-wrapper .y-labels {
             position: absolute;
             left: 0;
-            top: 9.5rem;
+            top: 13.5rem;
             width: 3.5rem;
             text-align: right;
             font-size: 0.9rem;
@@ -371,7 +371,7 @@
                 left: 0.5rem;
                 width: 2.5rem;
                 font-size: 0.7rem;
-                top: 7rem;
+                top: 11rem;
             }
 
             #budget-viz-wrapper .y-label {
@@ -703,46 +703,48 @@
 
         load();
 
-        // Mobile tap support for tooltips
-        document.addEventListener('click', function(e) {
-            const marker = e.target.closest('.marker');
-            const xLabel = e.target.closest('.x-label');
-            
-            if (marker) {
-                e.stopPropagation();
-                const tooltip = marker.querySelector('.event-tooltip');
-                if (tooltip) {
-                    // Toggle visibility
-                    const isVisible = tooltip.style.opacity === '1';
-                    // Hide all other tooltips first
+        // Mobile tap support for tooltips - only on touch devices
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            document.addEventListener('click', function(e) {
+                const marker = e.target.closest('.marker');
+                const xLabel = e.target.closest('.x-label');
+                
+                if (marker) {
+                    e.stopPropagation();
+                    const tooltip = marker.querySelector('.event-tooltip');
+                    if (tooltip) {
+                        // Toggle visibility
+                        const isVisible = tooltip.style.opacity === '1';
+                        // Hide all other tooltips first
+                        document.querySelectorAll('.event-tooltip').forEach(t => {
+                            t.style.opacity = '0';
+                            t.style.visibility = 'hidden';
+                        });
+                        if (!isVisible) {
+                            tooltip.style.opacity = '1';
+                            tooltip.style.visibility = 'visible';
+                        }
+                    }
+                } else if (xLabel && !xLabel.classList.contains('static')) {
+                    e.stopPropagation();
+                    const tooltip = xLabel.querySelector('.x-tooltip');
+                    if (tooltip) {
+                        const isVisible = tooltip.style.display === 'block';
+                        document.querySelectorAll('.x-tooltip').forEach(t => t.style.display = 'none');
+                        if (!isVisible) {
+                            tooltip.style.display = 'block';
+                        }
+                    }
+                } else {
+                    // Click outside - close all tooltips
                     document.querySelectorAll('.event-tooltip').forEach(t => {
                         t.style.opacity = '0';
                         t.style.visibility = 'hidden';
                     });
-                    if (!isVisible) {
-                        tooltip.style.opacity = '1';
-                        tooltip.style.visibility = 'visible';
-                    }
-                }
-            } else if (xLabel && !xLabel.classList.contains('static')) {
-                e.stopPropagation();
-                const tooltip = xLabel.querySelector('.x-tooltip');
-                if (tooltip) {
-                    const isVisible = tooltip.style.display === 'block';
                     document.querySelectorAll('.x-tooltip').forEach(t => t.style.display = 'none');
-                    if (!isVisible) {
-                        tooltip.style.display = 'block';
-                    }
                 }
-            } else {
-                // Click outside - close all tooltips
-                document.querySelectorAll('.event-tooltip').forEach(t => {
-                    t.style.opacity = '0';
-                    t.style.visibility = 'hidden';
-                });
-                document.querySelectorAll('.x-tooltip').forEach(t => t.style.display = 'none');
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
