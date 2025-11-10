@@ -387,20 +387,19 @@
                 -webkit-overflow-scrolling: touch;
             }
 
-            #budget-viz-wrapper .viz-wrapper::before {
+            #budget-viz-wrapper .container::before {
                 content: '← Scroll horizontally to view all fiscal years →';
                 display: block;
-                text-align: left;
+                text-align: center;
                 font-size: 0.8rem;
                 color: #58c1c6;
                 margin-bottom: 1rem;
                 font-style: italic;
-                margin-left: 0;
             }
         }
 
         @media (max-width: 768px) and (orientation: landscape) {
-            #budget-viz-wrapper .viz-wrapper::before {
+            #budget-viz-wrapper .container::before {
                 content: '';
                 display: none;
             }
