@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>A Decade of Budget Instability</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background-color: #37373d;
+        }
+        @font-face {
+            font-family: "Gotham-Book";
+            src: url("fonts/Gotham-Book.woff") format("woff"), url("fonts/Gotham-Book.ttf") format("truetype");
+        }
+        @font-face {
+            font-family: "Gotham-Bold";
+            src: url("fonts/Gotham-Bold.woff") format("woff"), url("fonts/Gotham-Bold.ttf") format("truetype");
+        }
+        @font-face {
+            font-family: "Gotham-Medium";
+            src: url("fonts/Gotham-Medium.woff") format("woff"), url("fonts/Gotham-Medium.ttf") format("truetype");
+        }
+
+        /* ISOLATED BUDGET VISUALIZATION - All styles prefixed with #budget-viz-wrapper */
+        
+        #budget-viz-wrapper * { 
+            box-sizing: border-box; 
+        }
+        
+        #budget-viz-wrapper {
+            background-color: #37373d;
+            color: #fff;
+            font-family: "Gotham-Book", sans-serif;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        #budget-viz-wrapper .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        #budget-viz-wrapper h1 {
+            font-family: "Gotham-Bold", sans-serif;
+            font-size: 2.4rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 0 0 0.5rem 0;
+            border-bottom: 0.5rem solid #fff;
+            display: inline-block;
+            padding-bottom: 0.3rem;
+        }
+
+        #budget-viz-wrapper .subtitle {
+            margin-bottom: 2rem;
+        }
+
+        /* View Toggle Buttons */
+        #budget-viz-wrapper .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        #budget-viz-wrapper .view-toggle button {
+            background-color: #4b4b51;
+            color: #fff;
+            border: 2px solid #6f6f74;
+            padding: 0.6rem 1.5rem;
+            font-family: "Gotham-Medium", sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #budget-viz-wrapper .view-toggle button:hover {
+            background-color: #5a5a60;
+        }
+
+        #budget-viz-wrapper .view-toggle button.active {
+            background-color: #58c1c6;
+            color: #000;
+            border-color: #58c1c6;
+        }
+
+        #budget-viz-wrapper .u-hidden { 
+            display: none !important; 
+        }
+
+        #budget-viz-wrapper #loading, 
+        #budget-viz-wrapper #error {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        #budget-viz-wrapper #error {
+            background-color: #d47371;
+            border-radius: 4px;
+            margin-top: 2rem;
+        }
+
+        /* === TIMELINE VIEW STYLES === */
+        
+        #budget-viz-wrapper .timeline-container {
+            padding-left: 4rem;
+        }
+
+        #budget-viz-wrapper .viz-wrapper {
+            position: relative;
+            margin-left: 0;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding-bottom: 2rem;
+            min-width: 100%;
+        }
+
+        #budget-viz-wrapper .y-labels {
+            position: absolute;
+            left: 0;
+            top: 13.5rem;
+            width: 3.5rem;
+            text-align: right;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #fff;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #budget-viz-wrapper .y-label {
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            color: #fff;
+            font-weight: normal;
+        }
+
+        #budget-viz-wrapper .x-labels {
+            display: flex;
+            margin-bottom: 0.5rem;
+            min-width: max-content;
+        }
+
+        #budget-viz-wrapper .x-label {
+            width: 5rem;
+            text-align: center;
+            font-size: 1rem;
+            text-transform: uppercase;
+            position: relative;
+            cursor: pointer;
+        }
+
+        #budget-viz-wrapper .x-label.static {
+            color: #8b8b8e;
+            cursor: default;
+        }
+
+        #budget-viz-wrapper .x-tooltip {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #000;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            white-space: normal;
+            width: 200px;
+            text-align: left;
+            font-size: 0.85rem;
+            text-transform: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 100;
+            margin-top: 0.5rem;
+        }
+
+        #budget-viz-wrapper .x-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-bottom-color: #fff;
+        }
+
+        #budget-viz-wrapper .x-label:hover .x-tooltip {
+            display: block;
+        }
+
+        #budget-viz-wrapper .grid {
+            display: grid;
+            grid-template-columns: repeat(var(--cols), 5rem);
+            grid-auto-rows: 4rem;
+            min-width: max-content;
+        }
+
+        #budget-viz-wrapper .cell {
+            border: 1px solid #4f4f55;
+            position: relative;
+        }
+
+        #budget-viz-wrapper .cell.avg-ideal {
+            background-color: #4b4b51;
+        }
+
+        #budget-viz-wrapper .cell.row-7 {
+            border-bottom: 2px dashed #fff !important;
+        }
+
+        #budget-viz-wrapper .data-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        #budget-viz-wrapper .event {
+            position: absolute;
+            width: 5rem;
+            pointer-events: auto;
+        }
+
+        #budget-viz-wrapper .marker {
+            width: 2.2rem;
+            height: 0.5rem;
+            margin: 0 auto;
+            position: relative;
+            cursor: pointer;
+        }
+
+        #budget-viz-wrapper .data-pbd .marker { background-color: #58c1c6; }
+        #budget-viz-wrapper .data-cr .marker { background-color: #d47371; }
+        #budget-viz-wrapper .data-app .marker { background-color: #ddb375; }
+        #budget-viz-wrapper .data-gs .marker { background-color: #7a2b2a; }
+
+        #budget-viz-wrapper .bar {
+            width: 0.6rem;
+            margin: 0 auto;
+        }
+
+        #budget-viz-wrapper .data-pbd .bar { background-color: #58c1c6; }
+        #budget-viz-wrapper .data-cr .bar { background-color: #d47371; }
+        #budget-viz-wrapper .data-app .bar { background-color: #ddb375; }
+        #budget-viz-wrapper .data-gs .bar { background-color: #7a2b2a; }
+
+        #budget-viz-wrapper .question-mark {
+            font-size: 1.8rem;
+            text-align: center;
+            color: #8b8b8e;
+            line-height: 1;
+            margin-top: -0.5rem;
+        }
+
+        #budget-viz-wrapper .event-tooltip {
+            position: absolute;
+            left: calc(100% + 0.5rem);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #fff;
+            color: #000;
+            padding: 0.6rem 0.8rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #budget-viz-wrapper .event:hover .event-tooltip,
+        #budget-viz-wrapper .event-tooltip:hover {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        #budget-viz-wrapper .event-tooltip::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-right-color: #fff;
+        }
+
+        #budget-viz-wrapper .event-tooltip a {
+            color: #58c1c6;
+            text-decoration: none;
+        }
+
+        #budget-viz-wrapper .legend {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        #budget-viz-wrapper .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #budget-viz-wrapper .legend-bar {
+            width: 2rem;
+            height: 0.4rem;
+        }
+
+        #budget-viz-wrapper .legend-bar.data-pbd { background-color: #58c1c6; }
+        #budget-viz-wrapper .legend-bar.data-cr { background-color: #d47371; }
+        #budget-viz-wrapper .legend-bar.data-app { background-color: #ddb375; }
+        #budget-viz-wrapper .legend-bar.data-gs { background-color: #7a2b2a; }
+        #budget-viz-wrapper .legend-bar.eofy { 
+            background: transparent; 
+            border-bottom: 2px dashed #fff;
+            height: 0;
+        }
+
+        /* === TABLE VIEW STYLES === */
+
+        #budget-viz-wrapper .filters {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #budget-viz-wrapper .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        #budget-viz-wrapper .filter-group label {
+            font-family: "Gotham-Medium", sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #budget-viz-wrapper select {
+            background-color: #4b4b51;
+            color: #fff;
+            border: 1px solid #6f6f74;
+            padding: 0.6rem 2rem 0.6rem 0.8rem;
+            font-family: "Gotham-Book", sans-serif;
+            font-size: 0.95rem;
+            border-radius: 4px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.6rem center;
+            min-width: 180px;
+        }
+
+        #budget-viz-wrapper select:hover {
+            background-color: #5a5a60;
+        }
+
+        #budget-viz-wrapper select:focus {
+            outline: 2px solid #58c1c6;
+            outline-offset: 2px;
+        }
+
+        #budget-viz-wrapper .clear-filters {
+            background-color: #58c1c6;
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-family: "Gotham-Medium", sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 4px;
+            cursor: pointer;
+            align-self: flex-end;
+            transition: background-color 0.2s;
+        }
+
+        #budget-viz-wrapper .clear-filters:hover {
+            background-color: #6dd1d6;
+        }
+
+        #budget-viz-wrapper .clear-filters:focus {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
+        #budget-viz-wrapper .result-count {
+            font-size: 0.9rem;
+            color: #b0b0b5;
+            margin-bottom: 1rem;
+        }
+
+        #budget-viz-wrapper .table-wrapper {
+            overflow-x: auto;
+            background-color: #2d2d32;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        #budget-viz-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        #budget-viz-wrapper thead {
+            background-color: #1f1f24;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        #budget-viz-wrapper th {
+            padding: 1rem;
+            text-align: left;
+            font-family: "Gotham-Medium", sans-serif;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #4f4f55;
+            white-space: nowrap;
+        }
+
+        #budget-viz-wrapper th.sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 1.5rem;
+        }
+
+        #budget-viz-wrapper th.sortable:hover {
+            background-color: #2a2a30;
+        }
+
+        #budget-viz-wrapper th.sortable::after {
+            content: '⇅';
+            position: absolute;
+            right: 0.5rem;
+            opacity: 0.3;
+        }
+
+        #budget-viz-wrapper th.sortable.sorted-asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        #budget-viz-wrapper th.sortable.sorted-desc::after {
+            content: '↓';
+            opacity: 1;
+        }
+
+        #budget-viz-wrapper tbody tr {
+            border-bottom: 1px solid #3f3f45;
+        }
+
+        #budget-viz-wrapper tbody tr:hover {
+            background-color: #37373d;
+        }
+
+        #budget-viz-wrapper td {
+            padding: 1rem;
+            vertical-align: top;
+        }
+
+        #budget-viz-wrapper td.date {
+            white-space: nowrap;
+            font-family: "Gotham-Medium", sans-serif;
+        }
+
+        #budget-viz-wrapper td.fy {
+            white-space: nowrap;
+            text-align: center;
+            position: relative;
+        }
+
+        #budget-viz-wrapper .fy-with-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            position: relative;
+        }
+
+        #budget-viz-wrapper .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+            background-color: #58c1c6;
+            color: #000;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-family: "Gotham-Bold", sans-serif;
+            cursor: help;
+            position: relative;
+        }
+
+        #budget-viz-wrapper .fy-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #000;
+            padding: 0.6rem 0.8rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            min-width: 200px;
+            max-width: 300px;
+            font-size: 0.85rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 100;
+            margin-bottom: 0.5rem;
+            white-space: normal;
+            text-align: left;
+            pointer-events: none;
+        }
+
+        #budget-viz-wrapper .fy-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #fff;
+        }
+
+        #budget-viz-wrapper .info-icon:hover .fy-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #budget-viz-wrapper td.event-type {
+            position: relative;
+            padding-left: 1.8rem;
+        }
+
+        #budget-viz-wrapper td.event-type::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 2px;
+        }
+
+        #budget-viz-wrapper td.event-type.data-pbd::before {
+            background-color: #58c1c6;
+        }
+
+        #budget-viz-wrapper td.event-type.data-cr::before {
+            background-color: #d47371;
+        }
+
+        #budget-viz-wrapper td.event-type.data-app::before {
+            background-color: #ddb375;
+        }
+
+        #budget-viz-wrapper td.event-type.data-gs::before {
+            background-color: #7a2b2a;
+        }
+
+        #budget-viz-wrapper td.bill {
+            font-style: italic;
+            color: #b0b0b5;
+        }
+
+        #budget-viz-wrapper td.source a {
+            color: #58c1c6;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        #budget-viz-wrapper td.source a:hover {
+            border-bottom-color: #58c1c6;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            #budget-viz-wrapper {
+                padding: 1rem 0.5rem;
+            }
+
+            #budget-viz-wrapper .timeline-container {
+                padding-left: 3rem;
+                min-width: 900px;
+            }
+
+            #budget-viz-wrapper h1 {
+                font-size: 1.5rem;
+            }
+
+            #budget-viz-wrapper .legend {
+                gap: 0.8rem;
+                font-size: 0.75rem;
+                margin-top: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            #budget-viz-wrapper .legend-bar {
+                width: 1.5rem;
+                height: 0.3rem;
+            }
+
+            #budget-viz-wrapper .y-labels {
+                left: 0.5rem;
+                width: 2.5rem;
+                font-size: 0.7rem;
+                top: 13rem;
+            }
+
+            #budget-viz-wrapper .y-label {
+                padding-right: 0.2rem;
+            }
+
+            #budget-viz-wrapper .x-labels {
+                font-size: 0.9rem;
+            }
+
+            #budget-viz-wrapper .viz-wrapper {
+                overflow-x: scroll;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #budget-viz-wrapper .timeline-container::before {
+                content: '← Scroll horizontally to view all fiscal years →';
+                display: block;
+                text-align: center;
+                font-size: 0.8rem;
+                color: #58c1c6;
+                margin-bottom: 1rem;
+                font-style: italic;
+            }
+
+            #budget-viz-wrapper .filters {
+                gap: 1rem;
+            }
+
+            #budget-viz-wrapper .filter-group {
+                width: 100%;
+            }
+
+            #budget-viz-wrapper select {
+                width: 100%;
+                min-width: 0;
+            }
+
+            #budget-viz-wrapper .clear-filters {
+                width: 100%;
+            }
+
+            #budget-viz-wrapper table {
+                font-size: 0.85rem;
+            }
+
+            #budget-viz-wrapper th,
+            #budget-viz-wrapper td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            #budget-viz-wrapper .fy-tooltip {
+                max-width: 250px;
+                font-size: 0.8rem;
+            }
+
+            #budget-viz-wrapper .view-toggle {
+                flex-direction: column;
+            }
+
+            #budget-viz-wrapper .view-toggle button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            #budget-viz-wrapper .timeline-container::before {
+                content: '';
+                display: none;
+            }
+            
+            #budget-viz-wrapper .legend {
+                flex-wrap: nowrap;
+                gap: 1rem;
+                font-size: 0.7rem;
+                overflow-x: auto;
+            }
+            
+            #budget-viz-wrapper .legend-item {
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="budget-viz-wrapper">
+        <div class="container">
+            <div class="subtitle">
+                <h1>A DECADE OF BUDGET INSTABILITY</h1>
+            </div>
+
+            <div class="view-toggle">
+                <button id="timeline-btn" class="active">Timeline View</button>
+                <button id="table-btn">Table View</button>
+            </div>
+
+            <div id="loading">Loading data...</div>
+            <div id="error" class="u-hidden"></div>
+
+            <!-- TIMELINE VIEW -->
+            <div id="timeline-view" class="u-hidden">
+                <div id="legend-placeholder"></div>
+                <div class="timeline-container">
+                    <div id="viz"></div>
+                </div>
+            </div>
+
+            <!-- TABLE VIEW -->
+            <div id="table-view" class="u-hidden">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filter-fy">Fiscal Year</label>
+                        <select id="filter-fy">
+                            <option value="">All Fiscal Years</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-event">Event Type</label>
+                        <select id="filter-event">
+                            <option value="">All Event Types</option>
+                        </select>
+                    </div>
+
+                    <button class="clear-filters" id="clear-filters">Clear Filters</button>
+                </div>
+
+                <div class="result-count" id="result-count"></div>
+
+                <div id="table-container">
+                    <div class="table-wrapper">
+                        <table id="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="date">Date</th>
+                                    <th>Fiscal Year</th>
+                                    <th class="sortable" data-sort="event">Event Type</th>
+                                    <th>Bill Name</th>
+                                    <th>Source</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CSV_FILE = 'data.csv';
+        const EVENTS = {
+            "President's Budget Delivered to Congress": { color: '#58c1c6', class: 'data-pbd' },
+            'Continuing Resolution': { color: '#d47371', class: 'data-cr' },
+            'Full-Year Continuing Resolution': { color: '#d47371', class: 'data-cr' },
+            'Appropriation': { color: '#ddb375', class: 'data-app' },
+            'Government Shutdown': { color: '#7a2b2a', class: 'data-gs' }
+        };
+
+        let allEvents = [];
+        let filteredEvents = [];
+        let fyNotes = {};
+        let currentView = 'timeline';
+        let currentSort = { column: 'date', direction: 'asc' };
+
+        // UTILITY FUNCTIONS
+        function parseCSV(txt) {
+            const lines = txt.split('\n');
+            const rows = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const cells = [];
+                let cell = '', quoted = false;
+                for (let c of lines[i]) {
+                    if (c === '"') quoted = !quoted;
+                    else if (c === ',' && !quoted) { cells.push(cell.trim()); cell = ''; }
+                    else cell += c;
+                }
+                cells.push(cell.trim());
+                if (cells.length >= 5) rows.push(cells);
+            }
+            return rows;
+        }
+
+        function parseDate(s) {
+            const [m, d, y] = s.split('/');
+            return new Date(y, m - 1, d);
+        }
+
+        function formatDate(date) {
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function getDaysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function getPos(date, fy) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const day = date.getDate();
+            
+            const fyStartYear = fy - 1;
+            const row = (year === fyStartYear) ? month - 1 : 11 + month;
+            
+            const daysInMonth = getDaysInMonth(year, month);
+            const proportion = (day - 1) / (daysInMonth - 1);
+            
+            return (row * 4) + (proportion * 4);
+        }
+
+        function getDayOfPeriod(date, fy) {
+            const start = new Date(fy - 1, 1, 1);
+            return Math.floor((date - start) / (1000 * 60 * 60 * 24));
+        }
+
+        // DATA LOADING
+        async function load() {
+            try {
+                const res = await fetch(CSV_FILE);
+                if (!res.ok) throw new Error('Cannot load CSV');
+                
+                const txt = await res.text();
+                const rows = parseCSV(txt);
+                
+                rows.forEach(r => {
+                    const fy = parseInt(r[1]);
+                    const dt = parseDate(r[2]);
+                    if (dt && fy) {
+                        allEvents.push({
+                            fy: fy,
+                            date: dt,
+                            dateStr: r[2],
+                            type: r[3],
+                            url: r[4] || '',
+                            bill: r[5] || ''
+                        });
+                    }
+                    if (r[6] && !fyNotes[fy]) {
+                        fyNotes[fy] = r[6].replace(/^"+|"+$/g, '');
+                    }
+                });
+
+                allEvents.sort((a, b) => a.date - b.date);
+                filteredEvents = [...allEvents];
+
+                populateFilters();
+                renderTimeline();
+                renderTable();
+                
+                document.getElementById('loading').classList.add('u-hidden');
+                showView('timeline');
+                
+            } catch (e) {
+                document.getElementById('error').textContent = 'Error: ' + e.message;
+                document.getElementById('error').classList.remove('u-hidden');
+                document.getElementById('loading').classList.add('u-hidden');
+            }
+        }
+
+        // VIEW TOGGLE
+        function showView(view) {
+            currentView = view;
+            
+            if (view === 'timeline') {
+                document.getElementById('timeline-view').classList.remove('u-hidden');
+                document.getElementById('table-view').classList.add('u-hidden');
+                document.getElementById('timeline-btn').classList.add('active');
+                document.getElementById('table-btn').classList.remove('active');
+            } else {
+                document.getElementById('timeline-view').classList.add('u-hidden');
+                document.getElementById('table-view').classList.remove('u-hidden');
+                document.getElementById('timeline-btn').classList.remove('active');
+                document.getElementById('table-btn').classList.add('active');
+            }
+        }
+
+        // TIMELINE RENDERING
+        function renderTimeline() {
+            const byYear = {};
+            allEvents.forEach(e => {
+                if (!byYear[e.fy]) byYear[e.fy] = [];
+                byYear[e.fy].push(e);
+            });
+
+            const years = Object.keys(byYear).map(Number).sort((a,b)=>a-b);
+            const cols = years.length + 2;
+
+            let legendHtml = '<div class="legend">';
+            legendHtml += '<div class="legend-item"><div class="legend-bar data-pbd"></div><span>President\'s Budget Delivered</span></div>';
+            legendHtml += '<div class="legend-item"><div class="legend-bar data-cr"></div><span>Continuing Resolution</span></div>';
+            legendHtml += '<div class="legend-item"><div class="legend-bar data-app"></div><span>Appropriation</span></div>';
+            legendHtml += '<div class="legend-item"><div class="legend-bar data-gs"></div><span>Government Shutdown</span></div>';
+            legendHtml += '<div class="legend-item"><div class="legend-bar eofy"></div><span>End of Fiscal Year</span></div>';
+            legendHtml += '</div>';
+            
+            document.getElementById('legend-placeholder').innerHTML = legendHtml;
+
+            let h = '<div class="viz-wrapper" style="--cols:' + cols + ';">';
+            
+            h += '<div class="x-labels">';
+            years.forEach(y => {
+                const note = fyNotes[y] || '';
+                h += `<div class="x-label">`;
+                if (note) h += `<div class="x-tooltip">${note}</div>`;
+                h += `FY ${String(y).slice(-2)}</div>`;
+            });
+            h += '<div class="x-label static">Avg</div>';
+            h += '<div class="x-label static">Ideal</div>';
+            h += '</div>';
+            
+            h += '<div class="grid">';
+            for (let r = 0; r < 18; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cls = (c >= years.length ? 'avg-ideal ' : '') + (r === 7 ? 'row-7' : '');
+                    h += `<div class="cell ${cls}"></div>`;
+                }
+            }
+            h += '</div>';
+            
+            h += '<div class="data-layer">';
+            h += renderEvents(byYear, years);
+            h += renderAvgIdeal(byYear, years.length);
+            h += '</div>';
+            
+            h += '</div>';
+            
+            h += '<div class="y-labels">';
+            ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'].forEach(m => {
+                h += `<div class="y-label">${m}</div>`;
+            });
+            h += '</div>';
+            
+            document.getElementById('viz').innerHTML = h;
+        }
+
+        function renderEvents(byYear, years) {
+            let h = '';
+            years.forEach((fy, col) => {
+                const ev = byYear[fy];
+                ev.sort((a,b) => a.date - b.date);
+                
+                const hasApp = ev.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
+                
+                for (let i = 0; i < ev.length; i++) {
+                    const e = ev[i];
+                    const cfg = EVENTS[e.type];
+                    if (!cfg) continue;
+                    
+                    const y = getPos(e.date, fy);
+                    const x = col * 5;
+                    
+                    let barH = 0;
+                    if (e.type !== 'Appropriation' && e.type !== 'Full-Year Continuing Resolution' && i < ev.length - 1) {
+                        const nextY = getPos(ev[i+1].date, fy);
+                        barH = nextY - y;
+                    }
+                    
+                    h += `<div class="event ${cfg.class}" style="top:${y}rem; left:${x}rem;">`;
+                    h += `<div class="marker"></div>`;
+                    if (barH > 0) h += `<div class="bar" style="height:${barH}rem;"></div>`;
+                    
+                    h += `<div class="event-tooltip">`;
+                    h += `<strong>${formatDate(e.date)}</strong><br>${e.type}`;
+                    if (e.bill) h += `<br><em>${e.bill}</em>`;
+                    if (e.url) h += `<br><a href="${e.url}" target="_blank">Source</a>`;
+                    h += `</div>`;
+                    
+                    h += `</div>`;
+                }
+                
+                if (!hasApp) {
+                    const now = new Date();
+                    const y = getPos(now, fy);
+                    const x = col * 5;
+                    h += `<div class="event" style="top:${y}rem; left:${x}rem;"><div class="question-mark">?</div></div>`;
+                }
+            });
+            return h;
+        }
+
+        function renderAvgIdeal(byYear, yearCount) {
+            const refFY = 2024;
+            const refStart = new Date(refFY - 1, 1, 1);
+            
+            const avgByType = { 'pbd': [], 'cr': [], 'app': [] };
+            Object.values(byYear).forEach(events => {
+                events.forEach(e => {
+                    const day = getDayOfPeriod(e.date, e.fy);
+                    if (e.type === "President's Budget Delivered to Congress") avgByType.pbd.push(day);
+                    else if (e.type === 'Continuing Resolution') avgByType.cr.push(day);
+                    else if (e.type === 'Appropriation') avgByType.app.push(day);
+                });
+            });
+            
+            let h = '';
+            
+            // Average column
+            const avgX = yearCount * 5;
+            ['pbd', 'cr', 'app'].forEach(type => {
+                if (avgByType[type].length === 0) return;
+                const avgDay = avgByType[type].reduce((a,b)=>a+b,0) / avgByType[type].length;
+                const avgDate = new Date(refStart.getTime() + avgDay * 24 * 60 * 60 * 1000);
+                const y = getPos(avgDate, refFY);
+                const cls = type === 'pbd' ? 'data-pbd' : type === 'cr' ? 'data-cr' : 'data-app';
+                h += `<div class="event ${cls}" style="top:${y}rem; left:${avgX}rem;"><div class="marker"></div></div>`;
+            });
+            
+            // Ideal column
+            const idealX = (yearCount + 1) * 5;
+            const idealBudget = new Date(refFY - 1, 1, 1);
+            const idealApp = new Date(refFY - 1, 8, 30);
+            h += `<div class="event data-pbd" style="top:${getPos(idealBudget, refFY)}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
+            h += `<div class="event data-app" style="top:${getPos(idealApp, refFY)}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
+            
+            return h;
+        }
+
+        // TABLE RENDERING
+        function populateFilters() {
+            const fiscalYears = [...new Set(allEvents.map(e => e.fy))].sort((a, b) => a - b);
+            const fySelect = document.getElementById('filter-fy');
+            fiscalYears.forEach(fy => {
+                const option = document.createElement('option');
+                option.value = fy;
+                option.textContent = `FY ${fy}`;
+                fySelect.appendChild(option);
+            });
+
+            const eventTypes = [...new Set(allEvents.map(e => e.type))].sort();
+            const eventSelect = document.getElementById('filter-event');
+            eventTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                eventSelect.appendChild(option);
+            });
+        }
+
+        function applyFilters() {
+            const fyFilter = document.getElementById('filter-fy').value;
+            const eventFilter = document.getElementById('filter-event').value;
+
+            filteredEvents = allEvents.filter(e => {
+                if (fyFilter && e.fy !== parseInt(fyFilter)) return false;
+                if (eventFilter && e.type !== eventFilter) return false;
+                return true;
+            });
+
+            sortEvents();
+            renderTable();
+        }
+
+        function sortEvents() {
+            filteredEvents.sort((a, b) => {
+                let valA, valB;
+                
+                if (currentSort.column === 'date') {
+                    valA = a.date;
+                    valB = b.date;
+                } else if (currentSort.column === 'event') {
+                    valA = a.type;
+                    valB = b.type;
+                }
+
+                if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            filteredEvents.forEach(e => {
+                const cfg = EVENTS[e.type];
+                if (!cfg) return;
+
+                const tr = document.createElement('tr');
+                
+                // Date
+                const tdDate = document.createElement('td');
+                tdDate.className = 'date';
+                tdDate.textContent = e.dateStr;
+                tr.appendChild(tdDate);
+
+                // Fiscal Year
+                const tdFY = document.createElement('td');
+                tdFY.className = 'fy';
+                
+                if (fyNotes[e.fy]) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'fy-with-note';
+                    
+                    const fyText = document.createElement('span');
+                    fyText.textContent = `FY ${e.fy}`;
+                    wrapper.appendChild(fyText);
+                    
+                    const infoIcon = document.createElement('span');
+                    infoIcon.className = 'info-icon';
+                    infoIcon.textContent = 'i';
+                    
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'fy-tooltip';
+                    tooltip.textContent = fyNotes[e.fy];
+                    infoIcon.appendChild(tooltip);
+                    
+                    wrapper.appendChild(infoIcon);
+                    tdFY.appendChild(wrapper);
+                } else {
+                    tdFY.textContent = `FY ${e.fy}`;
+                }
+                
+                tr.appendChild(tdFY);
+
+                // Event Type
+                const tdEvent = document.createElement('td');
+                tdEvent.className = `event-type ${cfg.class}`;
+                tdEvent.textContent = e.type;
+                tr.appendChild(tdEvent);
+
+                // Bill Name
+                const tdBill = document.createElement('td');
+                tdBill.className = 'bill';
+                tdBill.textContent = e.bill || '—';
+                tr.appendChild(tdBill);
+
+                // Source
+                const tdSource = document.createElement('td');
+                tdSource.className = 'source';
+                if (e.url) {
+                    const a = document.createElement('a');
+                    a.href = e.url;
+                    a.target = '_blank';
+                    a.textContent = 'View Source →';
+                    tdSource.appendChild(a);
+                } else {
+                    tdSource.textContent = '—';
+                }
+                tr.appendChild(tdSource);
+
+                tbody.appendChild(tr);
+            });
+
+            // Update result count
+            const total = allEvents.length;
+            const shown = filteredEvents.length;
+            const countEl = document.getElementById('result-count');
+            if (shown === total) {
+                countEl.textContent = `Showing all ${total} events`;
+            } else {
+                countEl.textContent = `Showing ${shown} of ${total} events`;
+            }
+
+            // Update sort indicators
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+                if (th.dataset.sort === currentSort.column) {
+                    th.classList.add(`sorted-${currentSort.direction}`);
+                }
+            });
+        }
+
+        // EVENT LISTENERS
+        document.getElementById('timeline-btn').addEventListener('click', () => showView('timeline'));
+        document.getElementById('table-btn').addEventListener('click', () => showView('table'));
+
+        document.getElementById('filter-fy').addEventListener('change', applyFilters);
+        document.getElementById('filter-event').addEventListener('change', applyFilters);
+
+        document.getElementById('clear-filters').addEventListener('click', () => {
+            document.getElementById('filter-fy').value = '';
+            document.getElementById('filter-event').value = '';
+            applyFilters();
+        });
+
+        document.querySelectorAll('th.sortable').forEach(th => {
+            th.addEventListener('click', () => {
+                const sortColumn = th.dataset.sort;
+                
+                if (currentSort.column === sortColumn) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.column = sortColumn;
+                    currentSort.direction = 'asc';
+                }
+
+                sortEvents();
+                renderTable();
+            });
+        });
+
+        // Touch support for tooltips on mobile
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            document.addEventListener('click', function(e) {
+                const infoIcon = e.target.closest('.info-icon');
+                
+                if (infoIcon) {
+                    e.stopPropagation();
+                    const tooltip = infoIcon.querySelector('.fy-tooltip');
+                    if (tooltip) {
+                        const isVisible = tooltip.style.opacity === '1';
+                        document.querySelectorAll('.fy-tooltip').forEach(t => {
+                            t.style.opacity = '0';
+                            t.style.visibility = 'hidden';
+                        });
+                        if (!isVisible) {
+                            tooltip.style.opacity = '1';
+                            tooltip.style.visibility = 'visible';
+                        }
+                    }
+                } else {
+                    document.querySelectorAll('.fy-tooltip').forEach(t => {
+                        t.style.opacity = '0';
+                        t.style.visibility = 'hidden';
+                    });
+                }
+            });
+        }
+
+        load();
+    </script>
+</body>
+</html>
