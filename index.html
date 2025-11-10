@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>A Decade of Budget Instability</title>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background-color: #37373d;
+        }
         @font-face {
             font-family: "Gotham-Book";
             src: url("fonts/Gotham-Book.woff") format("woff"), url("fonts/Gotham-Book.ttf") format("truetype");
@@ -690,6 +696,47 @@
         }
 
         load();
+
+        // Mobile tap support for tooltips
+        document.addEventListener('click', function(e) {
+            const marker = e.target.closest('.marker');
+            const xLabel = e.target.closest('.x-label');
+            
+            if (marker) {
+                e.stopPropagation();
+                const tooltip = marker.querySelector('.event-tooltip');
+                if (tooltip) {
+                    // Toggle visibility
+                    const isVisible = tooltip.style.opacity === '1';
+                    // Hide all other tooltips first
+                    document.querySelectorAll('.event-tooltip').forEach(t => {
+                        t.style.opacity = '0';
+                        t.style.visibility = 'hidden';
+                    });
+                    if (!isVisible) {
+                        tooltip.style.opacity = '1';
+                        tooltip.style.visibility = 'visible';
+                    }
+                }
+            } else if (xLabel && !xLabel.classList.contains('static')) {
+                e.stopPropagation();
+                const tooltip = xLabel.querySelector('.x-tooltip');
+                if (tooltip) {
+                    const isVisible = tooltip.style.display === 'block';
+                    document.querySelectorAll('.x-tooltip').forEach(t => t.style.display = 'none');
+                    if (!isVisible) {
+                        tooltip.style.display = 'block';
+                    }
+                }
+            } else {
+                // Click outside - close all tooltips
+                document.querySelectorAll('.event-tooltip').forEach(t => {
+                    t.style.opacity = '0';
+                    t.style.visibility = 'hidden';
+                });
+                document.querySelectorAll('.x-tooltip').forEach(t => t.style.display = 'none');
+            }
+        });
     </script>
 </body>
 </html>
