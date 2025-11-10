@@ -301,7 +301,8 @@
         #budget-viz-wrapper .data-app { background-color: #ddb375; }
 
         #budget-viz-wrapper .legend {
-            margin-top: 3rem;
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
             display: flex;
             flex-wrap: wrap;
             gap: 1.5rem;
@@ -354,6 +355,18 @@
                 font-size: 1.5rem;
             }
 
+            #budget-viz-wrapper .legend {
+                gap: 0.8rem;
+                font-size: 0.75rem;
+                margin-top: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            #budget-viz-wrapper .legend-bar {
+                width: 1.5rem;
+                height: 0.3rem;
+            }
+
             #budget-viz-wrapper .y-labels {
                 left: 0.5rem;
                 width: 2.5rem;
@@ -374,31 +387,20 @@
                 -webkit-overflow-scrolling: touch;
             }
 
-            #budget-viz-wrapper .legend {
-                flex-direction: column;
-                gap: 0.8rem;
-                font-size: 0.75rem;
-                margin-top: 2rem;
-            }
-
-            #budget-viz-wrapper .legend-bar {
-                width: 1.5rem;
-                height: 0.3rem;
-            }
-
-            #budget-viz-wrapper .container::before {
+            #budget-viz-wrapper .viz-wrapper::before {
                 content: '← Scroll horizontally to view all fiscal years →';
                 display: block;
-                text-align: center;
+                text-align: left;
                 font-size: 0.8rem;
                 color: #58c1c6;
                 margin-bottom: 1rem;
                 font-style: italic;
+                margin-left: 0;
             }
         }
 
         @media (max-width: 768px) and (orientation: landscape) {
-            #budget-viz-wrapper .container::before {
+            #budget-viz-wrapper .viz-wrapper::before {
                 content: '';
                 display: none;
             }
@@ -423,6 +425,8 @@
             <div class="subtitle">
                 <h1>A DECADE OF BUDGET INSTABILITY</h1>
             </div>
+
+            <div id="legend-placeholder"></div>
 
             <div id="loading">Loading data...</div>
             <div id="error" class="u-hidden"></div>
@@ -529,6 +533,17 @@
             const years = Object.keys(byYear).map(Number).sort((a,b)=>a-b);
             const cols = years.length + 2;
 
+            // Render legend first
+            let legendHtml = '<div class="legend">';
+            legendHtml += '<div class="legend-item"><div class="legend-bar data-pbd"></div><span>President\'s Budget Delivered</span></div>';
+            legendHtml += '<div class="legend-item"><div class="legend-bar data-cr"></div><span>Continuing Resolution</span></div>';
+            legendHtml += '<div class="legend-item"><div class="legend-bar data-app"></div><span>Appropriation</span></div>';
+            legendHtml += '<div class="legend-item"><div class="legend-bar data-gs"></div><span>Government Shutdown</span></div>';
+            legendHtml += '<div class="legend-item"><div class="legend-bar eofy"></div><span>End of Fiscal Year</span></div>';
+            legendHtml += '</div>';
+            
+            document.getElementById('legend-placeholder').innerHTML = legendHtml;
+
             let h = '<div class="viz-wrapper" style="--cols:' + cols + ';">';
             
             h += '<div class="x-labels">';
@@ -562,14 +577,6 @@
             ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'].forEach(m => {
                 h += `<div class="y-label">${m}</div>`;
             });
-            h += '</div>';
-            
-            h += '<div class="legend">';
-            h += '<div class="legend-item"><div class="legend-bar data-pbd"></div><span>President\'s Budget Delivered</span></div>';
-            h += '<div class="legend-item"><div class="legend-bar data-cr"></div><span>Continuing Resolution</span></div>';
-            h += '<div class="legend-item"><div class="legend-bar data-app"></div><span>Appropriation</span></div>';
-            h += '<div class="legend-item"><div class="legend-bar data-gs"></div><span>Government Shutdown</span></div>';
-            h += '<div class="legend-item"><div class="legend-bar eofy"></div><span>End of Fiscal Year</span></div>';
             h += '</div>';
             
             document.getElementById('viz').innerHTML = h;
