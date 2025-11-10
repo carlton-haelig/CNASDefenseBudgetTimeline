@@ -403,6 +403,18 @@
                 content: '';
                 display: none;
             }
+            
+            #budget-viz-wrapper .legend {
+                flex-wrap: nowrap;
+                gap: 1rem;
+                font-size: 0.7rem;
+                overflow-x: auto;
+            }
+            
+            #budget-viz-wrapper .legend-item {
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
         }
 
         @media (hover: none) and (pointer: coarse) {
