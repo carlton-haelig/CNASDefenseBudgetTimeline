@@ -51,6 +51,7 @@
             position: relative;
             margin-left: 4rem;
             overflow-x: auto;
+            padding-bottom: 2rem;
         }
 
         .y-labels {
@@ -62,6 +63,8 @@
             font-size: 0.85rem;
             text-transform: uppercase;
             color: #fff;
+            pointer-events: none;
+            z-index: 10;
         }
 
         .y-label {
@@ -70,6 +73,7 @@
             align-items: center;
             justify-content: flex-end;
             padding-right: 0.3rem;
+            color: #fff;
         }
 
         .x-labels {
@@ -142,6 +146,18 @@
 
         .x-label:first-child .x-tooltip::before {
             left: 2.5rem;
+        }
+
+        /* Prevent last few FY tooltips from being cut off on right */
+        .x-label:nth-last-child(-n+4) .x-tooltip {
+            left: auto;
+            right: 0;
+            transform: none;
+        }
+
+        .x-label:nth-last-child(-n+4) .x-tooltip::before {
+            left: auto;
+            right: 2.5rem;
         }
 
         .grid {
