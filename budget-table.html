@@ -215,6 +215,67 @@
         #budget-viz-wrapper td.fy {
             white-space: nowrap;
             text-align: center;
+            position: relative;
+        }
+
+        #budget-viz-wrapper .fy-with-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            position: relative;
+        }
+
+        #budget-viz-wrapper .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+            background-color: #58c1c6;
+            color: #000;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-family: "Gotham-Bold", sans-serif;
+            cursor: help;
+            position: relative;
+        }
+
+        #budget-viz-wrapper .fy-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #000;
+            padding: 0.6rem 0.8rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            min-width: 200px;
+            max-width: 300px;
+            font-size: 0.85rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 100;
+            margin-bottom: 0.5rem;
+            white-space: normal;
+            text-align: left;
+            pointer-events: none;
+        }
+
+        #budget-viz-wrapper .fy-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #fff;
+        }
+
+        #budget-viz-wrapper .info-icon:hover .fy-tooltip {
+            opacity: 1;
+            visibility: visible;
         }
 
         #budget-viz-wrapper td.event-type {
@@ -263,12 +324,6 @@
 
         #budget-viz-wrapper td.source a:hover {
             border-bottom-color: #58c1c6;
-        }
-
-        #budget-viz-wrapper td.notes {
-            max-width: 300px;
-            color: #d0d0d5;
-            line-height: 1.5;
         }
 
         #budget-viz-wrapper .u-hidden { 
@@ -323,8 +378,9 @@
                 padding: 0.75rem 0.5rem;
             }
 
-            #budget-viz-wrapper td.notes {
-                max-width: 200px;
+            #budget-viz-wrapper .fy-tooltip {
+                max-width: 250px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -369,7 +425,6 @@
                                 <th class="sortable" data-sort="event">Event Type</th>
                                 <th>Bill Name</th>
                                 <th>Source</th>
-                                <th>Notes</th>
                             </tr>
                         </thead>
                         <tbody id="table-body">
@@ -393,6 +448,7 @@
         let allEvents = [];
         let filteredEvents = [];
         let currentSort = { column: 'date', direction: 'asc' };
+        let fyNotes = {};
 
         function parseCSV(txt) {
             const lines = txt.split('\n');
@@ -432,8 +488,6 @@
                 const txt = await res.text();
                 const rows = parseCSV(txt);
                 
-                const fyNotes = {};
-                
                 rows.forEach(r => {
                     const fy = parseInt(r[1]);
                     const dt = parseDate(r[2]);
@@ -444,19 +498,11 @@
                             dateStr: r[2],
                             type: r[3],
                             url: r[4] || '',
-                            bill: r[5] || '',
-                            note: ''
+                            bill: r[5] || ''
                         });
                     }
                     if (r[6] && !fyNotes[fy]) {
                         fyNotes[fy] = r[6].replace(/^"+|"+$/g, '');
-                    }
-                });
-
-                // Assign FY notes to events
-                allEvents.forEach(e => {
-                    if (fyNotes[e.fy]) {
-                        e.note = fyNotes[e.fy];
                     }
                 });
 
@@ -481,7 +527,7 @@
             fiscalYears.forEach(fy => {
                 const option = document.createElement('option');
                 option.value = fy;
-                option.textContent = `FY ${String(fy).slice(-2)}`;
+                option.textContent = `FY ${fy}`;
                 fySelect.appendChild(option);
             });
 
@@ -547,7 +593,31 @@
                 // Fiscal Year
                 const tdFY = document.createElement('td');
                 tdFY.className = 'fy';
-                tdFY.textContent = `FY ${String(e.fy).slice(-2)}`;
+                
+                if (fyNotes[e.fy]) {
+                    // FY has a note - add info icon with tooltip
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'fy-with-note';
+                    
+                    const fyText = document.createElement('span');
+                    fyText.textContent = `FY ${e.fy}`;
+                    wrapper.appendChild(fyText);
+                    
+                    const infoIcon = document.createElement('span');
+                    infoIcon.className = 'info-icon';
+                    infoIcon.textContent = 'i';
+                    
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'fy-tooltip';
+                    tooltip.textContent = fyNotes[e.fy];
+                    infoIcon.appendChild(tooltip);
+                    
+                    wrapper.appendChild(infoIcon);
+                    tdFY.appendChild(wrapper);
+                } else {
+                    tdFY.textContent = `FY ${e.fy}`;
+                }
+                
                 tr.appendChild(tdFY);
 
                 // Event Type
@@ -575,12 +645,6 @@
                     tdSource.textContent = '—';
                 }
                 tr.appendChild(tdSource);
-
-                // Notes
-                const tdNotes = document.createElement('td');
-                tdNotes.className = 'notes';
-                tdNotes.textContent = e.note || '—';
-                tr.appendChild(tdNotes);
 
                 tbody.appendChild(tr);
             });
@@ -636,6 +700,37 @@
         });
 
         load();
+
+        // Touch support for info icon tooltips on mobile
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            document.addEventListener('click', function(e) {
+                const infoIcon = e.target.closest('.info-icon');
+                
+                if (infoIcon) {
+                    e.stopPropagation();
+                    const tooltip = infoIcon.querySelector('.fy-tooltip');
+                    if (tooltip) {
+                        // Toggle visibility
+                        const isVisible = tooltip.style.opacity === '1';
+                        // Hide all other tooltips first
+                        document.querySelectorAll('.fy-tooltip').forEach(t => {
+                            t.style.opacity = '0';
+                            t.style.visibility = 'hidden';
+                        });
+                        if (!isVisible) {
+                            tooltip.style.opacity = '1';
+                            tooltip.style.visibility = 'visible';
+                        }
+                    }
+                } else {
+                    // Click outside - close all tooltips
+                    document.querySelectorAll('.fy-tooltip').forEach(t => {
+                        t.style.opacity = '0';
+                        t.style.visibility = 'hidden';
+                    });
+                }
+            });
+        }
     </script>
 </body>
 </html>
