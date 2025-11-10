@@ -7,33 +7,203 @@
     <style>
         @font-face {
             font-family: "Gotham-Book";
-            src: url("fonts/Gotham-Book.woff") format("woff"),
-                 url("fonts/Gotham-Book.ttf") format("truetype");
+            src: url("fonts/Gotham-Book.woff") format("woff"), url("fonts/Gotham-Book.ttf") format("truetype");
         }
         @font-face {
             font-family: "Gotham-Bold";
-            src: url("fonts/Gotham-Bold.woff") format("woff"),
-                 url("fonts/Gotham-Bold.ttf") format("truetype");
+            src: url("fonts/Gotham-Bold.woff") format("woff"), url("fonts/Gotham-Bold.ttf") format("truetype");
         }
         @font-face {
             font-family: "Gotham-Medium";
-            src: url("fonts/Gotham-Medium.woff") format("woff"),
-                 url("fonts/Gotham-Medium.ttf") format("truetype");
+            src: url("fonts/Gotham-Medium.woff") format("woff"), url("fonts/Gotham-Medium.ttf") format("truetype");
         }
 
+        * { box-sizing: border-box; }
         html { background-color: #37373d; }
-        body { padding: 1rem 1rem 1rem 4.9rem; }
-        html { color: #fff; font-size: 1rem; line-height: 1.4; }
+        body { 
+            padding: 2rem; 
+            color: #fff; 
+            font-family: "Gotham-Book", sans-serif;
+            margin: 0;
+        }
 
-        .h1 {
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        h1 {
             font-family: "Gotham-Bold", sans-serif;
             font-size: 2.4rem;
             letter-spacing: 1px;
             text-transform: uppercase;
+            margin: 0 0 0.5rem 0;
+            border-bottom: 0.5rem solid #fff;
+            display: inline-block;
+            padding-bottom: 0.3rem;
+        }
+
+        .subtitle {
             margin-bottom: 3rem;
         }
-        .h1__border {
-            border-bottom: 0.5rem solid #fff;
+
+        .viz-wrapper {
+            position: relative;
+            margin-left: 4rem;
+            overflow-x: auto;
+        }
+
+        .y-labels {
+            position: absolute;
+            left: -4rem;
+            top: 2.5rem;
+            width: 3.5rem;
+            text-align: right;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .y-label {
+            height: 4rem;
+            line-height: 4rem;
+            padding-right: 0.5rem;
+        }
+
+        .x-labels {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+
+        .x-label {
+            width: 5rem;
+            text-align: center;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            padding: 0.5rem 0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .x-label.static {
+            cursor: default;
+        }
+
+        .x-label:hover {
+            color: #58c1c6;
+        }
+
+        .x-label.static:hover {
+            color: #fff;
+        }
+
+        .x-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #000;
+            padding: 0.6rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            min-width: 200px;
+            max-width: 300px;
+            font-size: 0.9rem;
+            text-transform: none;
+            display: none;
+            z-index: 100;
+            margin-bottom: 0.5rem;
+        }
+
+        .x-label:hover .x-tooltip {
+            display: block;
+        }
+
+        .grid {
+            display: inline-grid;
+            grid-template-columns: repeat(var(--cols), 5rem);
+            grid-template-rows: repeat(18, 4rem);
+            gap: 0;
+        }
+
+        .cell {
+            border: 1px solid #4f4f55;
+            width: 5rem;
+            height: 4rem;
+        }
+
+        .cell.avg-ideal {
+            background-color: #4b4b51;
+            border-color: #6f6f74;
+        }
+
+        .cell.row-7 {
+            border-bottom: 2px dashed #fff !important;
+        }
+
+        .data-layer {
+            position: absolute;
+            top: 2.5rem;
+            left: 0;
+            width: 100%;
+            height: 72rem;
+            pointer-events: none;
+        }
+
+        .event {
+            position: absolute;
+            width: 5rem;
+            text-align: center;
+            pointer-events: auto;
+        }
+
+        .marker {
+            width: 2.2rem;
+            height: 0.5rem;
+            margin: 0 auto;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .bar {
+            width: 0.6rem;
+            margin: 0 auto;
+        }
+
+        .question {
+            font-family: "Gotham-Bold", sans-serif;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .event-tooltip {
+            position: absolute;
+            top: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #000;
+            padding: 0.6rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            min-width: 200px;
+            font-size: 0.9rem;
+            display: none;
+            z-index: 100;
+            margin-top: -1rem;
+        }
+
+        .marker:hover .event-tooltip {
+            display: block;
+        }
+
+        .event-tooltip a {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .event-tooltip a:hover {
+            color: #58c1c6;
         }
 
         .data-pbd { background-color: #58c1c6; }
@@ -41,281 +211,57 @@
         .data-gs { background-color: #7a2b2a; }
         .data-app { background-color: #ddb375; }
 
-        .graph {
-            position: relative;
-            padding-left: 4rem;
+        .legend {
+            margin-top: 3rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
 
-        .graph__row {
-            margin-bottom: -6px;
-        }
-
-        .graph__cell {
-            display: inline-block;
-            width: 5rem;
-            height: 4rem;
-            border: 1px solid #4f4f55;
-            margin-left: -5px;
-        }
-
-        .graph__cell:nth-last-child(2),
-        .graph__cell:last-child {
-            background-color: #4b4b51;
-            border: 1px solid #6f6f74;
-        }
-
-        .graph__row:nth-child(8) .graph__cell {
-            border-bottom: 1px dashed #fff !important;
-        }
-
-        .graph__y-axis {
-            position: absolute;
-            top: 2.6rem;
-            left: 0;
-        }
-
-        .graph__x-axis {
-            padding-bottom: 0.5rem;
-        }
-
-        .graph__tick {
-            position: relative;
-            font-family: "Gotham-Book", sans-serif;
-            font-size: 1.2rem;
-            color: #fff;
-            text-transform: uppercase;
-        }
-
-        .graph__tick--y {
+        .legend-item {
             display: flex;
             align-items: center;
-            height: 4rem;
+            gap: 0.5rem;
         }
 
-        .graph__tick--x {
-            display: inline-block;
-            width: 5rem;
-            margin-left: -5px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .graph__tick--x:nth-last-child(2),
-        .graph__tick--x:last-child {
-            cursor: default;
-        }
-
-        .graph__tick--x:hover .tick-x-text {
-            position: relative;
-            z-index: 3;
-            color: #000;
-        }
-
-        .graph__tick--x:nth-last-child(2):hover .tick-x-text,
-        .graph__tick--x:last-child:hover .tick-x-text {
-            color: #fff;
-        }
-
-        .graph__data {
-            position: absolute;
-            top: 2.8rem;
-            left: 4rem;
-        }
-
-        .graph__datacell {
-            position: absolute;
-            width: 5rem;
-            text-align: center;
-        }
-
-        .datapoint, .databar, .data-unknown {
-            display: block;
-            margin: auto;
-        }
-
-        .datapoint {
-            position: relative;
-            max-width: 2.2rem;
-            height: 0.5rem;
-            cursor: pointer;
-        }
-
-        .databar {
-            width: 0.6rem;
-        }
-
-        .data-unknown {
-            font-family: "Gotham-Bold", sans-serif;
-            font-size: 2rem;
-            line-height: 0.9;
-        }
-
-        .datapoint, .databar, .data-unknown {
-            animation: data-anim ease;
-        }
-
-        .datapoint, .data-unknown {
-            animation-duration: 0.3s;
-        }
-
-        .databar1 { animation-duration: 1.3s; }
-        .databar2 { animation-duration: 1.6s; }
-        .databar3 { animation-duration: 1.9s; }
-        .databar4 { animation-duration: 2.2s; }
-        .databar5 { animation-duration: 2.5s; }
-        .databar6 { animation-duration: 2.8s; }
-        .databar7 { animation-duration: 3.1s; }
-        .databar8 { animation-duration: 3.4s; }
-        .databar9 { animation-duration: 3.7s; }
-        .databar10 { animation-duration: 4s; }
-
-        @keyframes data-anim {
-            0% {
-                opacity: 0;
-                max-height: 0;
-                visibility: hidden;
-            }
-            100% {
-                visibility: visible;
-                opacity: 1;
-                max-height: 40rem;
-            }
-        }
-
-        .legend {
-            float: right;
-            padding-right: 10rem;
-            padding-bottom: 4rem;
-            margin-top: 3rem;
-        }
-
-        .legend__row {
-            padding-bottom: 0.5rem;
-        }
-
-        .legend__bar, .legend__text {
-            display: inline-block;
-        }
-
-        .legend__bar {
+        .legend-bar {
             width: 2rem;
             height: 0.4rem;
         }
 
-        .legend__bar--eofy {
-            border-bottom: 1px dashed #fff;
+        .legend-bar.eofy {
+            border-bottom: 2px dashed #fff;
+            background: transparent;
         }
 
-        .legend__text {
-            font-family: "Gotham-Book", sans-serif;
-            font-size: 0.9rem;
-            padding-left: 1rem;
-        }
-
-        .tooltip {
-            position: absolute;
-            z-index: 2;
-        }
-
-        .tooltip__box {
-            position: absolute;
-            z-index: 3;
-            width: 100%;
-            min-width: 14.5rem;
-            font-family: "Gotham-Medium", sans-serif;
-            font-size: 0.95rem;
-            color: #fff;
-            text-transform: none;
-            text-align: left;
-            padding: 0.4rem 0.6rem;
-            box-shadow: 8px 8px 5px 0px rgba(0, 0, 0, 0.75);
-        }
-
-        .tooltip--xaxis {
-            top: -2.35rem;
-            left: -2.3rem;
-        }
-
-        .tooltip__box--xaxis {
-            top: 2rem;
-            left: 8.2rem;
-            background-color: #fff;
-            color: #000;
-        }
-
-        .tooltip__box--xaxis {
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.15s ease;
-        }
-
-        .graph__tick--x:hover .tooltip__box--xaxis {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .tooltip--data {
-            top: -1.15rem;
-            left: -0.9rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-        }
-
-        .datapoint:hover .tooltip--data,
-        .tooltip--data:hover {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .tooltip__box--data {
-            top: 1rem;
-            left: 4rem;
-        }
-
-        .tooltip__btn {
-            color: #37373d;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .tooltip__btn:hover {
-            color: #fff;
-        }
-
-        .data-gs .tooltip__btn {
-            color: #ccc;
-        }
-
-        .u-hidden {
-            display: none !important;
-        }
+        .u-hidden { display: none !important; }
 
         #loading, #error {
             margin-left: 4rem;
             padding: 2rem;
-            font-family: "Gotham-Book", sans-serif;
         }
 
         #error {
             background-color: #d47371;
-            color: #fff;
             border-radius: 4px;
         }
     </style>
 </head>
 <body>
-    <h1 class="h1"><span class="h1__border">A Decade</span> of Budget Instability</h1>
+    <div class="container">
+        <div class="subtitle">
+            <h1>A DECADE OF BUDGET INSTABILITY</h1>
+        </div>
 
-    <div id="loading">Loading data...</div>
-    <div id="error" class="u-hidden"></div>
+        <div id="loading">Loading data...</div>
+        <div id="error" class="u-hidden"></div>
 
-    <div id="visualization" class="u-hidden"></div>
+        <div id="viz" class="u-hidden"></div>
+    </div>
 
     <script>
         const CSV_FILE = 'data.csv';
-
-        const EVENT_CONFIG = {
+        const EVENTS = {
             "President's Budget Delivered to Congress": { color: '#58c1c6', class: 'data-pbd' },
             'Continuing Resolution': { color: '#d47371', class: 'data-cr' },
             'Full-Year Continuing Resolution': { color: '#d47371', class: 'data-cr' },
@@ -323,280 +269,271 @@
             'Government Shutdown': { color: '#7a2b2a', class: 'data-gs' }
         };
 
-        function parseCSV(text) {
-            const lines = text.split('\n');
-            const data = [];
+        function parseCSV(txt) {
+            const lines = txt.split('\n');
+            const rows = [];
             for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-                const row = [];
-                let cell = '';
-                let inQuotes = false;
-                for (let char of line) {
-                    if (char === '"') inQuotes = !inQuotes;
-                    else if (char === ',' && !inQuotes) { row.push(cell.trim()); cell = ''; }
-                    else cell += char;
+                if (!lines[i].trim()) continue;
+                const cells = [];
+                let cell = '', quoted = false;
+                for (let c of lines[i]) {
+                    if (c === '"') quoted = !quoted;
+                    else if (c === ',' && !quoted) { cells.push(cell.trim()); cell = ''; }
+                    else cell += c;
                 }
-                row.push(cell.trim());
-                if (row.length >= 5) data.push(row);
+                cells.push(cell.trim());
+                if (cells.length >= 5) rows.push(cells);
             }
-            return data;
+            return rows;
         }
 
-        function parseDate(str) {
-            const [m, d, y] = str.split('/');
+        function parseDate(s) {
+            const [m, d, y] = s.split('/');
             return new Date(y, m - 1, d);
         }
 
-        function getYPosition(date, fiscalYear) {
-            const fy = parseInt(fiscalYear);
+        function getPos(date, fy) {
             const year = date.getFullYear();
             const month = date.getMonth();
             const day = date.getDate();
             
-            let rowIndex;
+            // Calculate row (0-17)
+            let row;
             if (year === fy - 1) {
-                rowIndex = month - 1;
+                row = month - 1; // Feb(1)=0, Mar(2)=1, ..., Dec(11)=10
             } else {
-                rowIndex = 11 + month;
+                row = 11 + month; // Jan(0)=11, Feb(1)=12, ..., Jul(6)=17
             }
             
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const proportion = (day - 1) / (daysInMonth - 1); // 1st = 0%, middle ≈ 50%, last = 100%
+            // Proportional position in month
+            const days = new Date(year, month + 1, 0).getDate();
+            const pct = (day - 1) / (days - 1); // 1st=0%, middle≈50%, last=100%
             
-            return (rowIndex * 4) + (proportion * 4);
+            return (row * 4) + (pct * 4);
         }
 
-        function calculateDayOfPeriod(date, fiscalYear) {
-            const fy = parseInt(fiscalYear);
-            const periodStart = new Date(fy - 1, 1, 1);
-            return Math.floor((date - periodStart) / (1000 * 60 * 60 * 24));
+        function getDayOfPeriod(date, fy) {
+            const start = new Date(fy - 1, 1, 1);
+            return Math.floor((date - start) / 86400000);
         }
 
-        async function loadData() {
-            const loading = document.getElementById('loading');
-            const error = document.getElementById('error');
-
+        async function load() {
             try {
-                const response = await fetch(CSV_FILE);
-                if (!response.ok) throw new Error('Cannot load CSV');
+                const res = await fetch(CSV_FILE);
+                if (!res.ok) throw new Error('Cannot load CSV');
                 
-                const text = await response.text();
-                const rows = parseCSV(text);
-                if (rows.length === 0) throw new Error('No data found');
+                const txt = await res.text();
+                const rows = parseCSV(txt);
                 
                 const events = [];
                 const notes = {};
                 
-                rows.forEach(row => {
-                    const fy = row[1];
-                    const date = parseDate(row[2]);
-                    if (date && fy) {
-                        events.push({ fy, date, dateStr: row[2], type: row[3], url: row[4] || '', bill: row[5] || '' });
+                rows.forEach(r => {
+                    const fy = parseInt(r[1]);
+                    const dt = parseDate(r[2]);
+                    if (dt && fy) {
+                        events.push({
+                            fy, date: dt, dateStr: r[2],
+                            type: r[3], url: r[4] || '', bill: r[5] || ''
+                        });
                     }
-                    if (row[6] && !notes[fy]) {
-                        notes[fy] = row[6].replace(/^"+|"+$/g, '');
-                    }
+                    if (r[6] && !notes[fy]) notes[fy] = r[6].replace(/^"+|"+$/g, '');
                 });
 
-                if (events.length === 0) throw new Error('No valid events');
-                renderViz(events, notes);
+                render(events, notes);
                 
-            } catch (err) {
-                error.textContent = 'Error: ' + err.message;
-                error.classList.remove('u-hidden');
-                loading.classList.add('u-hidden');
+            } catch (e) {
+                document.getElementById('error').textContent = 'Error: ' + e.message;
+                document.getElementById('error').classList.remove('u-hidden');
+                document.getElementById('loading').classList.add('u-hidden');
             }
         }
 
-        function renderViz(events, notes) {
+        function render(events, notes) {
             const byYear = {};
             events.forEach(e => {
                 if (!byYear[e.fy]) byYear[e.fy] = [];
                 byYear[e.fy].push(e);
             });
 
-            const years = Object.keys(byYear).sort((a, b) => parseInt(a) - parseInt(b));
+            const years = Object.keys(byYear).map(Number).sort((a,b)=>a-b);
+            const cols = years.length + 2;
+
+            let h = '<div class="viz-wrapper" style="--cols:' + cols + ';">';
             
-            let html = '<div class="graph"><div class="graph__y-axis">';
+            // Y-axis labels
+            h += '<div class="y-labels">';
             ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'].forEach(m => {
-                html += `<div class="graph__tick graph__tick--y"><div class="tick-y-text">${m}</div></div>`;
+                h += `<div class="y-label">${m}</div>`;
             });
-            html += '</div><div class="graph__x-axis">';
+            h += '</div>';
             
+            // X-axis labels
+            h += '<div class="x-labels">';
             years.forEach(y => {
-                const yr = y.slice(-2);
-                const n = notes[y] || '';
-                html += `<div class="graph__tick graph__tick--x">`;
-                if (n) html += `<div class="tooltip tooltip--xaxis"><div class="tooltip__box tooltip__box--xaxis">${n}</div></div>`;
-                html += `<div class="tick-x-text">FY ${yr}</div></div>`;
+                const note = notes[y] || '';
+                h += `<div class="x-label">`;
+                if (note) h += `<div class="x-tooltip">${note}</div>`;
+                h += `FY ${String(y).slice(-2)}</div>`;
             });
-            html += '<div class="graph__tick graph__tick--x"><div class="tick-x-text">Avg</div></div>';
-            html += '<div class="graph__tick graph__tick--x"><div class="tick-x-text">Ideal</div></div></div>';
+            h += '<div class="x-label static">Avg</div>';
+            h += '<div class="x-label static">Ideal</div>';
+            h += '</div>';
             
+            // Grid
+            h += '<div class="grid">';
             for (let r = 0; r < 18; r++) {
-                html += '<div class="graph__row">';
-                for (let c = 0; c < years.length + 2; c++) {
-                    html += '<div class="graph__cell"></div>';
+                for (let c = 0; c < cols; c++) {
+                    const cls = (c >= years.length ? 'avg-ideal ' : '') + (r === 7 ? 'row-7' : '');
+                    h += `<div class="cell ${cls}"></div>`;
                 }
-                html += '</div>';
             }
+            h += '</div>';
             
-            html += '<div class="graph__data">';
-            html += renderData(byYear, years);
-            html += renderAvgIdeal(byYear, years.length);
-            html += '</div></div>';
+            // Data layer
+            h += '<div class="data-layer">';
+            h += renderEvents(byYear, years);
+            h += renderAvgIdeal(byYear, years.length);
+            h += '</div>';
             
-            html += `<div class="legend">
-                <div class="legend__row"><div class="legend__bar data-pbd"></div><div class="legend__text">President's Budget Delivered to the Hill</div></div>
-                <div class="legend__row"><div class="legend__bar data-cr"></div><div class="legend__text">Continuing Resolution</div></div>
-                <div class="legend__row"><div class="legend__bar data-app"></div><div class="legend__text">Appropriation</div></div>
-                <div class="legend__row"><div class="legend__bar data-gs"></div><div class="legend__text">Government Shutdown</div></div>
-                <div class="legend__row"><div class="legend__bar legend__bar--eofy"></div><div class="legend__text">End of Fiscal Year</div></div>
-            </div>`;
+            h += '</div>';
             
-            document.getElementById('visualization').innerHTML = html;
+            // Legend
+            h += '<div class="legend">';
+            h += '<div class="legend-item"><div class="legend-bar data-pbd"></div><span>President\'s Budget Delivered</span></div>';
+            h += '<div class="legend-item"><div class="legend-bar data-cr"></div><span>Continuing Resolution</span></div>';
+            h += '<div class="legend-item"><div class="legend-bar data-app"></div><span>Appropriation</span></div>';
+            h += '<div class="legend-item"><div class="legend-bar data-gs"></div><span>Government Shutdown</span></div>';
+            h += '<div class="legend-item"><div class="legend-bar eofy"></div><span>End of Fiscal Year</span></div>';
+            h += '</div>';
+            
+            document.getElementById('viz').innerHTML = h;
             document.getElementById('loading').classList.add('u-hidden');
-            document.getElementById('visualization').classList.remove('u-hidden');
+            document.getElementById('viz').classList.remove('u-hidden');
         }
 
-        function renderData(byYear, years) {
-            let html = '';
-            const today = new Date();
+        function renderEvents(byYear, years) {
+            let h = '';
+            const now = new Date();
             
-            years.forEach((fy, colIdx) => {
-                const evts = byYear[fy].sort((a, b) => getYPosition(a.date, a.fy) - getYPosition(b.date, b.fy));
-                const done = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
-                const xPos = (colIdx * 5) + 0.1; // 0.1rem offset centers the 0.6rem bar in the 5rem cell
-                let bn = 1;
+            years.forEach((fy, col) => {
+                const evts = byYear[fy].sort((a,b) => getPos(a.date, a.fy) - getPos(b.date, b.fy));
+                const complete = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
                 
-                evts.forEach((e, j) => {
-                    const cfg = EVENT_CONFIG[e.type];
+                evts.forEach((e, i) => {
+                    const cfg = EVENTS[e.type];
                     if (!cfg) return;
                     
-                    const yTop = getYPosition(e.date, e.fy);
-                    const term = e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution';
+                    const y = getPos(e.date, e.fy);
+                    const x = col * 5;
+                    const isLast = e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution';
                     
-                    // Bar first (so marker appears on top)
-                    let bh = 0;
-                    if (!term) {
-                        if (j < evts.length - 1) {
-                            bh = getYPosition(evts[j + 1].date, evts[j + 1].fy) - yTop;
-                        } else if (!done) {
-                            const ty = getYPosition(today, fy);
-                            if (ty > yTop && ty <= 72) bh = ty - yTop;
+                    let barH = 0;
+                    if (!isLast) {
+                        if (i < evts.length - 1) {
+                            barH = getPos(evts[i+1].date, evts[i+1].fy) - y;
+                        } else if (!complete) {
+                            const nowY = getPos(now, fy);
+                            if (nowY > y && nowY <= 72) barH = nowY - y;
                         }
                     }
                     
-                    if (bh > 0) {
-                        html += `<div class="graph__datacell" style="position:absolute;left:${xPos}rem;top:${yTop}rem;">
-                            <div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div>
-                        </div>`;
-                        bn++;
+                    if (barH > 0) {
+                        h += `<div class="event" style="left:${x}rem;top:${y}rem;"><div class="bar ${cfg.class}" style="height:${barH}rem;"></div></div>`;
                     }
                     
-                    // Event marker on top of bar
-                    html += `<div class="graph__datacell" style="position:absolute;left:${colIdx * 5}rem;top:${yTop}rem;">
-                        <div class="datapoint ${cfg.class}">
-                            <div class="tooltip tooltip--data">
-                                <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                    ${e.dateStr}<br>${e.type}
-                                    ${e.bill ? `<br><strong>Bill:</strong> ${e.bill}` : ''}
-                                    ${e.url ? `<br><a class="tooltip__btn" target="_blank" href="${e.url}">Read more &gt;&gt;</a>` : ''}
-                                </div>
+                    h += `<div class="event" style="left:${x}rem;top:${y}rem;">
+                        <div class="marker ${cfg.class}">
+                            <div class="event-tooltip">
+                                <strong>${e.dateStr}</strong><br>${e.type}
+                                ${e.bill ? `<br><strong>Bill:</strong> ${e.bill}` : ''}
+                                ${e.url ? `<br><a href="${e.url}" target="_blank">Source →</a>` : ''}
                             </div>
                         </div>
                     </div>`;
                 });
                 
-                if (!done) {
-                    const ty = getYPosition(today, fy);
-                    if (ty <= 72) {
-                        html += `<div class="graph__datacell" style="position:absolute;left:${colIdx * 5}rem;top:${ty}rem;">
-                            <div class="data-unknown">?</div>
-                        </div>`;
+                if (!complete) {
+                    const nowY = getPos(now, fy);
+                    if (nowY <= 72) {
+                        h += `<div class="event" style="left:${col*5}rem;top:${nowY}rem;"><div class="question">?</div></div>`;
                     }
                 }
             });
             
-            return html;
+            return h;
         }
 
         function renderAvgIdeal(byYear, numYears) {
-            const bd = [], cd = [], ad = [];
+            const bd=[], cr=[], ap=[];
             
-            Object.entries(byYear).forEach(([fy, evts]) => {
+            Object.values(byYear).forEach(evts => {
                 evts.forEach(e => {
-                    const d = calculateDayOfPeriod(e.date, e.fy);
+                    const d = getDayOfPeriod(e.date, e.fy);
                     if (e.type === "President's Budget Delivered to Congress") bd.push(d);
-                    else if (e.type.includes('Continuing Resolution')) cd.push(d);
-                    else if (e.type === 'Appropriation') ad.push(d);
+                    else if (e.type.includes('Continuing Resolution')) cr.push(d);
+                    else if (e.type === 'Appropriation') ap.push(d);
                 });
             });
 
             const avg = [];
-            const ref = new Date(2023, 1, 1);
+            const base = new Date(2023, 1, 1);
             
             if (bd.length) {
-                const dt = new Date(ref.getTime() + (bd.reduce((a,b)=>a+b)/bd.length) * 86400000);
-                avg.push({ type: "President's Budget Delivered to Congress", date: dt, label: `${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}` });
+                const d = Math.round(bd.reduce((a,b)=>a+b)/bd.length);
+                const dt = new Date(base.getTime() + d*86400000);
+                avg.push({type:"President's Budget Delivered to Congress", date:dt, lbl:`${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}`});
             }
-            if (cd.length) {
-                const dt = new Date(ref.getTime() + (cd.reduce((a,b)=>a+b)/cd.length) * 86400000);
-                avg.push({ type: 'Continuing Resolution', date: dt, label: `${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}` });
+            if (cr.length) {
+                const d = Math.round(cr.reduce((a,b)=>a+b)/cr.length);
+                const dt = new Date(base.getTime() + d*86400000);
+                avg.push({type:'Continuing Resolution', date:dt, lbl:`${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}`});
             }
-            if (ad.length) {
-                const dt = new Date(ref.getTime() + (ad.reduce((a,b)=>a+b)/ad.length) * 86400000);
-                avg.push({ type: 'Appropriation', date: dt, label: `${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}` });
+            if (ap.length) {
+                const d = Math.round(ap.reduce((a,b)=>a+b)/ap.length);
+                const dt = new Date(base.getTime() + d*86400000);
+                avg.push({type:'Appropriation', date:dt, lbl:`${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getDate().toString().padStart(2,'0')}`});
             }
 
             const ideal = [
-                { type: "President's Budget Delivered to Congress", date: new Date(2023, 1, 1), label: '02/01' },
-                { type: 'Appropriation', date: new Date(2023, 8, 30), label: '09/30' }
+                {type:"President's Budget Delivered to Congress", date:new Date(2023,1,1), lbl:'02/01'},
+                {type:'Appropriation', date:new Date(2023,8,30), lbl:'09/30'}
             ];
 
-            let html = '';
+            let h = '';
             
-            [avg, ideal].forEach((list, ci) => {
-                const colIdx = numYears + ci;
-                const xPos = (colIdx * 5) + 0.1;
-                let bn = 1;
+            [avg, ideal].forEach((list, idx) => {
+                const col = numYears + idx;
                 
                 list.forEach((e, i) => {
-                    const cfg = EVENT_CONFIG[e.type];
+                    const cfg = EVENTS[e.type];
                     if (!cfg) return;
                     
-                    const yTop = getYPosition(e.date, 2024);
-                    let bh = 0;
+                    const y = getPos(e.date, 2024);
+                    const x = col * 5;
                     
+                    let barH = 0;
                     if (e.type !== 'Appropriation' && i < list.length - 1) {
-                        bh = getYPosition(list[i + 1].date, 2024) - yTop;
+                        barH = getPos(list[i+1].date, 2024) - y;
                     }
                     
-                    if (bh > 0) {
-                        html += `<div class="graph__datacell" style="position:absolute;left:${xPos}rem;top:${yTop}rem;">
-                            <div class="databar databar${bn} ${cfg.class}" style="height:${bh}rem;"></div>
-                        </div>`;
-                        bn++;
+                    if (barH > 0) {
+                        h += `<div class="event" style="left:${x}rem;top:${y}rem;"><div class="bar ${cfg.class}" style="height:${barH}rem;"></div></div>`;
                     }
                     
-                    const lbl = ci === 0 ? 'Average' : 'Ideal';
-                    html += `<div class="graph__datacell" style="position:absolute;left:${colIdx * 5}rem;top:${yTop}rem;">
-                        <div class="datapoint ${cfg.class}">
-                            <div class="tooltip tooltip--data">
-                                <div class="tooltip__box tooltip__box--data ${cfg.class}">
-                                    ${lbl}: ${e.label}<br>${e.type}
-                                </div>
-                            </div>
+                    const label = idx === 0 ? 'Average' : 'Ideal';
+                    h += `<div class="event" style="left:${x}rem;top:${y}rem;">
+                        <div class="marker ${cfg.class}">
+                            <div class="event-tooltip"><strong>${label}: ${e.lbl}</strong><br>${e.type}</div>
                         </div>
                     </div>`;
                 });
             });
             
-            return html;
+            return h;
         }
 
-        loadData();
+        load();
     </script>
 </body>
 </html>
