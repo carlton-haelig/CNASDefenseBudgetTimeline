@@ -18,22 +18,27 @@
             src: url("fonts/Gotham-Medium.woff") format("woff"), url("fonts/Gotham-Medium.ttf") format("truetype");
         }
 
-        * { box-sizing: border-box; }
-        html { background-color: #37373d; }
-        body { 
-            padding: 2rem 2rem 2rem 1rem; 
-            color: #fff; 
+        /* ISOLATED BUDGET VISUALIZATION - All styles prefixed with #budget-viz-wrapper */
+        
+        #budget-viz-wrapper * { 
+            box-sizing: border-box; 
+        }
+        
+        #budget-viz-wrapper {
+            background-color: #37373d;
+            color: #fff;
             font-family: "Gotham-Book", sans-serif;
+            padding: 2rem 2rem 2rem 1rem;
             margin: 0;
         }
 
-        .container {
+        #budget-viz-wrapper .container {
             max-width: 1800px;
             margin: 0 auto;
             padding-left: 4rem;
         }
 
-        h1 {
+        #budget-viz-wrapper h1 {
             font-family: "Gotham-Bold", sans-serif;
             font-size: 2.4rem;
             letter-spacing: 1px;
@@ -44,19 +49,20 @@
             padding-bottom: 0.3rem;
         }
 
-        .subtitle {
+        #budget-viz-wrapper .subtitle {
             margin-bottom: 3rem;
         }
 
-        .viz-wrapper {
+        #budget-viz-wrapper .viz-wrapper {
             position: relative;
             margin-left: 0;
             overflow-x: auto;
             overflow-y: visible;
             padding-bottom: 2rem;
+            min-width: 100%;
         }
 
-        .y-labels {
+        #budget-viz-wrapper .y-labels {
             position: absolute;
             left: 0;
             top: 9.5rem;
@@ -69,7 +75,7 @@
             z-index: 10;
         }
 
-        .y-label {
+        #budget-viz-wrapper .y-label {
             height: 4rem;
             display: flex;
             align-items: center;
@@ -79,12 +85,13 @@
             font-weight: normal;
         }
 
-        .x-labels {
+        #budget-viz-wrapper .x-labels {
             display: flex;
             margin-bottom: 0.5rem;
+            min-width: max-content;
         }
 
-        .x-label {
+        #budget-viz-wrapper .x-label {
             width: 5rem;
             text-align: center;
             font-size: 1.1rem;
@@ -94,20 +101,19 @@
             position: relative;
         }
 
-        .x-label.static {
+        #budget-viz-wrapper .x-label.static {
             cursor: default;
         }
 
-        .x-label:hover {
+        #budget-viz-wrapper .x-label:hover {
             color: #58c1c6;
         }
 
-        .x-label.static:hover {
+        #budget-viz-wrapper .x-label.static:hover {
             color: #fff;
         }
 
-        /* FY Tooltip - appears BELOW the label */
-        .x-tooltip {
+        #budget-viz-wrapper .x-tooltip {
             position: absolute;
             top: 100%;
             left: 50%;
@@ -126,8 +132,7 @@
             margin-top: 0.5rem;
         }
 
-        /* Upward arrow for FY tooltip */
-        .x-tooltip::before {
+        #budget-viz-wrapper .x-tooltip::before {
             content: '';
             position: absolute;
             bottom: 100%;
@@ -137,71 +142,68 @@
             border-bottom-color: #fff;
         }
 
-        .x-label:hover .x-tooltip {
+        #budget-viz-wrapper .x-label:hover .x-tooltip {
             display: block;
         }
 
-        /* Prevent first FY tooltip from being cut off on left */
-        .x-label:first-child .x-tooltip {
+        #budget-viz-wrapper .x-label:first-child .x-tooltip {
             left: 0;
             transform: none;
         }
 
-        .x-label:first-child .x-tooltip::before {
+        #budget-viz-wrapper .x-label:first-child .x-tooltip::before {
             left: 2.5rem;
         }
 
-        /* Prevent last few FY tooltips from being cut off on right */
-        .x-label:nth-last-child(-n+4) .x-tooltip {
+        #budget-viz-wrapper .x-label:nth-last-child(-n+4) .x-tooltip {
             left: auto;
             right: 0;
             transform: none;
         }
 
-        .x-label:nth-last-child(-n+4) .x-tooltip::before {
+        #budget-viz-wrapper .x-label:nth-last-child(-n+4) .x-tooltip::before {
             left: auto;
             right: 2.5rem;
         }
 
-        /* Also prevent Avg and Ideal from being cut off */
-        .x-label:nth-last-child(2) .x-tooltip,
-        .x-label:nth-last-child(1) .x-tooltip {
+        #budget-viz-wrapper .x-label:nth-last-child(2) .x-tooltip,
+        #budget-viz-wrapper .x-label:nth-last-child(1) .x-tooltip {
             left: auto;
             right: 50%;
             transform: translateX(50%);
         }
 
-        .x-label:nth-last-child(2) .x-tooltip::before,
-        .x-label:nth-last-child(1) .x-tooltip::before {
+        #budget-viz-wrapper .x-label:nth-last-child(2) .x-tooltip::before,
+        #budget-viz-wrapper .x-label:nth-last-child(1) .x-tooltip::before {
             left: 50%;
             right: auto;
             transform: translateX(-50%);
         }
 
-        .grid {
+        #budget-viz-wrapper .grid {
             display: inline-grid;
             grid-template-columns: repeat(var(--cols), 5rem);
             grid-template-rows: repeat(18, 4rem);
             gap: 0;
+            min-width: max-content;
         }
 
-        .cell {
+        #budget-viz-wrapper .cell {
             border: 1px solid #4f4f55;
             width: 5rem;
             height: 4rem;
         }
 
-        .cell.avg-ideal {
+        #budget-viz-wrapper .cell.avg-ideal {
             background-color: #4b4b51;
             border-color: #6f6f74;
         }
 
-        /* Sept 30 dashed line - row 8 (0-indexed = row 7) */
-        .cell.row-7 {
+        #budget-viz-wrapper .cell.row-7 {
             border-bottom: 2px dashed #fff !important;
         }
 
-        .data-layer {
+        #budget-viz-wrapper .data-layer {
             position: absolute;
             top: 2.5rem;
             left: 0;
@@ -210,14 +212,14 @@
             pointer-events: none;
         }
 
-        .event {
+        #budget-viz-wrapper .event {
             position: absolute;
             width: 5rem;
             text-align: center;
             pointer-events: auto;
         }
 
-        .marker {
+        #budget-viz-wrapper .marker {
             width: 2.2rem;
             height: 0.5rem;
             margin: 0 auto;
@@ -225,19 +227,19 @@
             position: relative;
         }
 
-        .bar {
+        #budget-viz-wrapper .bar {
             width: 0.6rem;
             margin: 0 auto;
         }
 
-        .question {
+        #budget-viz-wrapper .question {
             font-family: "Gotham-Bold", sans-serif;
             font-size: 2rem;
             text-align: center;
         }
 
-        /* Event Tooltip - appears to the RIGHT of event */
-        .event-tooltip {
+        /* Event Tooltip - stays open for clicking links */
+        #budget-viz-wrapper .event-tooltip {
             position: absolute;
             top: 50%;
             left: 100%;
@@ -250,15 +252,17 @@
             min-width: 200px;
             max-width: 350px;
             font-size: 0.9rem;
-            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
             z-index: 100;
             margin-left: 1.5rem;
             white-space: normal;
             text-align: left;
+            pointer-events: auto;
         }
 
-        /* Left-pointing arrow for event tooltip */
-        .event-tooltip::before {
+        #budget-viz-wrapper .event-tooltip::before {
             content: '';
             position: absolute;
             right: 100%;
@@ -268,27 +272,29 @@
             border-right-color: #fff;
         }
 
-        .marker:hover .event-tooltip,
-        .event-tooltip:hover {
-            display: block;
+        /* Keep tooltip visible when hovering over marker OR tooltip itself */
+        #budget-viz-wrapper .marker:hover .event-tooltip,
+        #budget-viz-wrapper .event:hover .event-tooltip {
+            opacity: 1;
+            visibility: visible;
         }
 
-        .event-tooltip a {
+        #budget-viz-wrapper .event-tooltip a {
             color: #000;
             font-weight: bold;
             text-decoration: underline;
         }
 
-        .event-tooltip a:hover {
+        #budget-viz-wrapper .event-tooltip a:hover {
             color: #58c1c6;
         }
 
-        .data-pbd { background-color: #58c1c6; }
-        .data-cr { background-color: #d47371; }
-        .data-gs { background-color: #7a2b2a; }
-        .data-app { background-color: #ddb375; }
+        #budget-viz-wrapper .data-pbd { background-color: #58c1c6; }
+        #budget-viz-wrapper .data-cr { background-color: #d47371; }
+        #budget-viz-wrapper .data-gs { background-color: #7a2b2a; }
+        #budget-viz-wrapper .data-app { background-color: #ddb375; }
 
-        .legend {
+        #budget-viz-wrapper .legend {
             margin-top: 3rem;
             display: flex;
             flex-wrap: wrap;
@@ -296,32 +302,112 @@
             font-size: 0.9rem;
         }
 
-        .legend-item {
+        #budget-viz-wrapper .legend-item {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .legend-bar {
+        #budget-viz-wrapper .legend-bar {
             width: 2rem;
             height: 0.4rem;
         }
 
-        .legend-bar.eofy {
+        #budget-viz-wrapper .legend-bar.eofy {
             border-bottom: 2px dashed #fff;
             background: transparent;
         }
 
-        .u-hidden { display: none !important; }
+        #budget-viz-wrapper .u-hidden { 
+            display: none !important; 
+        }
 
-        #loading, #error {
+        #budget-viz-wrapper #loading, 
+        #budget-viz-wrapper #error {
             margin-left: 4rem;
             padding: 2rem;
         }
 
-        #error {
+        #budget-viz-wrapper #error {
             background-color: #d47371;
             border-radius: 4px;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            #budget-viz-wrapper {
+                padding: 1rem 0.5rem;
+            }
+
+            #budget-viz-wrapper .container {
+                padding-left: 3rem;
+                min-width: 900px;
+            }
+
+            #budget-viz-wrapper h1 {
+                font-size: 1.5rem;
+            }
+
+            #budget-viz-wrapper .y-labels {
+                left: 0.5rem;
+                width: 2.5rem;
+                font-size: 0.7rem;
+                top: 7rem;
+            }
+
+            #budget-viz-wrapper .y-label {
+                padding-right: 0.2rem;
+            }
+
+            #budget-viz-wrapper .x-labels {
+                font-size: 0.9rem;
+            }
+
+            #budget-viz-wrapper .viz-wrapper {
+                overflow-x: scroll;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #budget-viz-wrapper .legend {
+                flex-direction: column;
+                gap: 0.8rem;
+                font-size: 0.75rem;
+                margin-top: 2rem;
+            }
+
+            #budget-viz-wrapper .legend-bar {
+                width: 1.5rem;
+                height: 0.3rem;
+            }
+
+            #budget-viz-wrapper .container::before {
+                content: '← Scroll horizontally to view all fiscal years →';
+                display: block;
+                text-align: center;
+                font-size: 0.8rem;
+                color: #58c1c6;
+                margin-bottom: 1rem;
+                font-style: italic;
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            #budget-viz-wrapper .container::before {
+                content: '';
+                display: none;
+            }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            #budget-viz-wrapper .x-label,
+            #budget-viz-wrapper .marker {
+                touch-action: manipulation;
+            }
+            
+            /* On touch devices, make tooltips tap-to-toggle */
+            #budget-viz-wrapper .marker {
+                cursor: pointer;
+            }
         }
     </style>
 </head>
@@ -464,9 +550,8 @@
             h += renderAvgIdeal(byYear, years.length);
             h += '</div>';
             
-            h += '</div>'; // Close viz-wrapper
+            h += '</div>';
             
-            // Y-labels OUTSIDE the scroll wrapper
             h += '<div class="y-labels">';
             ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'].forEach(m => {
                 h += `<div class="y-label">${m}</div>`;
@@ -493,7 +578,7 @@
             years.forEach((fy, col) => {
                 const evts = byYear[fy].sort((a,b) => getPos(a.date, a.fy) - getPos(b.date, b.fy));
                 const complete = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
-                const x = col * 5; // Define x at this level for use in question mark
+                const x = col * 5;
                 
                 evts.forEach((e, i) => {
                     const cfg = EVENTS[e.type];
@@ -575,13 +660,13 @@
             
             [avg, ideal].forEach((list, idx) => {
                 const col = numYears + idx;
+                const x = col * 5;
                 
                 list.forEach((e, i) => {
                     const cfg = EVENTS[e.type];
                     if (!cfg) return;
                     
                     const y = getPos(e.date, 2024);
-                    const x = col * 5;
                     
                     let barH = 0;
                     if (e.type !== 'Appropriation' && i < list.length - 1) {
