@@ -443,13 +443,13 @@
             years.forEach((fy, col) => {
                 const evts = byYear[fy].sort((a,b) => getPos(a.date, a.fy) - getPos(b.date, b.fy));
                 const complete = evts.some(e => e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution');
+                const x = col * 5; // Define x at this level for use in question mark
                 
                 evts.forEach((e, i) => {
                     const cfg = EVENTS[e.type];
                     if (!cfg) return;
                     
                     const y = getPos(e.date, e.fy);
-                    const x = col * 5;
                     const isLast = e.type === 'Appropriation' || e.type === 'Full-Year Continuing Resolution';
                     
                     let barH = 0;
