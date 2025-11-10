@@ -21,7 +21,7 @@
         * { box-sizing: border-box; }
         html { background-color: #37373d; }
         body { 
-            padding: 2rem; 
+            padding: 2rem 2rem 2rem 1rem; 
             color: #fff; 
             font-family: "Gotham-Book", sans-serif;
             margin: 0;
@@ -30,6 +30,7 @@
         .container {
             max-width: 1800px;
             margin: 0 auto;
+            padding-left: 4rem;
         }
 
         h1 {
@@ -49,18 +50,19 @@
 
         .viz-wrapper {
             position: relative;
-            margin-left: 4rem;
+            margin-left: 0;
             overflow-x: auto;
+            overflow-y: visible;
             padding-bottom: 2rem;
         }
 
         .y-labels {
             position: absolute;
-            left: -3.8rem;
+            left: -4rem;
             top: 2.5rem;
             width: 3.5rem;
             text-align: right;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
             color: #fff;
             pointer-events: none;
@@ -72,8 +74,9 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 0.3rem;
+            padding-right: 0.5rem;
             color: #fff;
+            font-weight: normal;
         }
 
         .x-labels {
@@ -158,6 +161,21 @@
         .x-label:nth-last-child(-n+4) .x-tooltip::before {
             left: auto;
             right: 2.5rem;
+        }
+
+        /* Also prevent Avg and Ideal from being cut off */
+        .x-label:nth-last-child(2) .x-tooltip,
+        .x-label:nth-last-child(1) .x-tooltip {
+            left: auto;
+            right: 50%;
+            transform: translateX(50%);
+        }
+
+        .x-label:nth-last-child(2) .x-tooltip::before,
+        .x-label:nth-last-child(1) .x-tooltip::before {
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
         }
 
         .grid {
