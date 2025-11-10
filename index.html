@@ -58,8 +58,8 @@
 
         .y-labels {
             position: absolute;
-            left: -4rem;
-            top: 2.5rem;
+            left: 0;
+            top: 5.5rem;
             width: 3.5rem;
             text-align: right;
             font-size: 0.9rem;
@@ -437,12 +437,6 @@
 
             let h = '<div class="viz-wrapper" style="--cols:' + cols + ';">';
             
-            h += '<div class="y-labels">';
-            ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'].forEach(m => {
-                h += `<div class="y-label">${m}</div>`;
-            });
-            h += '</div>';
-            
             h += '<div class="x-labels">';
             years.forEach(y => {
                 const note = notes[y] || '';
@@ -468,6 +462,13 @@
             h += renderAvgIdeal(byYear, years.length);
             h += '</div>';
             
+            h += '</div>'; // Close viz-wrapper
+            
+            // Y-labels OUTSIDE the scroll wrapper
+            h += '<div class="y-labels">';
+            ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'].forEach(m => {
+                h += `<div class="y-label">${m}</div>`;
+            });
             h += '</div>';
             
             h += '<div class="legend">';
