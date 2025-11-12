@@ -1006,16 +1006,21 @@
                         }
                     }
                     
-                    h += `<div class="event ${cfg.class}" style="top:${y}rem; left:${x}rem;">`;
-                    if (barH > 0) h += `<div class="bar" style="height:${barH}rem;"></div>`;
-                    h += `<div class="marker"></div>`;
+                    // Render bar first (if needed) as separate div
+                    if (barH > 0) {
+                        h += `<div class="event ${cfg.class}" style="top:${y}rem; left:${x}rem;">`;
+                        h += `<div class="bar" style="height:${barH}rem;"></div>`;
+                        h += `</div>`;
+                    }
                     
+                    // Then render marker as separate div at same position
+                    h += `<div class="event ${cfg.class}" style="top:${y}rem; left:${x}rem;">`;
+                    h += `<div class="marker"></div>`;
                     h += `<div class="event-tooltip">`;
                     h += `<strong>${formatDate(e.date)}</strong><br>${e.type}`;
                     if (e.bill) h += `<br><em>${e.bill}</em>`;
                     if (e.url) h += `<br><a href="${e.url}" target="_blank">Source</a>`;
                     h += `</div>`;
-                    
                     h += `</div>`;
                 }
                 
@@ -1067,9 +1072,12 @@
                     barH = avgEvents[i + 1].y - e.y;
                 }
                 
+                // Render bar first (if needed)
                 if (barH > 0) {
                     h += `<div class="event ${e.cls}" style="top:${e.y}rem; left:${avgX}rem;"><div class="bar" style="height:${barH}rem;"></div></div>`;
                 }
+                
+                // Then render marker
                 h += `<div class="event ${e.cls}" style="top:${e.y}rem; left:${avgX}rem;"><div class="marker"></div></div>`;
             });
             
@@ -1081,7 +1089,10 @@
             const appY = getPos(idealApp, refFY);
             const barH = appY - budgetY;
             
+            // Render bar first
             h += `<div class="event data-pbd" style="top:${budgetY}rem; left:${idealX}rem;"><div class="bar" style="height:${barH}rem;"></div></div>`;
+            
+            // Then render markers
             h += `<div class="event data-pbd" style="top:${budgetY}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
             h += `<div class="event data-app" style="top:${appY}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
             
