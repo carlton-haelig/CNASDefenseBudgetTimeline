@@ -813,12 +813,18 @@
         function positionYLabels() {
             const grid = document.querySelector('#budget-viz-wrapper .grid');
             const yLabels = document.querySelector('#budget-viz-wrapper .y-labels');
-            const vizWrapper = document.querySelector('#budget-viz-wrapper .viz-wrapper');
             
-            if (grid && yLabels && vizWrapper) {
-                // Get the grid's position relative to viz-wrapper
-                const vizRect = vizWrapper.getBoundingClientRect();
+            if (grid && yLabels) {
+                // Get the grid's absolute position on the page
                 const gridRect = grid.getBoundingClientRect();
+                
+                // Get y-labels parent container position
+                const vizDiv = document.querySelector('#budget-viz-wrapper #viz');
+                if (!vizDiv) return;
+                
+                const vizRect = vizDiv.getBoundingClientRect();
+                
+                // Calculate offset from viz container to grid
                 const offsetTop = gridRect.top - vizRect.top;
                 
                 // Set y-labels to align with grid
