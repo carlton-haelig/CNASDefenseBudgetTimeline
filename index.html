@@ -197,6 +197,16 @@
             display: block;
         }
 
+        #budget-viz-wrapper .x-label:first-child .x-tooltip {
+            left: 0;
+            transform: none;
+        }
+
+        #budget-viz-wrapper .x-label:first-child .x-tooltip::before {
+            left: 2.5rem;
+            transform: none;
+        }
+
         #budget-viz-wrapper .grid {
             display: grid;
             grid-template-columns: repeat(var(--cols), 5rem);
@@ -408,14 +418,16 @@
         #budget-viz-wrapper .result-count {
             font-size: 0.9rem;
             color: #b0b0b5;
-            margin-bottom: 1rem;
+            margin-bottom: 3rem;
         }
 
         #budget-viz-wrapper .table-wrapper {
             overflow-x: auto;
+            overflow-y: visible;
             background-color: #2d2d32;
             border-radius: 4px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            margin-top: 2rem;
         }
 
         #budget-viz-wrapper table {
