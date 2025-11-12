@@ -36,13 +36,11 @@
             font-family: "Gotham-Book", sans-serif;
             padding: 2rem;
             margin: 0;
-            overflow: visible;
         }
 
         #budget-viz-wrapper .container {
             max-width: 1800px;
             margin: 0 auto;
-            overflow: visible;
         }
 
         #budget-viz-wrapper h1 {
@@ -425,30 +423,15 @@
 
         #budget-viz-wrapper .table-wrapper {
             overflow-x: auto;
-            overflow-y: visible;
             background-color: #2d2d32;
             border-radius: 4px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        #budget-viz-wrapper #table-view {
-            overflow: visible;
-            padding-top: 3rem;
-        }
-
-        #budget-viz-wrapper #table-container {
-            overflow: visible;
         }
 
         #budget-viz-wrapper table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.95rem;
-            overflow: visible;
-        }
-
-        #budget-viz-wrapper tbody {
-            overflow: visible;
         }
 
         #budget-viz-wrapper thead {
@@ -456,7 +439,6 @@
             position: sticky;
             top: 0;
             z-index: 10;
-            overflow: visible;
         }
 
         #budget-viz-wrapper th {
@@ -520,7 +502,6 @@
             white-space: nowrap;
             text-align: center;
             position: relative;
-            overflow: visible;
         }
 
         #budget-viz-wrapper .fy-with-note {
@@ -528,7 +509,6 @@
             align-items: center;
             gap: 0.3rem;
             position: relative;
-            overflow: visible;
         }
 
         #budget-viz-wrapper .info-icon {
@@ -548,7 +528,7 @@
 
         #budget-viz-wrapper .fy-tooltip {
             position: absolute;
-            bottom: 100%;
+            top: 100%;
             left: 50%;
             transform: translateX(-50%);
             background: #fff;
@@ -563,7 +543,7 @@
             visibility: hidden;
             transition: opacity 0.2s, visibility 0.2s;
             z-index: 100;
-            margin-bottom: 0.5rem;
+            margin-top: 0.5rem;
             white-space: normal;
             text-align: left;
             pointer-events: none;
@@ -572,11 +552,11 @@
         #budget-viz-wrapper .fy-tooltip::after {
             content: '';
             position: absolute;
-            top: 100%;
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
             border: 6px solid transparent;
-            border-top-color: #fff;
+            border-bottom-color: #fff;
         }
 
         #budget-viz-wrapper .info-icon:hover .fy-tooltip {
