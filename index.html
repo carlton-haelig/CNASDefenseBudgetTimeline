@@ -815,19 +815,17 @@
             const yLabels = document.querySelector('#budget-viz-wrapper .y-labels');
             
             if (grid && yLabels) {
-                // Get the grid's absolute position on the page
+                // Get the y-labels' positioning context (what it's absolutely positioned relative to)
+                const labelsParent = yLabels.offsetParent || document.body;
+                
+                // Get absolute positions
                 const gridRect = grid.getBoundingClientRect();
+                const parentRect = labelsParent.getBoundingClientRect();
                 
-                // Get y-labels parent container position
-                const vizDiv = document.querySelector('#budget-viz-wrapper #viz');
-                if (!vizDiv) return;
+                // Calculate where grid starts relative to the labels' positioning parent
+                const offsetTop = gridRect.top - parentRect.top;
                 
-                const vizRect = vizDiv.getBoundingClientRect();
-                
-                // Calculate offset from viz container to grid
-                const offsetTop = gridRect.top - vizRect.top;
-                
-                // Set y-labels to align with grid
+                // Set y-labels to align with grid start
                 yLabels.style.top = offsetTop + 'px';
             }
         }
