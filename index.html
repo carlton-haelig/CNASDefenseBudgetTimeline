@@ -36,11 +36,13 @@
             font-family: "Gotham-Book", sans-serif;
             padding: 2rem;
             margin: 0;
+            overflow: visible;
         }
 
         #budget-viz-wrapper .container {
             max-width: 1800px;
             margin: 0 auto;
+            overflow: visible;
         }
 
         #budget-viz-wrapper h1 {
@@ -348,7 +350,7 @@
         #budget-viz-wrapper .filters {
             display: flex;
             gap: 1.5rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap;
             align-items: center;
         }
@@ -418,7 +420,7 @@
         #budget-viz-wrapper .result-count {
             font-size: 0.9rem;
             color: #b0b0b5;
-            margin-bottom: 5rem;
+            margin-bottom: 1rem;
         }
 
         #budget-viz-wrapper .table-wrapper {
@@ -427,14 +429,14 @@
             background-color: #2d2d32;
             border-radius: 4px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            margin-top: 3rem;
-        }
-
-        #budget-viz-wrapper #table-container {
-            padding-top: 2rem;
         }
 
         #budget-viz-wrapper #table-view {
+            overflow: visible;
+            padding-top: 3rem;
+        }
+
+        #budget-viz-wrapper #table-container {
             overflow: visible;
         }
 
@@ -442,6 +444,11 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.95rem;
+            overflow: visible;
+        }
+
+        #budget-viz-wrapper tbody {
+            overflow: visible;
         }
 
         #budget-viz-wrapper thead {
@@ -449,6 +456,7 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            overflow: visible;
         }
 
         #budget-viz-wrapper th {
@@ -512,6 +520,7 @@
             white-space: nowrap;
             text-align: center;
             position: relative;
+            overflow: visible;
         }
 
         #budget-viz-wrapper .fy-with-note {
@@ -519,6 +528,7 @@
             align-items: center;
             gap: 0.3rem;
             position: relative;
+            overflow: visible;
         }
 
         #budget-viz-wrapper .info-icon {
