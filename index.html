@@ -1049,11 +1049,21 @@
             
             const avgByType = { 'pbd': [], 'cr': [], 'app': [] };
             Object.values(byYear).forEach(events => {
-                events.forEach(e => {
+                // Sort events by date to ensure we get the first CR
+                const sortedEvents = [...events].sort((a, b) => a.date - b.date);
+                let firstCRFound = false;
+                
+                sortedEvents.forEach(e => {
                     const day = getDayOfPeriod(e.date, e.fy);
-                    if (e.type === "President's Budget Delivered to Congress") avgByType.pbd.push(day);
-                    else if (e.type === 'Continuing Resolution') avgByType.cr.push(day);
-                    else if (e.type === 'Appropriation') avgByType.app.push(day);
+                    if (e.type === "President's Budget Delivered to Congress") {
+                        avgByType.pbd.push(day);
+                    } else if (e.type.includes('Continuing Resolution') && !firstCRFound) {
+                        // Only include the first CR for this fiscal year
+                        avgByType.cr.push(day);
+                        firstCRFound = true;
+                    } else if (e.type === 'Appropriation') {
+                        avgByType.app.push(day);
+                    }
                 });
             });
             
