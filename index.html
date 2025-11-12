@@ -123,7 +123,6 @@
         #budget-viz-wrapper .y-labels {
             position: absolute;
             left: 0;
-            top: 15.7rem;
             width: 3.5rem;
             text-align: right;
             font-size: 0.9rem;
@@ -643,7 +642,6 @@
                 left: 0.5rem;
                 width: 2.5rem;
                 font-size: 0.7rem;
-                top: 16.5rem;
             }
 
             #budget-viz-wrapper .y-label {
@@ -811,6 +809,32 @@
         let currentView = 'timeline';
         let currentSort = { column: 'date', direction: 'asc' };
 
+        // DYNAMIC Y-LABEL POSITIONING
+        function positionYLabels() {
+            const grid = document.querySelector('#budget-viz-wrapper .grid');
+            const yLabels = document.querySelector('#budget-viz-wrapper .y-labels');
+            const vizWrapper = document.querySelector('#budget-viz-wrapper .viz-wrapper');
+            
+            if (grid && yLabels && vizWrapper) {
+                // Get the grid's position relative to viz-wrapper
+                const vizRect = vizWrapper.getBoundingClientRect();
+                const gridRect = grid.getBoundingClientRect();
+                const offsetTop = gridRect.top - vizRect.top;
+                
+                // Set y-labels to align with grid
+                yLabels.style.top = offsetTop + 'px';
+            }
+        }
+
+        function positionLabelsAfterRender() {
+            // Use requestAnimationFrame to ensure DOM is fully rendered
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    positionYLabels();
+                });
+            });
+        }
+
         // UTILITY FUNCTIONS
         function parseCSV(txt) {
             const lines = txt.split('\n');
@@ -900,6 +924,9 @@
                 document.getElementById('loading').classList.add('u-hidden');
                 showView('timeline');
                 
+                // Position labels after everything is rendered
+                positionLabelsAfterRender();
+                
             } catch (e) {
                 document.getElementById('error').textContent = 'Error: ' + e.message;
                 document.getElementById('error').classList.remove('u-hidden');
@@ -981,6 +1008,9 @@
             h += '</div>';
             
             document.getElementById('viz').innerHTML = h;
+            
+            // Position y-labels after timeline is rendered
+            positionLabelsAfterRender();
         }
 
         function renderEvents(byYear, years) {
@@ -1340,6 +1370,21 @@
         }
 
         load();
+
+        // Initial positioning after page loads
+        window.addEventListener('load', positionLabelsAfterRender);
+
+        // Re-position on window resize (debounced)
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(positionYLabels, 100);
+        });
+
+        // Also position when switching to timeline view
+        document.getElementById('timeline-btn').addEventListener('click', () => {
+            setTimeout(positionLabelsAfterRender, 50);
+        });
     </script>
 </body>
 </html>
