@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>A Decade of Budget Instability</title>
+    <title>Nearly Two Decades of Defense Budget Instability</title>
     <style>
         html, body {
             margin: 0;
@@ -733,7 +733,7 @@
     <div id="budget-viz-wrapper">
         <div class="container">
             <div class="subtitle">
-                <h1>A DECADE OF BUDGET INSTABILITY</h1>
+                <h1>NEARLY TWO DECADES OF DEFENSE BUDGET INSTABILITY</h1>
             </div>
 
             <div class="view-toggle">
@@ -1069,7 +1069,8 @@
                 const avgDate = new Date(refStart.getTime() + avgDay * 24 * 60 * 60 * 1000);
                 const y = getPos(avgDate, refFY);
                 const cls = type === 'pbd' ? 'data-pbd' : type === 'cr' ? 'data-cr' : 'data-app';
-                avgEvents.push({ y, cls, type });
+                const typeName = type === 'pbd' ? "President's Budget Delivered to Congress" : type === 'cr' ? 'Continuing Resolution' : 'Appropriation';
+                avgEvents.push({ y, cls, type, date: avgDate, typeName });
             });
             
             // Sort by position
@@ -1087,8 +1088,13 @@
                     h += `<div class="event ${e.cls}" style="top:${e.y}rem; left:${avgX}rem;"><div class="bar" style="height:${barH}rem;"></div></div>`;
                 }
                 
-                // Then render marker
-                h += `<div class="event ${e.cls}" style="top:${e.y}rem; left:${avgX}rem;"><div class="marker"></div></div>`;
+                // Then render marker with tooltip
+                h += `<div class="event ${e.cls}" style="top:${e.y}rem; left:${avgX}rem;">`;
+                h += `<div class="marker"></div>`;
+                h += `<div class="event-tooltip">`;
+                h += `<strong>Average: ${formatDate(e.date)}</strong><br>${e.typeName}`;
+                h += `</div>`;
+                h += `</div>`;
             });
             
             // Ideal column
@@ -1102,9 +1108,20 @@
             // Render bar first
             h += `<div class="event data-pbd" style="top:${budgetY}rem; left:${idealX}rem;"><div class="bar" style="height:${barH}rem;"></div></div>`;
             
-            // Then render markers
-            h += `<div class="event data-pbd" style="top:${budgetY}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
-            h += `<div class="event data-app" style="top:${appY}rem; left:${idealX}rem;"><div class="marker"></div></div>`;
+            // Then render markers with tooltips
+            h += `<div class="event data-pbd" style="top:${budgetY}rem; left:${idealX}rem;">`;
+            h += `<div class="marker"></div>`;
+            h += `<div class="event-tooltip">`;
+            h += `<strong>Ideal: ${formatDate(idealBudget)}</strong><br>President's Budget Delivered to Congress`;
+            h += `</div>`;
+            h += `</div>`;
+            
+            h += `<div class="event data-app" style="top:${appY}rem; left:${idealX}rem;">`;
+            h += `<div class="marker"></div>`;
+            h += `<div class="event-tooltip">`;
+            h += `<strong>Ideal: ${formatDate(idealApp)}</strong><br>Appropriation`;
+            h += `</div>`;
+            h += `</div>`;
             
             return h;
         }
