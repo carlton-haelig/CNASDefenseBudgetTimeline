@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Nearly Two Decades of Defense Budget Instability</title>
+    
+    <!--
+    PRODUCTION VERSION - HARDCODED DATA
+    
+    This file contains all data hardcoded directly in the HTML for single-file deployment.
+    
+    TO UPDATE DATA:
+    1. Export your updated CSV from Google Forms
+    2. Find the CSV_DATA constant in the JavaScript section below (search for "HARDCODED CSV DATA")
+    3. Replace the CSV_DATA string with your new export
+    4. Keep the header row and all data rows
+    5. Test in browser before deploying
+    
+    FOR CODE CHANGES:
+    - Make changes to budget_viz_merged.html (which uses external data.csv)
+    - Then create a new production version with updated code + hardcoded data
+    
+    DEPENDENCIES:
+    - Gotham fonts (fonts/Gotham-*.woff and fonts/Gotham-*.ttf)
+    - Update font paths to absolute URLs before embedding
+    -->
+    
     <style>
         html, body {
             margin: 0;
@@ -794,7 +816,104 @@
     </div>
 
     <script>
-        const CSV_FILE = 'data.csv';
+        // HARDCODED CSV DATA FOR PRODUCTION
+        // To update data: Replace the CSV_DATA string below with your updated CSV export from Google Forms
+        // Format: Keep the header row, then one row per event with columns:
+        // Timestamp, Fiscal Year, Date (MM/DD/YYYY), Event Type, Source URL, Bill Name, FY Note
+        
+        const CSV_DATA = `Timestamp,Fiscal Year,Date,Event Type,Source URL,Bill Name (if applicable),Input note for the FY
+11/20/2025 12:00:00,2026,11/20/2025,Continuing Resolution,https://www.congress.gov/bill/119th-congress/house-bill/5371,H.R. 5371,
+10/29/2025 15:33:45,2026,05/02/2025,President's Budget Delivered to Congress,https://www.govinfo.gov/content/pkg/BUDGET-2026-BUD/pdf/BUDGET-2026-BUD.pdf,,"""DOD started FY2026 under a shutdown. The government remains shutdown at the time data collection"""
+10/29/2025 15:34:35,2026,10/01/2025,Government Shutdown,https://www.cbsnews.com/live-updates/government-shutdown-latest-snap-benefits-impasse/,,
+10/29/2025 15:31:29,2025,03/11/2024,President's Budget Delivered to Congress,https://www.govinfo.gov/content/pkg/BUDGET-2025-BUD/pdf/BUDGET-2025-BUD.pdf,,"""DoD's FY25 budget was funded by two short-term CRs and a third full-year CR"""
+10/29/2025 15:32:23,2025,03/15/2025,Full-Year Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2025,H.R. 1968,
+10/29/2025 15:31:47,2025,09/26/2024,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2025,H.R. 9747,
+10/29/2025 15:32:07,2025,12/21/2024,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2025,H.R. 10545,
+10/29/2025 15:30:13,2024,01/19/2024,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2024,H.R. 2782,
+10/29/2025 15:30:32,2024,03/01/2024,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2024,H.R. 7463,
+10/29/2025 15:28:52,2024,03/09/2023,President's Budget Delivered to Congress,https://www.govinfo.gov/content/pkg/BUDGET-2024-BUD/pdf/BUDGET-2024-BUD.pdf,,"""DoD started FY24 under a CR and continued with four additional CRs before the Consolidated Appropriations Act became Law in December"""
+10/29/2025 15:30:59,2024,03/23/2024,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2024,H.R. 2882,
+10/29/2025 15:29:17,2024,09/30/2023,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2024,H.R. 5860,
+10/29/2025 15:29:48,2024,11/16/2023,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2024,H.R. 6363,
+10/29/2025 15:27:24,2023,03/28/2022,President's Budget Delivered to Congress,https://www.govinfo.gov/app/collection/budget/2023,,"""DoD started FY23 under a CR and continued with three additional CRs before the Consolidated Appropriations Act became Law in December"""
+10/29/2025 15:27:41,2023,09/30/2022,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2023,H.R. 6833,
+10/29/2025 15:28:01,2023,12/16/2022,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2023,H.R. 1487,
+10/29/2025 15:28:19,2023,12/23/2022,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2023,H.R. 2617,
+,2024,03/23/2024,Appropriation,https://www.congress.gov/crs-appropriations-status-table/2024,H.R. 2882,
+10/29/2025 15:28:33,2023,12/29/2022,Appropriation,https://www.congress.gov/crs-appropriations-status-table/2023,H.R. 2617,
+10/29/2025 15:26:29,2022,02/18/2022,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2022,H.R. 6617,
+10/29/2025 15:26:47,2022,03/11/2022,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2022,H.J. Res 75,
+10/29/2025 15:27:02,2022,03/15/2022,Appropriation,https://www.congress.gov/crs-appropriations-status-table/2022,H.R. 2471,
+10/29/2025 15:25:28,2022,05/28/2021,President's Budget Delivered to Congress,https://www.govinfo.gov/content/pkg/BUDGET-2022-BUD/pdf/BUDGET-2022-BUD.pdf,,"""DoD started FY22 under a CR and continued with four additional CRs before the Consolidated Appropriations Act became Law in March"""
+10/29/2025 15:25:43,2022,09/30/2021,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2022,H.R. 5305,
+10/29/2025 15:26:07,2022,12/03/2021,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2022,H.R. 6119,
+10/29/2025 15:22:57,2021,02/10/2020,President's Budget Delivered to Congress,https://www.govinfo.gov/content/pkg/BUDGET-2021-BUD/pdf/BUDGET-2021-BUD.pdf,,"""DoD started FY21 under a CR and continued with five additional CRs before the Consolidated Appropriations Act became Law in December"""
+10/29/2025 15:23:21,2021,10/01/2020,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2021,H.R. 8319,
+10/29/2025 15:23:35,2021,12/11/2020,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2021,H.R. 8900,
+10/29/2025 15:23:52,2021,12/18/2020,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2021,H.J. Res 107,
+10/29/2025 15:24:17,2021,12/20/2020,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2021,H.J. Res 110,
+10/29/2025 15:24:31,2021,12/22/2020,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2021,H.R. 1520,
+10/29/2025 15:25:05,2021,12/27/2020,Appropriation,https://www.congress.gov/crs-appropriations-status-table/2021,H.R. 133,
+10/29/2025 15:21:49,2020,03/11/2019,President's Budget Delivered to Congress,https://www.govinfo.gov/content/pkg/BUDGET-2020-BUD/pdf/BUDGET-2020-BUD.pdf,,"""DOD Started FY2020 under a CR and continued with two additional CRs before the Consolidated Appropriations Act became Law in December"""
+10/29/2025 15:22:13,2020,09/27/2019,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2020,H.R. 4378,
+10/29/2025 15:22:35,2020,11/21/2019,Continuing Resolution,https://www.congress.gov/crs-appropriations-status-table/2020,H.R. 3055,
+10/29/2025 15:20:59,2019,02/12/2018,President's Budget Delivered to Congress,https://www.govinfo.gov/content/pkg/BUDGET-2019-BUD/pdf/BUDGET-2019-BUD.pdf,,"""While other parts of the government started under CR, DoD's FY19 appropriations passed on time. The December 2018-January 2019 shutdown did not directly affect DoD spending"""
+,2020,12/20/2019,Appropriation,https://www.congress.gov/crs-appropriations-status-table/2020,HR. 1158,
+10/29/2025 15:21:20,2019,09/28/2018,Appropriation,https://www.congress.gov/bill/115th-congress/house-bill/6157,H.R. 6157,
+10/29/2025 15:19:28,2018,01/20/2018,Government Shutdown,https://www.congress.gov/crs-product/RL34680,,
+10/29/2025 15:19:45,2018,01/22/2018,Continuing Resolution,https://www.congress.gov/115/plaws/publ120/PLAW-115publ120.pdf,H.R. 195,
+10/29/2025 15:20:06,2018,02/09/2018,Continuing Resolution,https://www.congress.gov/115/plaws/publ123/PLAW-115publ123.pdf,H.R. 1892,
+10/29/2025 15:20:35,2018,03/23/2018,Appropriation,https://www.congress.gov/bill/115th-congress/house-bill/1625/text,H.R. 1625,
+10/29/2025 15:17:04,2018,05/23/2017,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2018-BUD/pdf/BUDGET-2018-BUD.pdf,,"""DoD started FY18 under a CR and continued with five additional CRs before the Consolidated Appropriations Act became Law in March"""
+10/29/2025 15:18:08,2018,09/08/2017,Continuing Resolution,https://www.congress.gov/bill/115th-congress/house-bill/601?q=%7B%22search%22%3A%5B%22h.r.601%22%5D%7D&r=1,H.R. 601,
+10/29/2025 15:18:32,2018,12/08/2017,Continuing Resolution,https://www.govinfo.gov/content/pkg/PLAW-115publ90/pdf/PLAW-115publ90.pdf,H.J. Res 123,
+10/29/2025 15:18:56,2018,12/22/2017,Continuing Resolution,https://www.govinfo.gov/content/pkg/PLAW-115publ96/pdf/PLAW-115publ96.pdf,H.R. 1370,
+,2017,02/09/2016,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2017-BUD/pdf/BUDGET-2017-BUD.pdf,,DoD started FY17 under a CR and continued with two additional CRs before the Consolidated Appropriations Act became law in May.
+,2017,09/29/2016,Continuing Resolution,https://www.congress.gov/bill/114th-congress/house-bill/5325,H.R. 5325,
+,2016,02/02/2015,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2016-BUD/pdf/BUDGET-2016-BUD.pdf,,DoD started FY16 under a CR and continued with two follow on CRs before the Consolidated Appropriations Act became law in December 2015.
+,2016,09/30/2015,Continuing Resolution,https://www.congress.gov/bill/114th-congress/house-bill/719,H.R. 719,
+,2016,12/11/2015,Continuing Resolution,https://www.congress.gov/bill/114th-congress/house-bill/2250,H.R. 2250,
+,2016,12/16/2015,Continuing Resolution,https://www.congress.gov/bill/114th-congress/house-joint-resolution/78?r=2,H.J. Res 78,
+,2017,05/05/2017,Appropriation,https://www.congress.gov/bill/115th-congress/house-bill/244,H.R. 244,
+,2016,12/18/2015,Appropriation,https://www.congress.gov/bill/114th-congress/house-bill/2029,H.R. 2029,
+,2015,03/04/2014,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2015-BUD/pdf/BUDGET-2015-BUD.pdf,,DoD started FY15 under a CR and had two short extensions before the Consolidated and Further Continuing Appropriations Act became law in December.
+,2015,09/19/2014,Continuing Resolution,https://www.congress.gov/bill/113th-congress/house-joint-resolution/124,H.J. Res 124,
+,2015,12/12/2014,Continuing Resolution,https://www.congress.gov/bill/113th-congress/house-joint-resolution/130,H.J. Res 130,
+,2015,12/13/2014,Continuing Resolution,https://www.congress.gov/bill/113th-congress/house-joint-resolution/131,H.J. Res 131,
+,2015,12/16/2014,Appropriation,https://www.congress.gov/bill/113th-congress/house-bill/83,H.R. 83,
+,2014,01/15/2014,Continuing Resolution,https://www.congress.gov/bill/113th-congress/house-joint-resolution/106,H.J. Res 106,
+,2014,01/17/2014,Appropriation,https://www.congress.gov/bill/113th-congress/house-bill/3547,H.R. 3547,
+,2014,04/10/2013,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2014-BUD/pdf/BUDGET-2014-BUD.pdf,,DoD started FY14 with a government shutdown that lasted 16 days. It then continued under CR until the Consolidated Appropriations Act became law in January.
+,2014,09/30/2013,Government Shutdown,https://www.congress.gov/bill/113th-congress/house-bill/3210,H.R. 3210,
+,2014,10/17/2013,Continuing Resolution,https://www.congress.gov/bill/113th-congress/house-bill/2775,H.R. 2775,
+,2014,12/26/2013,Continuing Resolution,https://www.congress.gov/bill/113th-congress/house-joint-resolution/59,H.J. Res 59,
+,2013,02/13/2012,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2013-BUD/pdf/BUDGET-2013-BUD.pdf,,DoD started FY13 with a 6 month CR to give the Murray-Ryan Supercommittee time to reach a long-term budget deal. The Supercommittee failed and sequestration took effect in the middle of the fiscal year.
+,2013,03/26/2013,Appropriation,https://www.congress.gov/bill/113th-congress/house-bill/933,H.R. 933,
+,2013,09/28/2012,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-joint-resolution/117,H.J. Res 117,
+,2012,02/14/2011,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2012-BUD/pdf/BUDGET-2012-BUD.pdf,,DoD started FY12 under a CR and continued with multiple short-term CRs before the Consolidated Appropriations Act was signed into law in December.
+,2012,09/30/2011,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-bill/2017,H.R. 2017,
+,2012,10/05/2011,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-bill/2608,H.R. 2608,
+,2012,11/18/2011,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-bill/2112,H.R. 2112,
+,2012,12/16/2011,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-joint-resolution/94,H.J. Res 94,
+,2012,12/17/2011,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-joint-resolution/95,H.J. Res 95,
+,2012,12/23/2011,Appropriation,https://www.congress.gov/bill/112th-congress/house-bill/2055,H.R. 2055,
+,2011,02/01/2010,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2011-BUD/pdf/BUDGET-2011-BUD.pdf,,DoD started FY11 under a CR and continued with seven short-term CRs before the Department of Defense and Full-Year Continuing Appropriations Act became law in April.
+,2011,03/02/2011,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-joint-resolution/44,H.J. Res 44,
+,2011,03/18/2011,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-joint-resolution/48,H.J. Res 48,
+,2011,04/09/2011,Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-bill/1363,H.R. 1363,
+,2011,04/14/2011,Full-Year Continuing Resolution,https://www.congress.gov/bill/112th-congress/house-bill/1473,H.R. 1473,
+,2011,09/30/2010,Continuing Resolution,https://www.congress.gov/bill/111th-congress/house-bill/3081,H.R. 3081,
+,2011,12/04/2010,Continuing Resolution,https://www.congress.gov/bill/111th-congress/house-joint-resolution/101,H.J. Res 101,
+,2011,12/18/2010,Continuing Resolution,https://www.congress.gov/bill/111th-congress/house-joint-resolution/105,H.J. Res 105,
+,2011,12/22/2010,Continuing Resolution,https://www.congress.gov/bill/111th-congress/house-bill/3082,H.R. 3082,
+,2010,02/26/2009,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2010-BUD/pdf/BUDGET-2010-BUD.pdf,,DoD started FY10 under a CR which was extended once before the Department of Defense Appropriations Act became law in December.
+,2010,10/01/2009,Continuing Resolution,https://www.congress.gov/bill/111th-congress/house-bill/2918,H.R. 2918,
+,2010,10/30/2009,Continuing Resolution,https://www.congress.gov/bill/111th-congress/house-bill/2996,H.R. 2996,
+,2011,04/15/2011,Appropriation,https://www.congress.gov/bill/112th-congress/house-bill/1473,H.R. 1473,
+,2010,12/19/2009,Appropriation,https://www.congress.gov/bill/111th-congress/house-bill/3326,H.R. 3326,
+,2009,02/04/2008,President's Budget Delivered to Congress,https://www.gpo.gov/fdsys/pkg/BUDGET-2009-BUD/pdf/BUDGET-2009-BUD-11.pdf,,"FY09 was a normal year for DoD. While other parts of the government started under CR, DOD's appropriations passed on time."
+,2009,09/30/2008,Appropriation,https://www.congress.gov/bill/110th-congress/house-bill/2638,H.R. 2638,`;
+
         const EVENTS = {
             "President's Budget Delivered to Congress": { color: '#58c1c6', class: 'data-pbd' },
             'Continuing Resolution': { color: '#d47371', class: 'data-cr' },
@@ -894,10 +1013,8 @@
         // DATA LOADING
         async function load() {
             try {
-                const res = await fetch(CSV_FILE);
-                if (!res.ok) throw new Error('Cannot load CSV');
-                
-                const txt = await res.text();
+                // Use hardcoded CSV data instead of fetching
+                const txt = CSV_DATA;
                 const rows = parseCSV(txt);
                 
                 rows.forEach(r => {
